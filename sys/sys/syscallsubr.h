@@ -50,6 +50,7 @@ struct kevent_copyops;
 struct kld_file_stat;
 struct ksiginfo;
 struct mbuf;
+struct mmap_req;
 struct msghdr;
 struct msqid_ds;
 struct pollfd;
@@ -63,8 +64,8 @@ struct stat;
 struct thr_param;
 struct uio;
 
-typedef int (*mmap_check_fp_fn)(struct file *, int, int, int);
-
+int	kern___getcwd(struct thread *td, char *buf, enum uio_seg bufseg,
+	    size_t buflen, size_t path_max);
 int	kern_accept(struct thread *td, int s, struct sockaddr **name,
 	    socklen_t *namelen, struct file **fp);
 int	kern_accept4(struct thread *td, int s, struct sockaddr **name,
@@ -182,9 +183,7 @@ int	kern_mlock(struct proc *proc, struct ucred *cred, uintptr_t addr,
 	    size_t len);
 int	kern_mmap(struct thread *td, uintptr_t addr, size_t len, int prot,
 	    int flags, int fd, off_t pos);
-int	kern_mmap_fpcheck(struct thread *td, uintptr_t addr, size_t len,
-	    int prot, int flags, int fd, off_t pos,
-	    mmap_check_fp_fn check_fp_fn);
+int	kern_mmap_req(struct thread *td, const struct mmap_req *mrp);
 int	kern_mmap_maxprot(struct proc *p, int prot);
 int	kern_mprotect(struct thread *td, uintptr_t addr, size_t size, int prot);
 int	kern_msgctl(struct thread *, int, int, struct msqid_ds *);

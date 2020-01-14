@@ -201,17 +201,25 @@ linux_mmap_common(struct thread *td, uintptr_t addr, size_t len, int prot,
 	 * address is not zero, try with MAP_FIXED and MAP_EXCL first,
 	 * and fall back to the normal behaviour if that fails.
 	 */
+	struct mmap_req mr = {
+		.mr_hint = addr,
+		.mr_len = len,
+		.mr_prot = prot,
+		.mr_flags = bsd_flags,
+		.mr_fd = fd,
+		.mr_pos = pos,
+		.mr_check_fp_fn = linux_mmap_check_fp
+	};
 	if (addr != 0 && (bsd_flags & MAP_FIXED) == 0 &&
 	    (bsd_flags & MAP_EXCL) == 0) {
-		error = kern_mmap_fpcheck(td, addr, len, prot,
-		    bsd_flags | MAP_FIXED | MAP_EXCL, fd, pos,
-		    linux_mmap_check_fp);
+		struct mmap_req mr_fixed = mr;
+		mr_fixed.mr_flags |= MAP_FIXED | MAP_EXCL;
+		error = kern_mmap_req(td, &mr_fixed);
 		if (error == 0)
 			goto out;
 	}
 
-	error = kern_mmap_fpcheck(td, addr, len, prot, bsd_flags, fd, pos,
-	    linux_mmap_check_fp);
+	error = kern_mmap_req(td, &mr);
 out:
 	LINUX_CTR2(mmap2, "return: %d (%p)", error, td->td_retval[0]);
 
