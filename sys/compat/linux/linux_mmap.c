@@ -77,6 +77,7 @@ int
 linux_mmap_common(struct thread *td, uintptr_t addr, size_t len, int prot,
     int flags, int fd, off_t pos)
 {
+	struct mmap_req mr;
 	struct proc *p = td->td_proc;
 	struct vmspace *vms = td->td_proc->p_vmspace;
 	int bsd_flags, error;
@@ -201,7 +202,7 @@ linux_mmap_common(struct thread *td, uintptr_t addr, size_t len, int prot,
 	 * address is not zero, try with MAP_FIXED and MAP_EXCL first,
 	 * and fall back to the normal behaviour if that fails.
 	 */
-	struct mmap_req mr = {
+	mr = (struct mmap_req) {
 		.mr_hint = addr,
 		.mr_len = len,
 		.mr_prot = prot,
