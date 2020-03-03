@@ -50,7 +50,6 @@ struct kevent_copyops;
 struct kld_file_stat;
 struct ksiginfo;
 struct mbuf;
-struct mmap_req;
 struct msghdr;
 struct msqid_ds;
 struct pollfd;
@@ -63,6 +62,18 @@ struct sockaddr;
 struct stat;
 struct thr_param;
 struct uio;
+
+typedef int (*mmap_check_fp_fn)(struct file *, int, int, int);
+
+struct mmap_req {
+	vm_offset_t		mr_hint;
+	vm_size_t		mr_len;
+	int			mr_prot;
+	int			mr_flags;
+	int			mr_fd;
+	off_t			mr_pos;
+	mmap_check_fp_fn	mr_check_fp_fn;
+};
 
 int	kern___getcwd(struct thread *td, char *buf, enum uio_seg bufseg,
 	    size_t buflen, size_t path_max);
