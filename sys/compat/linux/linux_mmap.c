@@ -77,7 +77,7 @@ int
 linux_mmap_common(struct thread *td, uintptr_t addr, size_t len, int prot,
     int flags, int fd, off_t pos)
 {
-	struct mmap_req mr;
+	struct mmap_req mr, mr_fixed;
 	struct proc *p = td->td_proc;
 	struct vmspace *vms = td->td_proc->p_vmspace;
 	int bsd_flags, error;
@@ -213,7 +213,7 @@ linux_mmap_common(struct thread *td, uintptr_t addr, size_t len, int prot,
 	};
 	if (addr != 0 && (bsd_flags & MAP_FIXED) == 0 &&
 	    (bsd_flags & MAP_EXCL) == 0) {
-		struct mmap_req mr_fixed = mr;
+		mr_fixed = mr;
 		mr_fixed.mr_flags |= MAP_FIXED | MAP_EXCL;
 		error = kern_mmap_req(td, &mr_fixed);
 		if (error == 0)
