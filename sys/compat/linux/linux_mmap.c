@@ -209,7 +209,7 @@ linux_mmap_common(struct thread *td, uintptr_t addr, size_t len, int prot,
 		.mr_flags = bsd_flags,
 		.mr_fd = fd,
 		.mr_pos = pos,
-		.mr_check_fp_fn = linux_mmap_check_fp
+		.mr_check_fp_fn = linux_mmap_check_fp,
 	};
 	if (addr != 0 && (bsd_flags & MAP_FIXED) == 0 &&
 	    (bsd_flags & MAP_EXCL) == 0) {
