@@ -11,8 +11,10 @@ env:
 task:
   timeout_in: 120m
   install_script:
-  - pkg install -y qemu-devel uefi-edk2-qemu-x86_64
+  - pkg install -y qemu-devel uefi-edk2-qemu-x86_64 git
   script:
+  - git clone https://github.com/jmmv/lutok.git contrib/lutok
+  - git clone https://github.com/jmmv/kyua.git contrib/kyua
   - make -j$(sysctl -n hw.ncpu) WITHOUT_TOOLCHAIN=yes buildworld buildkernel
   package_script:
   - make WITHOUT_TOOLCHAIN=yes PKG_FORMAT=tar packages
