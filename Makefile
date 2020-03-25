@@ -48,6 +48,9 @@
 # native-xtools-install
 #                     - Install the files to the given DESTDIR/NXTP where
 #                       NXTP defaults to /nxb-bin.
+# buildsysroot        - Build all the boostrap tools and libraries needed
+#                       for a cross-compile sysroot.
+# installsysroot      - Install the sysroot created by buildsysroot.
 #
 # This makefile is simple by design. The FreeBSD make automatically reads
 # the /usr/share/mk/sys.mk unless the -m argument is specified on the
@@ -122,7 +125,7 @@
 .include "targets/Makefile"
 .else
 
-TGTS=	all all-man buildenv buildenvvars buildkernel buildworld \
+TGTS=	all all-man buildenv buildenvvars buildkernel buildsysroot buildworld \
 	check check-old check-old-dirs check-old-files check-old-libs \
 	checkdpadd checkworld clean cleandepend cleandir cleanworld \
 	cleanuniverse \
@@ -132,7 +135,7 @@ TGTS=	all all-man buildenv buildenvvars buildkernel buildworld \
 	everything hier hierarchy install installcheck installkernel \
 	installkernel.debug packagekernel packageworld \
 	reinstallkernel reinstallkernel.debug \
-	installworld kernel-toolchain libraries maninstall \
+	installsysroot installworld kernel-toolchain libraries maninstall \
 	obj objlink showconfig tags toolchain update \
 	makeman sysent \
 	_worldtmp _legacy _bootstrap-tools _cleanobj _obj \
@@ -190,6 +193,7 @@ META_TGT_WHITELIST+= \
 .ORDER: buildkernel installkernel.debug
 .ORDER: buildkernel reinstallkernel
 .ORDER: buildkernel reinstallkernel.debug
+.ORDER: buildsysroot installsysroot
 
 PATH=	/sbin:/bin:/usr/sbin:/usr/bin
 MAKEOBJDIRPREFIX?=	/usr/obj
