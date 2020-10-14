@@ -216,7 +216,6 @@ ffs_rawread_readahead(struct vnode *vp,
 	bp->b_flags = 0;	/* XXX necessary ? */
 	bp->b_iocmd = BIO_READ;
 	bp->b_iodone = bdone;
-	bp->b_data = udata;
 	blockno = offset / bsize;
 	blockoff = (offset % bsize) / DEV_BSIZE;
 	if ((daddr_t) blockno != blockno) {
@@ -235,7 +234,7 @@ ffs_rawread_readahead(struct vnode *vp,
 			bp->b_bcount = bsize - blockoff * DEV_BSIZE;
 		bp->b_bufsize = bp->b_bcount;
 		
-		if (vmapbuf(bp, 1) < 0)
+		if (vmapbuf(bp, udata, 1) < 0)
 			return EFAULT;
 		
 		maybe_yield();
@@ -254,7 +253,7 @@ ffs_rawread_readahead(struct vnode *vp,
 		bp->b_bcount = bsize * (1 + bforwards) - blockoff * DEV_BSIZE;
 	bp->b_bufsize = bp->b_bcount;
 
-	if (vmapbuf(bp, 1) < 0)
+	if (vmapbuf(bp, udata, 1) < 0)
 		return EFAULT;
 
 	BO_STRATEGY(&dp->v_bufobj, bp);
