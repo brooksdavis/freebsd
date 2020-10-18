@@ -4907,20 +4907,21 @@ vm_hold_free_pages(struct buf *bp, int newbsize)
  * This function only works with pager buffers.
  */
 int
-vmapbuf(struct buf *bp, void *uaddr, int mapbuf)
+vmapbuf(struct buf *bp, void *uaddr, size_t len, int mapbuf)
 {
 	vm_prot_t prot;
 	int pidx;
 
-	if (bp->b_bufsize < 0)
+	if (len < 0)
 		return (-1);
 	prot = VM_PROT_READ;
 	if (bp->b_iocmd == BIO_READ)
 		prot |= VM_PROT_WRITE;	/* Less backwards than it looks */
 	if ((pidx = vm_fault_quick_hold_pages(&curproc->p_vmspace->vm_map,
-	    (vm_offset_t)uaddr, bp->b_bufsize, prot, bp->b_pages,
+	    (vm_offset_t)uaddr, len, prot, bp->b_pages,
 	    btoc(MAXPHYS))) < 0)
 		return (-1);
+	bp->b_bufsize = len;
 	bp->b_npages = pidx;
 	bp->b_offset = ((vm_offset_t)uaddr) & PAGE_MASK;
 	if (mapbuf || !unmapped_buf_allowed) {
