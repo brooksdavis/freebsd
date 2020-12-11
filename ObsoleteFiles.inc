@@ -36,6 +36,15 @@
 #   xargs -n1 | sort | uniq -d;
 # done
 
+# 20201216: ndis driver support removed
+OLD_FILES+=usr/sbin/ndiscvt
+OLD_FILES+=usr/sbin/ndisgen
+OLD_FILES+=usr/share/man/man4/ndis.4.gz
+OLD_FILES+=usr/share/man/man4/if_ndis.4.gz
+OLD_FILES+=usr/share/man/man8/ndiscvt.8.gz
+OLD_FILES+=usr/share/man/man8/ndisgen.8.gz
+OLD_FILES+=usr/share/misc/windrv_stub.c
+
 # 20201124: ping6(8) was merged into ping(8)
 OLD_FILES+=usr/lib/debug/sbin/ping6.debug
 OLD_FILES+=usr/share/man/man8/ping6.8.gz
