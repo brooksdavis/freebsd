@@ -40,6 +40,7 @@ __FBSDID("$FreeBSD$");
 #include <err.h>
 #include <fcntl.h>
 #include <pmc.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -79,7 +80,7 @@ static int powerpc_allocate_pmc(enum pmc_event _pe, char* ctrspec,
 #endif /* __powerpc__ */
 
 #define PMC_CALL(cmd, params)				\
-	syscall(pmc_syscall, PMC_OP_##cmd, (params))
+	pmc_op(PMC_OP_##cmd, (params))
 
 /*
  * Event aliases provide a way for the user to ask for generic events
@@ -296,7 +297,7 @@ static const char * pmc_state_names[] = {
 /*
  * Filled in by pmc_init().
  */
-static int pmc_syscall = -1;
+static bool pmc_initialized;
 static struct pmc_cpuinfo cpu_info;
 static struct pmc_op_getdyneventinfo soft_event_info;
 
@@ -1204,7 +1205,7 @@ pmc_configure_logfile(int fd)
 int
 pmc_cpuinfo(const struct pmc_cpuinfo **pci)
 {
-	if (pmc_syscall == -1) {
+	if (!pmc_initialized) {
 		errno = ENXIO;
 		return (-1);
 	}
@@ -1398,39 +1399,15 @@ pmc_get_msr(pmc_id_t pmc, uint32_t *msr)
 int
 pmc_init(void)
 {
-	int error, pmc_mod_id;
 	unsigned int n;
-	uint32_t abi_version;
-	struct module_stat pmc_modstat;
 	struct pmc_op_getcpuinfo op_cpu_info;
 
-	if (pmc_syscall != -1) /* already inited */
+	if (pmc_initialized)
 		return (0);
-
-	/* retrieve the system call number from the KLD */
-	if ((pmc_mod_id = modfind(PMC_MODULE_NAME)) < 0)
-		return (-1);
-
-	pmc_modstat.version = sizeof(struct module_stat);
-	if ((error = modstat(pmc_mod_id, &pmc_modstat)) < 0)
-		return (-1);
-
-	pmc_syscall = pmc_modstat.data.intval;
-
-	/* check the kernel module's ABI against our compiled-in version */
-	abi_version = PMC_VERSION;
-	if (PMC_CALL(GETMODULEVERSION, &abi_version) < 0)
-		return (pmc_syscall = -1);
-
-	/* ignore patch & minor numbers for the comparison */
-	if ((abi_version & 0xFF000000) != (PMC_VERSION & 0xFF000000)) {
-		errno  = EPROGMISMATCH;
-		return (pmc_syscall = -1);
-	}
 
 	bzero(&op_cpu_info, sizeof(op_cpu_info));
 	if (PMC_CALL(GETCPUINFO, &op_cpu_info) < 0)
-		return (pmc_syscall = -1);
+		return (-1);
 
 	cpu_info.pm_cputype = op_cpu_info.pm_cputype;
 	cpu_info.pm_ncpu    = op_cpu_info.pm_ncpu;
@@ -1451,7 +1428,7 @@ pmc_init(void)
 	 */
 	soft_event_info.pm_class = PMC_CLASS_SOFT;
 	if (PMC_CALL(GETDYNEVENTINFO, &soft_event_info) < 0)
-		return (pmc_syscall = -1);
+		return (-1);
 
 	/* Map soft events to static list. */
 	for (n = 0; n < soft_event_info.pm_nevent; n++) {
@@ -1498,7 +1475,7 @@ pmc_init(void)
 				break;
 			default:
 				errno = ENXIO;
-				return (pmc_syscall = -1);
+				return (-1);
 			}
 			break;
 #endif
@@ -1520,7 +1497,7 @@ pmc_init(void)
 				break;
 			default:
 				errno = ENXIO;
-				return (pmc_syscall = -1);
+				return (-1);
 			}
 			break;
 
@@ -1613,9 +1590,10 @@ pmc_init(void)
 		break;
 #endif
 		errno = ENXIO;
-		return (pmc_syscall = -1);
+		return (-1);
 	}
 
+	pmc_initialized = true;
 	return (0);
 }
 
@@ -1791,7 +1769,7 @@ pmc_name_of_state(enum pmc_state ps)
 int
 pmc_ncpu(void)
 {
-	if (pmc_syscall == -1) {
+	if (!pmc_initialized) {
 		errno = ENXIO;
 		return (-1);
 	}
@@ -1802,7 +1780,7 @@ pmc_ncpu(void)
 int
 pmc_npmc(int cpu)
 {
-	if (pmc_syscall == -1) {
+	if (!pmc_initialized) {
 		errno = ENXIO;
 		return (-1);
 	}

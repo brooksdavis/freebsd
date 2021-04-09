@@ -3328,6 +3328,14 @@ systrace_args(int sysnum, void *params, uint64_t *uarg, int *n_args)
 		*n_args = 1;
 		break;
 	}
+	/* pmc_op */
+	case 584: {
+		struct pmc_op_args *p = params;
+		uarg[a++] = p->pmop_code; /* uint64_t */
+		uarg[a++] = (intptr_t)p->pmop_data; /* void * */
+		*n_args = 2;
+		break;
+	}
 	default:
 		*n_args = 0;
 		break;
@@ -8981,6 +8989,19 @@ systrace_entry_setargdesc(int sysnum, int ndx, char *desc, size_t descsz)
 			break;
 		};
 		break;
+	/* pmc_op */
+	case 584:
+		switch (ndx) {
+		case 0:
+			p = "uint64_t";
+			break;
+		case 1:
+			p = "userland void *";
+			break;
+		default:
+			break;
+		};
+		break;
 	default:
 		break;
 	};
@@ -10841,6 +10862,11 @@ systrace_return_setargdesc(int sysnum, int ndx, char *desc, size_t descsz)
 		break;
 	/* kqueuex */
 	case 583:
+		if (ndx == 0 || ndx == 1)
+			p = "int";
+		break;
+	/* pmc_op */
+	case 584:
 		if (ndx == 0 || ndx == 1)
 			p = "int";
 		break;

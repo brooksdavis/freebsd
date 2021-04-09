@@ -3311,5 +3311,11 @@
 		    u_int flags
 		);
 	}
+584	AUE_NULL	NOSTD {
+		int pmc_op(
+		    uint64_t pmop_code,
+		    _Inout_ void *pmop_data
+		);
+	}
 
 ; vim: syntax=off

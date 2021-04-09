@@ -680,15 +680,6 @@ struct pmc_op_getdyneventinfo {
  */
 
 /*
- * PMC commands
- */
-
-struct pmc_syscall_args {
-	register_t	pmop_code;	/* one of PMC_OP_* */
-	void		*pmop_data;	/* syscall parameter */
-};
-
-/*
  * Interface to processor specific s1tuff
  */
 
@@ -1239,5 +1230,7 @@ void	pmc_select_cpu(int cpu);
 struct pmc_mdep *pmc_mdep_alloc(int nclasses);
 void pmc_mdep_free(struct pmc_mdep *md);
 uint64_t pmc_rdtsc(void);
+#else
+int	pmc_op(uint64_t code, void *data);
 #endif /* _KERNEL */
 #endif /* _SYS_PMC_H_ */

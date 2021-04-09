@@ -521,4 +521,5 @@
 #define	SYS_sched_getcpu	581
 #define	SYS_swapoff	582
 #define	SYS_kqueuex	583
-#define	SYS_MAXSYSCALL	584
+#define	SYS_pmc_op	584
+#define	SYS_MAXSYSCALL	585
