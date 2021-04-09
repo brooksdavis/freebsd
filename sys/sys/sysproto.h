@@ -1847,7 +1847,7 @@ struct aio_writev_args {
 struct aio_readv_args {
 	char aiocbp_l_[PADL_(struct aiocb *)]; struct aiocb * aiocbp; char aiocbp_r_[PADR_(struct aiocb *)];
 };
-struct pmc_syscall_args {
+struct pmc_op_args {
 	char pmop_code_l_[PADL_(uint64_t)]; uint64_t pmop_code; char pmop_code_r_[PADR_(uint64_t)];
 	char pmop_data_l_[PADL_(void *)]; void * pmop_data; char pmop_data_r_[PADR_(void *)];
 };
@@ -2245,7 +2245,7 @@ int	sys_rpctls_syscall(struct thread *, struct rpctls_syscall_args *);
 int	sys___specialfd(struct thread *, struct __specialfd_args *);
 int	sys_aio_writev(struct thread *, struct aio_writev_args *);
 int	sys_aio_readv(struct thread *, struct aio_readv_args *);
-int	sys_pmc_syscall(struct thread *, struct pmc_syscall_args *);
+int	sys_pmc_op(struct thread *, struct pmc_op_args *);
 
 #ifdef COMPAT_43
 
@@ -3180,7 +3180,7 @@ int	freebsd12_closefrom(struct thread *, struct freebsd12_closefrom_args *);
 #define	SYS_AUE___specialfd	AUE_SPECIALFD
 #define	SYS_AUE_aio_writev	AUE_AIO_WRITEV
 #define	SYS_AUE_aio_readv	AUE_AIO_READV
-#define	SYS_AUE_pmc_syscall	AUE_NULL
+#define	SYS_AUE_pmc_op	AUE_NULL
 
 #undef PAD_
 #undef PADL_

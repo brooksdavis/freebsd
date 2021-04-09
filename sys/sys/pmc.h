@@ -1214,5 +1214,7 @@ int	pmc_save_user_callchain(uintptr_t *_cc, int _maxsamples,
 struct pmc_mdep *pmc_mdep_alloc(int nclasses);
 void pmc_mdep_free(struct pmc_mdep *md);
 uint64_t pmc_rdtsc(void);
+#else
+int	pmc_op(uint64_t code, void *data);
 #endif /* _KERNEL */
 #endif /* _SYS_PMC_H_ */

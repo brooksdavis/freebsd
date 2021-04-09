@@ -421,4 +421,4 @@ MIASM =  \
 	__specialfd.o \
 	aio_writev.o \
 	aio_readv.o \
-	pmc_syscall.o
+	pmc_op.o

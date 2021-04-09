@@ -99,7 +99,7 @@ enum pmc_flags {
  * The offset in sysent where the syscall is allocated.
  */
 
-static int pmc_syscall_num = SYS_pmc_syscall;
+static int pmc_syscall_num = SYS_pmc_op;
 struct pmc_cpu		**pmc_pcpu;	 /* per-cpu state */
 pmc_value_t		*pmc_pcpu_saved; /* saved PMC values: CSW handling */
 
@@ -404,7 +404,7 @@ SYSCTL_INT(_security_bsd, OID_AUTO, unprivileged_syspmcs, CTLFLAG_RWTUN,
 /* The `sysent' for the new syscall */
 static struct sysent pmc_sysent = {
 	.sy_narg =	2,
-	.sy_call =	(sy_call_t *)sys_pmc_syscall,
+	.sy_call =	(sy_call_t *)sys_pmc_op,
 };
 
 static struct syscall_module_data pmc_syscall_mod = {
@@ -3375,7 +3375,7 @@ static const char *pmc_op_to_name[] = {
 } while (0)
 
 int
-sys_pmc_syscall(struct thread *td, struct pmc_syscall_args *uap)
+sys_pmc_op(struct thread *td, struct pmc_op_args *uap)
 {
 	int error, is_sx_downgraded, op;
 	void *pmclog_proc_handle;
