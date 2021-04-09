@@ -3399,6 +3399,14 @@ systrace_args(int sysnum, void *params, uint64_t *uarg, int *n_args)
 		*n_args = 1;
 		break;
 	}
+	/* pmc_syscall */
+	case 580: {
+		struct pmc_syscall_args *p = params;
+		uarg[0] = p->pmop_code; /* uint64_t */
+		uarg[1] = (intptr_t) p->pmop_data; /* void * */
+		*n_args = 2;
+		break;
+	}
 	default:
 		*n_args = 0;
 		break;
@@ -9088,6 +9096,19 @@ systrace_entry_setargdesc(int sysnum, int ndx, char *desc, size_t descsz)
 			break;
 		};
 		break;
+	/* pmc_syscall */
+	case 580:
+		switch(ndx) {
+		case 0:
+			p = "uint64_t";
+			break;
+		case 1:
+			p = "userland void *";
+			break;
+		default:
+			break;
+		};
+		break;
 	default:
 		break;
 	};
@@ -11031,6 +11052,11 @@ systrace_return_setargdesc(int sysnum, int ndx, char *desc, size_t descsz)
 		break;
 	/* aio_readv */
 	case 579:
+		if (ndx == 0 || ndx == 1)
+			p = "int";
+		break;
+	/* pmc_syscall */
+	case 580:
 		if (ndx == 0 || ndx == 1)
 			p = "int";
 		break;

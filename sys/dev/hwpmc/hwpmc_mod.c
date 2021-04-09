@@ -60,9 +60,11 @@ __FBSDID("$FreeBSD$");
 #include <sys/signalvar.h>
 #include <sys/smp.h>
 #include <sys/sx.h>
+#include <sys/syscall.h>
 #include <sys/sysctl.h>
 #include <sys/sysent.h>
 #include <sys/syslog.h>
+#include <sys/sysproto.h>
 #include <sys/taskqueue.h>
 #include <sys/vnode.h>
 
@@ -97,7 +99,7 @@ enum pmc_flags {
  * The offset in sysent where the syscall is allocated.
  */
 
-static int pmc_syscall_num = NO_SYSCALL;
+static int pmc_syscall_num = SYS_pmc_syscall;
 struct pmc_cpu		**pmc_pcpu;	 /* per-cpu state */
 pmc_value_t		*pmc_pcpu_saved; /* saved PMC values: CSW handling */
 
@@ -254,7 +256,6 @@ static void	pmc_save_cpu_binding(struct pmc_binding *pb);
 static void	pmc_select_cpu(int cpu);
 static int	pmc_start(struct pmc *pm);
 static int	pmc_stop(struct pmc *pm);
-static int	pmc_syscall_handler(struct thread *td, void *syscall_args);
 static struct pmc_thread *pmc_thread_descriptor_pool_alloc(void);
 static void	pmc_thread_descriptor_pool_drain(void);
 static void	pmc_thread_descriptor_pool_free(struct pmc_thread *pt);
@@ -403,7 +404,7 @@ SYSCTL_INT(_security_bsd, OID_AUTO, unprivileged_syspmcs, CTLFLAG_RWTUN,
 /* The `sysent' for the new syscall */
 static struct sysent pmc_sysent = {
 	.sy_narg =	2,
-	.sy_call =	pmc_syscall_handler,
+	.sy_call =	(sy_call_t *)sys_pmc_syscall,
 };
 
 static struct syscall_module_data pmc_syscall_mod = {
@@ -3373,17 +3374,15 @@ static const char *pmc_op_to_name[] = {
 	is_sx_downgraded = 1;			\
 } while (0)
 
-static int
-pmc_syscall_handler(struct thread *td, void *syscall_args)
+int
+sys_pmc_syscall(struct thread *td, struct pmc_syscall_args *uap)
 {
 	int error, is_sx_downgraded, op;
-	struct pmc_syscall_args *c;
 	void *pmclog_proc_handle;
 	void *arg;
 
-	c = (struct pmc_syscall_args *)syscall_args;
-	op = c->pmop_code;
-	arg = c->pmop_data;
+	op = uap->pmop_code;
+	arg = uap->pmop_data;
 	/* PMC isn't set up yet */
 	if (pmc_hook == NULL)
 		return (EINVAL);

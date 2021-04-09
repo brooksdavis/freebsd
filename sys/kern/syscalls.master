@@ -3238,6 +3238,12 @@
 		    _Inout_ struct aiocb *aiocbp
 		);
 	}
+580	AUE_NULL	NOSTD {
+		int pmc_syscall(
+		    uint64_t pmop_code,
+		    _Inout_ void *pmop_data
+		);
+	}
 
 ; Please copy any additions and changes to the following compatability tables:
 ; sys/compat/freebsd32/syscalls.master
