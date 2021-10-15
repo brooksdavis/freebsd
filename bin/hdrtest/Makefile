@@ -12,33 +12,35 @@ PROG=	hdrtest
 SRCS=	hdrtest.c
 INTERNALPROG=	This is a compile-only test
 MAN=
+HDRS!=	(cd ${SRCTOP}/sys && ls sys/*.h net/*.h)
 
 # Some files have to be clean for extra defines too...
 #CFLAGS.event.c=	-D_WANT_KEVENT32 -D_WANT_FREEBSD11_KEVENT
 
-.include "goodfiles.inc"
+.sinclude "badfiles.inc"
 
 .for h in ${HDRS}
+.if !${BADHDRS:M${h}}
 SRCS+=	${h:R}.c
 CLEANFILES+=${h:R}.c
 ${h:R}.c:
 	echo "#include <$h>" > ${.TARGET}
+.endif
 .endfor
 
 #
-# Target to make the current known good list. Only run it when this hdrtest is
-# building so the list never shrinks (except when files are removed entirely
-# that are on the list).
+# Target to make the current known bad list. In the base system, this list
+# should be be permitted to grow.
 #
-goodfiles.inc!
+badfiles.inc:
 	@(cd ${SRCTOP}/sys; \
 	echo "# DO NOT EDIT-- this file is automatically @""generated."; \
-	echo "HDRS= \\"; \
+	echo "BADHDRS= \\"; \
 	for i in sys/*.h net*/*.h; do \
 		echo "#include <$$i>" | \
-			${CC} ${CFLAGS} -xc - -c -o /dev/null 2> /dev/null && \
+			${CC} ${CFLAGS} -xc - -c -o /dev/null 2> /dev/null || \
 			echo "	$$i \\"; \
 	done; \
-	echo) > ${.CURDIR}/goodfiles.inc
+	echo) > ${.CURDIR}/badfiles.inc
 
 .include <bsd.prog.mk>
