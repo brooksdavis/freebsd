@@ -32,6 +32,7 @@ ${h:R}.c:
 # Target to make the current known bad list. In the base system, this list
 # should be be permitted to grow.
 #
+.PHONY: badfiles.inc
 badfiles.inc:
 	@(cd ${SRCTOP}/sys; \
 	echo "# DO NOT EDIT-- this file is automatically @""generated."; \
