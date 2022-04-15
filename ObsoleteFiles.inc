@@ -51,6 +51,9 @@
 #   xargs -n1 | sort | uniq -d;
 # done
 
+# 202312XX: remove some a.out related headers
+OLD_FILES+=usr/include/a.out.h
+
 # 20231208: new clang import which bumps version from 16 to 17
 OLD_FILES+=usr/lib/clang/16/include/__clang_cuda_builtin_vars.h
 OLD_FILES+=usr/lib/clang/16/include/__clang_cuda_cmath.h
