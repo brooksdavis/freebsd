@@ -27,6 +27,12 @@ NOTE TO PEOPLE WHO THINK THAT FreeBSD 14.x IS SLOW:
 	world, or to merely disable the most expensive debugging functionality
 	at runtime, run "ln -s 'abort:false,junk:false' /etc/malloc.conf".)
 
+20220903:
+	The MACHINE_ABI and TARGET_ABI variables used to set the
+	middle of the target triple (e.g., "-unknown-" or "-gnueabihf-")
+	have been renamed to MACHINE_TRIPLE_ABI and TARGET_TRIPLE_ABI to
+	clear the way to use MACHINE_ABI for a key ABI feature list.
+
 20220610:
 	LinuxKPI pm.h changes require an update to the latest drm-kmod version
 	before re-compiling to avoid errors.
