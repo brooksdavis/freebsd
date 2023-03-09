@@ -68,8 +68,8 @@ housekeeping_task:
     #
     # Comment these out during test development for better turnaround.
     #
-    cpu: 1
-    memory: 1G
+    #cpu: 1
+    #memory: 1G
     disk: 22
   name: Check assorted housekeeping is up to date
   timeout_in: 20m
