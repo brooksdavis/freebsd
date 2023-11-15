@@ -202,6 +202,7 @@ _LIBRARIES=	\
 		stats \
 		stdthreads \
 		supcplusplus \
+		sys \
 		sysdecode \
 		tacplus \
 		termcapw \
@@ -401,6 +402,7 @@ _DP_c+=		ssp_nonshared
 .endif
 _DP_stats=	sbuf pthread
 _DP_stdthreads=	pthread
+_DP_sys=	compiler_rt
 _DP_tacplus=	md pam
 _DP_ncursesw=	tinfow
 _DP_formw=	ncursesw
@@ -553,6 +555,9 @@ LIBSMDB?=	${LIBSMDBDIR}/libsmdb${PIE_SUFFIX}.a
 
 LIBSMUTILDIR=	${_LIB_OBJTOP}/lib/libsmutil
 LIBSMUTIL?=	${LIBSMUTILDIR}/libsmutil${PIE_SUFFIX}.a
+
+LIBSYSDIR=	${_LIB_OBJTOP}/lib/libsys
+LIBSYS?=	${LIBSYSDIR}/libsys${PIE_SUFFIX}.a
 
 LIBNETBSDDIR?=	${_LIB_OBJTOP}/lib/libnetbsd
 LIBNETBSD?=	${LIBNETBSDDIR}/libnetbsd${PIE_SUFFIX}.a
