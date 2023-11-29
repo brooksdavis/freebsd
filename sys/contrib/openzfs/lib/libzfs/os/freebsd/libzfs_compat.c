@@ -39,6 +39,7 @@
 #endif
 
 
+#ifndef HAVE_EXECVPE
 static int
 execvPe(const char *name, const char *path, char * const *argv,
     char * const *envp)
@@ -192,6 +193,7 @@ execvpe(const char *name, char * const argv[], char * const envp[])
 
 	return (execvPe(name, path, argv, envp));
 }
+#endif /* !HAVE_EXECVPE */
 
 static __thread char errbuf[ERRBUFLEN];
 
