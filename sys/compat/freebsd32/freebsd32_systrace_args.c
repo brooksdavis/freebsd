@@ -122,13 +122,6 @@ systrace_args(int sysnum, void *params, uint64_t *uarg, int *n_args)
 		*n_args = 3;
 		break;
 	}
-	/* break */
-	case 17: {
-		struct break_args *p = params;
-		uarg[a++] = (intptr_t)p->nsize; /* char * */
-		*n_args = 1;
-		break;
-	}
 	/* getpid */
 	case 20: {
 		*n_args = 0;
@@ -3548,16 +3541,6 @@ systrace_entry_setargdesc(int sysnum, int ndx, char *desc, size_t descsz)
 			break;
 		case 2:
 			p = "int";
-			break;
-		default:
-			break;
-		};
-		break;
-	/* break */
-	case 17:
-		switch (ndx) {
-		case 0:
-			p = "userland char *";
 			break;
 		default:
 			break;
@@ -9200,11 +9183,6 @@ systrace_return_setargdesc(int sysnum, int ndx, char *desc, size_t descsz)
 	case 16:
 		if (ndx == 0 || ndx == 1)
 			p = "int";
-		break;
-	/* break */
-	case 17:
-		if (ndx == 0 || ndx == 1)
-			p = "void *";
 		break;
 	/* getpid */
 	case 20:
