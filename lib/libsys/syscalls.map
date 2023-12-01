@@ -32,8 +32,6 @@ FBSDprivate_1.0 {
 	__sys_chmod;
 	_chown;
 	__sys_chown;
-	_break;
-	__sys_break;
 	_getpid;
 	__sys_getpid;
 	_mount;

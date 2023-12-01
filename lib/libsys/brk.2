@@ -48,10 +48,21 @@ and
 .Fn sbrk
 functions are legacy interfaces from before the
 advent of modern virtual memory management.
-They are deprecated and not present on the arm64 or riscv architectures.
+They are deprecated and no longer declared or directly linkable in the
+.Lb libc
+as of
+.Fx 15.0 .
 The
 .Xr mmap 2
 interface should be used to allocate pages instead.
+.Pp
+The kernel may not support the underlying system call require to
+implement
+.Fn brk
+and
+.Fn sbrk
+depending on its configuration.
+This is always the case on the aarch64 and riscv architectures.
 .Ef
 .Pp
 The

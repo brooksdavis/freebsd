@@ -216,7 +216,7 @@
 		    int gid
 		);
 	}
-17	AUE_NULL	STD|CAPENABLED {
+17	AUE_NULL	COMPAT14|CAPENABLED {
 		void *break(
 		    _In_ char *nsize
 		);

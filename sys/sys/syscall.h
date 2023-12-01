@@ -21,7 +21,7 @@
 #define	SYS_freebsd11_mknod	14
 #define	SYS_chmod	15
 #define	SYS_chown	16
-#define	SYS_break	17
+#define	SYS_freebsd14_break	17
 				/* 18 is freebsd4 getfsstat */
 				/* 19 is old lseek */
 #define	SYS_getpid	20

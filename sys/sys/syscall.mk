@@ -20,7 +20,7 @@ MIASM =  \
 	freebsd11_mknod.o \
 	chmod.o \
 	chown.o \
-	break.o \
+	freebsd14_break.o \
 	getpid.o \
 	mount.o \
 	unmount.o \
