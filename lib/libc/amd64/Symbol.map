@@ -6,7 +6,6 @@
 FBSD_1.0 {
 	.mcount;
 	__flt_rounds;
-	brk;
 	fpgetmask;
 	fpgetprec;
 	fpgetround;
@@ -14,7 +13,6 @@ FBSD_1.0 {
 	fpsetmask;
 	fpsetprec;
 	fpsetround;
-	sbrk;
 };
 
 /*
@@ -28,5 +26,4 @@ FBSDprivate_1.0 {
 	__signalcontext;
 	signalcontext;
 	__siglongjmp;
-	_brk;
 };
