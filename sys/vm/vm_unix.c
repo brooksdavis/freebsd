@@ -59,13 +59,14 @@
 #include <vm/pmap.h>
 #include <vm/vm_map.h>
 
+#ifdef COMPAT_FREEBSD14
 #ifndef _SYS_SYSPROTO_H_
-struct break_args {
+struct freebsd14_break_args {
 	char *nsize;
 };
 #endif
 int
-sys_break(struct thread *td, struct break_args *uap)
+freebsd14_break(struct thread *td, struct freebsd14_break_args *uap)
 {
 #if !defined(__aarch64__) && !defined(__riscv)
 	uintptr_t addr;
@@ -80,6 +81,7 @@ sys_break(struct thread *td, struct break_args *uap)
 	return (ENOSYS);
 #endif /* defined(__aarch64__) || defined(__riscv) */
 }
+#endif
 
 int
 kern_break(struct thread *td, uintptr_t *addr)
