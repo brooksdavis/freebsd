@@ -35,6 +35,15 @@
 
 #include <atf-c.h>
 
+int libc_brk(const void *addr);
+void *libc_sbrk(intptr_t incr);
+
+asm (".symver libc_brk, brk@FBSD_1.0");
+asm (".symver libc_sbrk, sbrk@FBSD_1.0");
+
+#define	brk	libc_brk
+#define	sbrk	libc_sbrk
+
 ATF_TC(brk_basic);
 ATF_TC_HEAD(brk_basic, tc)
 {

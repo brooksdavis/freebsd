@@ -21,7 +21,7 @@
 #define	FREEBSD32_SYS_freebsd11_mknod	14
 #define	FREEBSD32_SYS_chmod	15
 #define	FREEBSD32_SYS_chown	16
-#define	FREEBSD32_SYS_break	17
+#define	FREEBSD32_SYS_freebsd14_break	17
 				/* 18 is freebsd4 freebsd32_getfsstat */
 				/* 19 is old freebsd32_lseek */
 #define	FREEBSD32_SYS_getpid	20

@@ -6,8 +6,6 @@
 FBSD_1.0 {
 	__mcount;
 	alloca;
-	brk;
-	sbrk;
 };
 
 FBSD_1.3 {
@@ -35,8 +33,6 @@ FBSDprivate_1.0 {
 	_signalcontext;
 	__siglongjmp;
 	_vfork;
-	_brk;
-	_sbrk;
 
 	_libc_arm_fpu_present;
 };

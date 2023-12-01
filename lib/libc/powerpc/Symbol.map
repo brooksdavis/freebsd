@@ -11,8 +11,6 @@ FBSD_1.0 {
 	fpgetsticky;
 	fpsetmask;
 	fpsetround;
-	brk;
-	sbrk;
 };
 
 FBSD_1.3 {
