@@ -92,6 +92,7 @@ SUBDIR=	${SUBDIR_BOOTSTRAP} \
 	librss \
 	librt \
 	librtld_db \
+	libsbrk \
 	libsbuf \
 	libsmb \
 	libstdbuf \
