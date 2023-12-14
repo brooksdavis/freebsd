@@ -14,8 +14,9 @@
  */
 
 #include <sys/param.h>
-#include <sys/gpt.h>
 #include <sys/dirent.h>
+#include <sys/gpt.h>
+#include <sys/imgact_aout.h>
 #include <sys/reboot.h>
 
 #include <machine/bootinfo.h>
@@ -24,8 +25,6 @@
 #include <machine/psl.h>
 
 #include <stdarg.h>
-
-#include <a.out.h>
 
 #include <btxv86.h>
 

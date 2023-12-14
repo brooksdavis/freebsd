@@ -22,8 +22,9 @@
 #ifdef GPT
 #include <sys/gpt.h>
 #endif
-#include <sys/reboot.h>
+#include <sys/imgact_aout.h>
 #include <sys/queue.h>
+#include <sys/reboot.h>
 #ifdef LOADER_ZFS_SUPPORT
 #include <sys/zfs_bootenv.h>
 #endif
@@ -35,7 +36,6 @@
 #include <stdarg.h>
 #include <stddef.h>
 
-#include <a.out.h>
 #include "bootstrap.h"
 #include "libi386.h"
 #include <btxv86.h>

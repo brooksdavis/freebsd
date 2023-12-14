@@ -17,14 +17,13 @@
 #include <sys/disklabel.h>
 #include <sys/diskmbr.h>
 #include <sys/dirent.h>
+#include <sys/imgact_aout.h>
 #include <sys/reboot.h>
 
 #include <machine/bootinfo.h>
 #include <machine/elf.h>
 
 #include <stdarg.h>
-
-#include <a.out.h>
 
 #include <btxv86.h>
 
