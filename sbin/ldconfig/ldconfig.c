@@ -34,7 +34,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
-#include <a.out.h>
 #include <ctype.h>
 #include <dirent.h>
 #include <elf-hints.h>
