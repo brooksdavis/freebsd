@@ -151,13 +151,11 @@ X86INCSDIR=	${INCLUDEDIR}/x86
 X86INCS+=	${SRCTOP}/sys/x86/include/elf.h
 .endif
 
+.if ${_host_arch} == "amd64" || ${_host_arch} == "i386"
 # needed for btxld:
 MACHINESYSINCS+=	${SRCTOP}/sys/${_host_arch}/include/exec.h
-MACHINESYSINCS+=	${SRCTOP}/sys/${_host_arch}/include/reloc.h
-INCS+=	${SRCTOP}/include/a.out.h
-INCS+=	${SRCTOP}/include/nlist.h
 SYSINCS+=	${SRCTOP}/sys/sys/imgact_aout.h
-SYSINCS+=	${SRCTOP}/sys/sys/nlist_aout.h
+.endif
 
 # macOS's bitstring lacks FreeBSD-specific additions used by makefs's ZFS code
 # and Linux doesn't have it at all.  Older FreeBSD versions lack recent

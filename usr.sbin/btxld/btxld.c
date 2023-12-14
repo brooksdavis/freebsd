@@ -28,6 +28,7 @@
 
 #include <sys/param.h>
 #include <sys/endian.h>
+#include <sys/imgact_aout.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
 
@@ -38,7 +39,6 @@
 
 #include <netinet/in.h>
 
-#include <a.out.h>
 #include <err.h>
 #include <errno.h>
 #include <fcntl.h>
