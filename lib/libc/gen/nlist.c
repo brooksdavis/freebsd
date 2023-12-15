@@ -47,8 +47,8 @@
 #include <elf-hints.h>
 
 int __fdnlist(int, struct nlist *);
-int __elf_fdnlist(int, struct nlist *);
-int __elf_is_okay__(Elf_Ehdr *);
+static int __elf_fdnlist(int, struct nlist *);
+static int __elf_is_okay__(Elf_Ehdr *);
 
 int
 nlist(const char *name, struct nlist *list)
@@ -94,7 +94,7 @@ static void elf_sym_to_nlist(struct nlist *, Elf_Sym *, Elf_Shdr *, int);
  * WARNING:  This is NOT an ELF ABI function and
  * as such its use should be restricted.
  */
-int
+static int
 __elf_is_okay__(Elf_Ehdr *ehdr)
 {
 	int retval = 0;
@@ -117,7 +117,7 @@ __elf_is_okay__(Elf_Ehdr *ehdr)
 	return retval;
 }
 
-int
+static int
 __elf_fdnlist(int fd, struct nlist *list)
 {
 	struct nlist *p;
