@@ -42,19 +42,10 @@
  */
 
 /*
- * Layout of each symbol.  The "#ifdef _AOUT_INCLUDE_" is so that
- * programs including nlist.h can initialize nlist structures
- * statically.
+ * Layout of each symbol.
  */
 struct nlist {
-#ifdef _AOUT_INCLUDE_
-	union {
-		const char *n_name; /* symbol name (in memory) */
-		long n_strx;	/* file string table offset (on disk) */
-	} n_un;
-#else
 	const char *n_name;	/* symbol name (in memory) */
-#endif
 	unsigned char n_type;	/* type defines */
 	char n_other;		/* ".type" and binding information */
 	short n_desc;		/* used by stab entries */
