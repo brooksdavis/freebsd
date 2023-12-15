@@ -37,7 +37,7 @@
 #include <arpa/inet.h>
 
 #include <errno.h>
-#include <a.out.h>
+#include <nlist.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -83,7 +83,7 @@ __fdnlist(int fd, struct nlist *list)
 	return (n);
 }
 
-#define	ISLAST(p)	(p->n_un.n_name == 0 || p->n_un.n_name[0] == 0)
+#define	ISLAST(p)	(p->n_name == 0 || p->n_name[0] == 0)
 
 static void elf_sym_to_nlist(struct nlist *, Elf_Sym *, Elf_Shdr *, int);
 
@@ -232,9 +232,9 @@ __elf_fdnlist(int fd, struct nlist *list)
 			if (name[0] == '\0')
 				continue;
 			for (p = list; !ISLAST(p); p++) {
-				if ((p->n_un.n_name[0] == '_' &&
-				    strcmp(name, p->n_un.n_name+1) == 0)
-				    || strcmp(name, p->n_un.n_name) == 0) {
+				if ((p->n_name[0] == '_' &&
+				    strcmp(name, p->n_name+1) == 0)
+				    || strcmp(name, p->n_name) == 0) {
 					elf_sym_to_nlist(p, s, shdr,
 					    ehdr.e_shnum);
 					if (--nent <= 0)
