@@ -63,7 +63,6 @@ MAN=	acct.5 \
 	shells.5 \
 	smbfs.5 \
 	src.conf.5 \
-	stab.5 \
 	style.Makefile.5 \
 	style.mdoc.5 \
 	sysctl.conf.5 \
