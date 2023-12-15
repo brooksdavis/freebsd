@@ -55,6 +55,7 @@
 OLD_FILES+=usr/include/a.out.h
 OLD_FILES+=usr/include/machine/reloc.h
 OLD_FILES+=usr/include/machine/stab.h
+OLD_FILES+=usr/include/sys/link_aout.h
 
 # 20231208: new clang import which bumps version from 16 to 17
 OLD_FILES+=usr/lib/clang/16/include/__clang_cuda_builtin_vars.h
