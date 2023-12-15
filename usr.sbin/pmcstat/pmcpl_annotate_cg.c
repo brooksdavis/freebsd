@@ -41,7 +41,6 @@
 #include <sys/param.h>
 #include <sys/endian.h>
 #include <sys/gmon.h>
-#include <sys/imgact_aout.h>
 #include <sys/imgact_elf.h>
 #include <sys/mman.h>
 #include <sys/pmc.h>
