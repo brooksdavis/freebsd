@@ -53,6 +53,7 @@ MIASM=
 NOASM=
 
 .include "${LIBSYS_SRCTOP}/Makefile.sys"
+.include "${LIBSYS_SRCTOP}/Makefile.thr"
 
 VERSION_DEF=${LIBC_SRCTOP}/Versions.def
 SYMBOL_MAPS=${SYM_MAPS}

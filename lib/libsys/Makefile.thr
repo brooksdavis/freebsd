@@ -1,0 +1,7 @@
+# This PATH addition must be after ${LIBSYS_SRCTOP}/${LIBC_ARCH} added
+# in Makefile.sys.
+.PATH: ${LIBSYS_SRCTOP}/${MACHINE_CPUARCH}
+.sinclude "${LIBSYS_SRCTOP}/${MACHINE_CPUARCH}/Makefile.thr"
+.if exists(${LIBSYS_SRCTOP}/${MACHINE_CPUARCH}/Symbol.thr.map)
+SYM_MAPS+=	${LIBSYS_SRCTOP}/${MACHINE_CPUARCH}/Symbol.thr.map
+.endif
