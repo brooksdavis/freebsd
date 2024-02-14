@@ -224,10 +224,8 @@ __ssp_real(realpath)(const char * __restrict path, char * __restrict resolved)
 		if (resolved == NULL)
 			return (NULL);
 	}
-	if (__getosreldate() >= 1300080) {
-		if (__realpathat(AT_FDCWD, path, resolved, PATH_MAX, 0) == 0)
-			return (resolved);
-	}
+	if (__realpathat(AT_FDCWD, path, resolved, PATH_MAX, 0) == 0)
+		return (resolved);
 	res = realpath1(path, resolved);
 	if (res == NULL)
 		free(m);
