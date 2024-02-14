@@ -515,8 +515,6 @@ ifunc_init(Elf_Auxinfo *aux_info[__min_size(AT_COUNT)] __unused)
 	}
 }
 
-int __getosreldate(void);
-
 void
 allocate_initial_tls(Obj_Entry *objs)
 {
@@ -535,8 +533,7 @@ allocate_initial_tls(Obj_Entry *objs)
 	 * This does not use _tcb_set() as it calls amd64_set_fsbase()
 	 * which is an ifunc and rtld must not use ifuncs.
 	 */
-	if (__getosreldate() >= P_OSREL_WRFSBASE &&
-	    (cpu_stdext_feature & CPUID_STDEXT_FSGSBASE) != 0)
+	if ((cpu_stdext_feature & CPUID_STDEXT_FSGSBASE) != 0)
 		wrfsbase((uintptr_t)addr);
 	else
 		sysarch(AMD64_SET_FSBASE, &addr);
