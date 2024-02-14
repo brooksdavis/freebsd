@@ -526,8 +526,6 @@ ifunc_init(Elf_Auxinfo *aux_info[__min_size(AT_COUNT)] __unused)
 	}
 }
 
-int __getosreldate(void);
-
 void
 allocate_initial_tls(Obj_Entry *objs)
 {
@@ -548,8 +546,7 @@ allocate_initial_tls(Obj_Entry *objs)
 	 */
 	if (__getosreldate() >= P_OSREL_TLSBASE)
 		sysarch(AMD64_SET_TLSBASE, &addr);
-	else if (__getosreldate() >= P_OSREL_WRFSBASE &&
-	    (cpu_stdext_feature & CPUID_STDEXT_FSGSBASE) != 0)
+	else if ((cpu_stdext_feature & CPUID_STDEXT_FSGSBASE) != 0)
 		wrfsbase((uintptr_t)addr);
 	else
 		sysarch(AMD64_SET_FSBASE, &addr);
