@@ -29,6 +29,7 @@ CFLAGS+=-DNO__SCCSID -DNO__RCSID
 
 LIB=c
 SHLIB_MAJOR= 7
+SYMBOLS_REF_MD=
 .if ${MK_SSP} != "no" && \
     (${LIBC_ARCH} == "i386" || ${LIBC_ARCH:Mpowerpc*} != "")
 SHLIB_LDSCRIPT=libc.ldscript

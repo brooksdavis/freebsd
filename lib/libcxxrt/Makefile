@@ -6,6 +6,7 @@ SHLIBDIR?=	/lib
 SRCDIR=		${SRCTOP}/contrib/libcxxrt
 
 SHLIB_MAJOR=	1
+SYMBOLS_REF_MD=
 
 .PATH: ${SRCDIR}
 
