@@ -155,6 +155,7 @@ __DO_KERNELS?=yes
 
 TGTS=	all all-man buildenv buildenvvars buildetc buildkernel buildworld \
 	check check-old check-old-dirs check-old-files check-old-libs \
+	check-symbols \
 	checkdpadd checkworld clean cleandepend cleandir cleankernel \
 	cleanworld cleanuniverse \
 	delete-old delete-old-dirs delete-old-files delete-old-libs \

@@ -41,7 +41,8 @@ _obj=	obj
 
 SUBDIR_TARGETS+= \
 		all all-man analyze buildconfig buildfiles buildincludes \
-		checkdpadd clean cleandepend cleandir cleanilinks \
+		checkdpadd check-symbols \
+		clean cleandepend cleandir cleanilinks \
 		cleanobj depend distribute files includes installconfig \
 		installdirs \
 		installfiles installincludes print-dir realinstall \
