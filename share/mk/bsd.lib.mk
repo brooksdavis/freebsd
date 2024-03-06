@@ -403,6 +403,9 @@ check-symbols: ${SHLIB_NAME}.symbols
 			false; \
 		fi \
 	fi
+.if !defined(_SKIP_BUILD) && ${MK_CHECK_SYMBOLS} == yes
+all: check-symbols
+.endif
 
 update-symref: ${SHLIB_NAME}.symbols
 	cp ${SHLIB_NAME}.symbols ${SYMBOLS_REF}

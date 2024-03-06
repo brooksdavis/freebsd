@@ -52,6 +52,7 @@ __<bsd.opts.mk>__:
 
 __DEFAULT_YES_OPTIONS = \
     ASSERT_DEBUG \
+    CHECK_SYMBOLS \
     DEBUG_FILES \
     DOCCOMPRESS \
     INCLUDES \
