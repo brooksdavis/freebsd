@@ -63,7 +63,7 @@ WITH_META_STATS= t
 .endif
 
 # toolchains can be a pain - especially bootstrappping them
-TOOLCHAIN_VARS=	AS AR CC CLANG_TBLGEN CXX CPP LD NM OBJCOPY RANLIB \
+TOOLCHAIN_VARS=	AS AR CC CLANG_TBLGEN CXX CPP LD NM OBJCOPY OBJDUMP RANLIB \
 		STRINGS SIZE LLVM_TBLGEN
 _toolchain_bin_CLANG_TBLGEN=	/usr/bin/clang-tblgen
 _toolchain_bin_LLVM_TBLGEN=	/usr/bin/llvm-tblgen
