@@ -240,13 +240,13 @@ OBJCFLAGS	?=	${OBJCINCLUDES} ${CFLAGS} -Wno-import
 
 OBJCOPY		?=	objcopy
 
-OBJDUMP		?=	objdump
-
 PC		?=	pc
 PFLAGS		?=
 
 RC		?=	f77
 RFLAGS		?=
+
+READELF		?=	readelf
 
 TSORT		?=	tsort
 TSORTFLAGS	?=	-q
