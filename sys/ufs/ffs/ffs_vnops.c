@@ -1354,8 +1354,7 @@ ffs_rdextattr(uint8_t **p, struct vnode *vp, struct thread *td)
 
 	eae = malloc(easize, M_TEMP, M_WAITOK);
 
-	liovec.iov_base = eae;
-	liovec.iov_len = easize;
+	IOVEC_INIT(&liovec, eae, easize);
 	luio.uio_iov = &liovec;
 	luio.uio_iovcnt = 1;
 	luio.uio_offset = 0;
@@ -1482,11 +1481,10 @@ ffs_close_ea(struct vnode *vp, int commit, struct ucred *cred, struct thread *td
 		liovec = __builtin_alloca(lcnt * sizeof(struct iovec));
 		luio.uio_iovcnt = lcnt;
 
-		liovec[0].iov_base = ip->i_ea_area;
-		liovec[0].iov_len = ip->i_ea_len;
+		IOVEC_INIT(&liovec[0], ip->i_ea_area, ip->i_ea_len);
 		for (i = 1, tlen = ea_len - ip->i_ea_len; i < lcnt; i++) {
-			liovec[i].iov_base = __DECONST(void *, zero_region);
-			liovec[i].iov_len = MIN(ZERO_REGION_SIZE, tlen);
+			IOVEC_INIT(&liovec[i], __DECONST(void *, zero_region),
+			    MIN(ZERO_REGION_SIZE, tlen));
 			tlen -= liovec[i].iov_len;
 		}
 		MPASS(tlen == 0);

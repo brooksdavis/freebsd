@@ -799,8 +799,7 @@ resumefs:
 	 */
 	auio.uio_iov = &aiov;
 	auio.uio_iovcnt = 1;
-	aiov.iov_base = (void *)snapblklist;
-	aiov.iov_len = snaplistsize * sizeof(daddr_t);
+	IOVEC_INIT(&aiov, snapblklist, snaplistsize * sizeof(daddr_t));
 	auio.uio_resid = aiov.iov_len;
 	auio.uio_offset = lblktosize(fs, (off_t)numblks);
 	auio.uio_segflg = UIO_SYSSPACE;
@@ -2091,8 +2090,7 @@ ffs_snapshot_mount(struct mount *mp)
 	 */
 	auio.uio_iov = &aiov;
 	auio.uio_iovcnt = 1;
-	aiov.iov_base = (void *)&snaplistsize;
-	aiov.iov_len = sizeof(snaplistsize);
+	IOVEC_INIT(&aiov, &snaplistsize, sizeof(snaplistsize));
 	auio.uio_resid = aiov.iov_len;
 	auio.uio_offset =
 	    lblktosize(fs, howmany(fs->fs_size, fs->fs_frag));
@@ -2108,8 +2106,7 @@ ffs_snapshot_mount(struct mount *mp)
 	snapblklist = malloc(snaplistsize * sizeof(daddr_t),
 	    M_UFSMNT, M_WAITOK);
 	auio.uio_iovcnt = 1;
-	aiov.iov_base = snapblklist;
-	aiov.iov_len = snaplistsize * sizeof (daddr_t);
+	IOVEC_INIT(&aiov, snapblklist, snaplistsize * sizeof (daddr_t));
 	auio.uio_resid = aiov.iov_len;
 	auio.uio_offset -= sizeof(snaplistsize);
 	if ((error = VOP_READ(vp, &auio, IO_UNIT, td->td_ucred)) != 0) {
