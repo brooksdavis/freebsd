@@ -232,8 +232,7 @@ ctl_ha_rx_thread(void *arg)
 		SOCK_RECVBUF_UNLOCK(so);
 
 		if (wire_hdr.length == 0) {
-			iov.iov_base = &wire_hdr;
-			iov.iov_len = sizeof(wire_hdr);
+			IOVEC_INIT_OBJ(&iov, wire_hdr);
 			uio.uio_iov = &iov;
 			uio.uio_iovcnt = 1;
 			uio.uio_rw = UIO_READ;
@@ -636,8 +635,7 @@ ctl_ha_msg_recv(ctl_ha_channel channel, void *addr, size_t len,
 	if (!softc->ha_connected)
 		return (CTL_HA_STATUS_DISCONNECT);
 
-	iov.iov_base = addr;
-	iov.iov_len = len;
+	IOVEC_INIT(&iov, addr, len);
 	uio.uio_iov = &iov;
 	uio.uio_iovcnt = 1;
 	uio.uio_rw = UIO_READ;

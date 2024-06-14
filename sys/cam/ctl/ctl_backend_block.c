@@ -687,10 +687,9 @@ ctl_be_block_dispatch_file(struct ctl_be_block_lun *be_lun,
 	xuio.uio_iovcnt = beio->num_segs;
 	xuio.uio_td = curthread;
 
-	for (i = 0, xiovec = xuio.uio_iov; i < xuio.uio_iovcnt; i++, xiovec++) {
-		xiovec->iov_base = beio->sg_segs[i].addr;
-		xiovec->iov_len = beio->sg_segs[i].len;
-	}
+	for (i = 0, xiovec = xuio.uio_iov; i < xuio.uio_iovcnt; i++, xiovec++)
+		IOVEC_INIT(xiovec, beio->sg_segs[i].addr,
+		    beio->sg_segs[i].len);
 
 	binuptime(&beio->ds_t0);
 	devstat_start_transaction(beio->lun->disk_stats, &beio->ds_t0);
@@ -991,10 +990,9 @@ ctl_be_block_dispatch_zvol(struct ctl_be_block_lun *be_lun,
 	xuio.uio_iovcnt = beio->num_segs;
 	xuio.uio_td = curthread;
 
-	for (i = 0, xiovec = xuio.uio_iov; i < xuio.uio_iovcnt; i++, xiovec++) {
-		xiovec->iov_base = beio->sg_segs[i].addr;
-		xiovec->iov_len = beio->sg_segs[i].len;
-	}
+	for (i = 0, xiovec = xuio.uio_iov; i < xuio.uio_iovcnt; i++, xiovec++)
+		IOVEC_INIT(xiovec, beio->sg_segs[i].addr,
+		    beio->sg_segs[i].len);
 
 	binuptime(&beio->ds_t0);
 	devstat_start_transaction(beio->lun->disk_stats, &beio->ds_t0);
