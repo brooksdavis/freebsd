@@ -1053,8 +1053,7 @@ freebsd32_ptrace(struct thread *td, struct freebsd32_ptrace_args *uap)
 		if (error != 0)
 			break;
 
-		r.vec.iov_len = r32.vec.iov_len;
-		r.vec.iov_base = PTRIN(r32.vec.iov_base);
+		IOVEC_INIT(&r.vec, PTRIN(r32.vec.iov_base), r32.vec.iov_len);
 		break;
 	case PT_SET_EVENT_MASK:
 		if (uap->data != sizeof(r.ptevents))
@@ -1209,8 +1208,7 @@ freebsd32_copyinuio(const struct iovec32 *iovp, u_int iovcnt, struct uio **uiop)
 			freeuio(uio);
 			return (error);
 		}
-		iov[i].iov_base = PTRIN(iov32.iov_base);
-		iov[i].iov_len = iov32.iov_len;
+		IOVEC_INIT(&iov[i], PTRIN(iov32.iov_base), iov32.iov_len);
 	}
 	uio->uio_iovcnt = iovcnt;
 	uio->uio_segflg = UIO_USERSPACE;
@@ -1304,8 +1302,7 @@ freebsd32_copyiniov(struct iovec32 *iovp32, u_int iovcnt, struct iovec **iovp,
 			free(iov, M_IOV);
 			return (error);
 		}
-		iov[i].iov_base = PTRIN(iov32.iov_base);
-		iov[i].iov_len = iov32.iov_len;
+		IOVEC_INIT(&iov[i], PTRIN(iov32.iov_base), iov32.iov_len);
 	}
 	*iovp = iov;
 	return (0);
