@@ -62,7 +62,6 @@ implement
 and
 .Fn sbrk
 depending on its configuration.
-This is always the case on the aarch64 and riscv architectures.
 .Ef
 .Pp
 The
@@ -165,10 +164,17 @@ The
 function appeared in
 .At v7 .
 .Fx 11.0
-introduced the arm64 and riscv architectures which do not support
+introduced the arm64 and riscv architectures which did not support
 .Fn brk
 or
 .Fn sbrk .
+As of
+.Fx 15.0
+.Fn brk
+and
+.Fn sbrk
+are available for all architectures and are provided for backwards
+compatibility only.
 .Sh BUGS
 Mixing
 .Fn brk
