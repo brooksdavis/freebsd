@@ -68,7 +68,6 @@ struct freebsd14_break_args {
 int
 freebsd14_break(struct thread *td, struct freebsd14_break_args *uap)
 {
-#if !defined(__aarch64__) && !defined(__riscv)
 	uintptr_t addr;
 	int error;
 
@@ -77,9 +76,6 @@ freebsd14_break(struct thread *td, struct freebsd14_break_args *uap)
 	if (error == 0)
 		td->td_retval[0] = addr;
 	return (error);
-#else /* defined(__aarch64__) || defined(__riscv) */
-	return (ENOSYS);
-#endif /* defined(__aarch64__) || defined(__riscv) */
 }
 #endif
 
