@@ -29,9 +29,9 @@ function libsys_h.generate(tbl, config, fh)
 	-- Grab the master system calls table.
 	local s = tbl.syscalls
 
-	local print_decl = function (s)
-		return s:native() and not s.type.NODEF and
-		    not s.type.SYSMUX and s.name ~= "yield"
+	local print_decl = function (sc)
+		return sc:native() and not sc.type.NODEF and
+		    not sc.type.SYSMUX and sc.name ~= "yield"
 	end
 
 	-- Bind the generator to the parameter file.

@@ -1,5 +1,5 @@
 # System call creation library
-Parses `syscalls.master` and packages information into objects with methods. 
+Parses `syscalls.master` and packages information into objects with methods.
 Modules reproduce the previous file auto-generation of `makesyscalls.lua`.
 
 We generally assume that this script will be run by flua, however we've
