@@ -19,8 +19,7 @@ end
 local FreeBSDSyscall = require("core.freebsd-syscall")
 local generator = require("tools.generator")
 
--- File has not been decided yet; config will decide file. Default defined as
--- null.
+-- File has not been decided yet; config will decide file.
 syscall_mk.file = "/dev/null"
 
 -- Libc has all the STD, NOSTD and SYSMUX system calls in it, as well as
@@ -29,8 +28,8 @@ syscall_mk.file = "/dev/null"
 function syscall_mk.generate(tbl, fh)
 	-- Grab the master system calls table.
 	local s = tbl.syscalls
-	-- Bookkeeping for keeping track of when we're at the last system call (no
-	-- backslash).
+	-- Bookkeeping for keeping track of when we're at the last system
+	-- call (no backslash).
 	local size = #s
 	local idx = 0
 

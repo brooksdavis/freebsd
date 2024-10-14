@@ -20,8 +20,7 @@ local FreeBSDSyscall = require("core.freebsd-syscall")
 local util = require("tools.util")
 local generator = require("tools.generator")
 
--- File has not been decided yet; config will decide file. Default defined as
--- null.
+-- File has not been decided yet; config will decide file.
 systrace_args.file = "/dev/null"
 
 function systrace_args.generate(tbl, config, fh)
@@ -36,9 +35,10 @@ function systrace_args.generate(tbl, config, fh)
 	gen:pad64(config.abiChanges("pair_64bit"))
 
 	-- Write the generated preamble.
-	gen:preamble("System call argument to DTrace register array converstion.\n"
-				  .. "\n"
-				  .. "This file is part of the DTrace syscall provider.")
+	gen:preamble(
+	    "System call argument to DTrace register array converstion.\n" ..
+	    "\n" ..
+	    "This file is part of the DTrace syscall provider.")
 
 	gen:write(string.format([[
 static void
@@ -73,10 +73,12 @@ systrace_return_setargdesc(int sysnum, int ndx, char *desc, size_t descsz)
 	/* %s */
 	case %d: {
 ]], v.name, v.num))
+
 			gen:store(string.format([[
 	/* %s */
 	case %d:
 ]], v.name, v.num), 1)
+
 			gen:store(string.format([[
 	/* %s */
 	case %d:
@@ -90,16 +92,26 @@ systrace_return_setargdesc(int sysnum, int ndx, char *desc, size_t descsz)
 			if #v.args > 0 and not v.type.SYSMUX then
 				local padding = ""
 
-				gen:write(string.format("\t\tstruct %s *p = params;\n",
+				gen:write(string.format([[
+		struct %s *p = params;
+]],
 				    v.arg_alias))
-				gen:store("\t\tswitch (ndx) {\n", 1)
+
+				gen:store([[
+		switch (ndx) {
+]],
+				    1)
 
 				for idx, arg in ipairs(v.args) do
 					local argtype = util.trim(
-						arg.type:gsub("__restrict$", ""), nil)
-					if argtype == "int" and arg.name == "_pad" and
-						config.abiChanges("pair_64bit") then
-						gen:store("#ifdef PAD64_REQUIRED\n", 1)
+						arg.type:gsub(
+						    "__restrict$", ""), nil)
+					if argtype == "int" and
+					    arg.name == "_pad" and
+					    config.abiChanges("pair_64bit") then
+						gen:store(
+						    "#ifdef PAD64_REQUIRED\n",
+						    1)
 					end
 
 					-- Pointer arg?
@@ -110,48 +122,74 @@ systrace_return_setargdesc(int sysnum, int ndx, char *desc, size_t descsz)
 						desc = argtype;
 					end
 
-					gen:store(string.format(
-					    "\t\tcase %d%s:\n\t\t\tp = \"%s\";\n\t\t\tbreak;\n",
+					gen:store(string.format([[
+		case %d%s:
+			p = "%s";
+			break;
+]],
 					    idx - 1, padding, desc), 1)
 
-					if argtype == "int" and arg.name == "_pad" and
+					if argtype == "int" and
+					    arg.name == "_pad" and
 					   config.abiChanges("pair_64bit") then
 						padding = " - _P_"
-						gen:store(
-						    "#define _P_ 0\n#else\n#define _P_ 1\n#endif\n", 1)
+						gen:store([[
+#define _P_ 0
+#else
+#define _P_ 1
+#endif
+]],
+					    1)
 					end
 
 					if util.isPtrType(argtype,
 					    config.abi_intptr_t) then
-						gen:write(string.format(
-						    "\t\tuarg[a++] = (%s)p->%s; /* %s */\n",
-						    config.ptr_intptr_t_cast, arg.name, argtype))
-					elseif argtype == "union l_semun" then
-						gen:write(string.format(
-						    "\t\tuarg[a++] = p->%s.buf; /* %s */\n",
+						gen:write(string.format([[
+		uarg[a++] = (%s)p->%s; /* %s */
+]],
+						    config.ptr_intptr_t_cast,
 						    arg.name, argtype))
-					elseif argtype:sub(1,1) == "u" or argtype == "size_t" then
-						gen:write(string.format(
-						    "\t\tuarg[a++] = p->%s; /* %s */\n",
+					elseif argtype == "union l_semun" then
+						gen:write(string.format([[
+		uarg[a++] = p->%s.buf; /* %s */
+]],
+						    arg.name, argtype))
+					elseif argtype:sub(1,1) == "u" or
+					    argtype == "size_t" then
+						gen:write(string.format([[
+		uarg[a++] = p->%s; /* %s */
+]],
 						    arg.name, argtype))
 					else
-						if argtype == "int" and arg.name == "_pad" and
-						   config.abiChanges("pair_64bit") then
-							gen:write("#ifdef PAD64_REQUIRED\n")
+						if argtype == "int" and
+						    arg.name == "_pad" and
+						    config.abiChanges(
+						    "pair_64bit") then
+							gen:write([[
+#ifdef PAD64_REQUIRED
+]])
 						end
 
-						gen:write(string.format(
-						    "\t\tiarg[a++] = p->%s; /* %s */\n",
+						gen:write(string.format([[
+		iarg[a++] = p->%s; /* %s */
+]],
 						    arg.name, argtype))
 
-						if argtype == "int" and arg.name == "_pad" and
-						   config.abiChanges("pair_64bit") then
+						if argtype == "int" and
+						    arg.name == "_pad" and
+						    config.abiChanges(
+						    "pair_64bit") then
 							gen:write("#endif\n")
 						end
 					end
 				end
 
-				gen:store("\t\tdefault:\n\t\t\tbreak;\n\t\t};\n", 1)
+				gen:store([[
+		default:
+			break;
+		};
+]],
+				    1)
 
 				if padding ~= "" then
 					gen:store("#undef _P_\n\n", 1)

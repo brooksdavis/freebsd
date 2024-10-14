@@ -19,8 +19,7 @@ end
 local FreeBSDSyscall = require("core.freebsd-syscall")
 local generator = require("tools.generator")
 
--- File has not been decided yet; config will decide file. Default defined as
--- null
+-- File has not been decided yet; config will decide file.
 syscalls.file = "/dev/null"
 
 function syscalls.generate(tbl, config, fh)
@@ -39,7 +38,9 @@ function syscalls.generate(tbl, config, fh)
 		--print("num " .. v.num .. " name " .. v.name)
 		local c = v:compatLevel()
 		if v:native() then
-			gen:write(string.format("\t\"%s\",\t\t\t/* %d = %s */\n",
+			gen:write(string.format([[
+	"%s",			/* %d = %s */
+]],
 			    v.name, v.num, v.name))
 		elseif c >= 3 then
 			-- Lookup the info for this specific compat option.
@@ -53,19 +54,29 @@ function syscalls.generate(tbl, config, fh)
 				end
 			end
 
-			gen:write(string.format("\t\"%s.%s\",\t\t/* %d = %s %s */\n",
+			gen:write(string.format([[
+	"%s.%s",		/* %d = %s %s */
+]],
 			    flag, v.name, v.num, descr, v.name))
+
 		elseif v.type.RESERVED then
-			gen:write(string.format(
-			    "\t\"#%d\",\t\t\t/* %d = reserved for local use */\n",
+			gen:write(string.format([[
+	"#%d",			/* %d = reserved for local use */
+]],
 			    v.num, v.num))
+
 		elseif v.type.UNIMPL then
-			gen:write(string.format("\t\"#%d\",\t\t\t/* %d = %s */\n",
+			gen:write(string.format([[
+	"#%d",			/* %d = %s */
+]],
 			    v.num, v.num, v.alias))
+
 		elseif v.type.OBSOL then
-			gen:write(string.format(
-			    "\t\"obs_%s\",\t\t\t/* %d = obsolete %s */\n",
+			gen:write(string.format([[
+	"obs_%s",			/* %d = obsolete %s */
+]],
 			    v.name, v.num, v.name))
+
 		end
 	end
 	-- End

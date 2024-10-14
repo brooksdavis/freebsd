@@ -45,7 +45,10 @@ end
 --
 function util.set(t)
 	local s = { }
-	for _,v in pairs(t) do s[v] = true end
+
+	for _,v in pairs(t) do
+		s[v] = true
+	end
 	return s
 end
 
@@ -88,8 +91,10 @@ function util.pairsByKeys(t, f)
 	local i = 0	  -- iterator variable
 	local iter = function ()   -- iterator function
 		i = i + 1
-		if a[i] == nil then return nil
-		else return a[i], t[a[i]]
+		if a[i] == nil then
+			return nil
+		else
+			return a[i], t[a[i]]
 		end
 	end
 	return iter
@@ -113,8 +118,8 @@ end
 
 -- Find types that are always 64-bits wide.
 function util.is64bitType(type)
-	return type:find("^dev_t[ ]*$") or type:find("^id_t[ ]*$")
-		or type:find("^off_t[ ]*$")
+	return type:find("^dev_t[ ]*$") or type:find("^id_t[ ]*$") or
+	    type:find("^off_t[ ]*$")
 end
 
 --

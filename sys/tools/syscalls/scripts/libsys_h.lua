@@ -21,8 +21,8 @@ local FreeBSDSyscall = require("core.freebsd-syscall")
 local generator = require("tools.generator")
 local util = require("tools.util")
 
--- File has not been decided yet; config will decide file. Default defined as
--- null
+-- File has not been decided yet; config will decide file.  Default defined as
+-- /dev/null.
 libsys_h.file = "/dev/null"
 
 function libsys_h.generate(tbl, config, fh)
@@ -38,9 +38,9 @@ function libsys_h.generate(tbl, config, fh)
 	local gen = generator:new({}, fh)
 
 	-- Write the generated preamble.
-	gen:preamble("Public system call stubs provided by libsys.\n"
-	    .. "\n"
-	    .. "Do not use directly, include <libsys.h> instead.")
+	gen:preamble("Public system call stubs provided by libsys.\n" ..
+	    "\n" ..
+	    "Do not use directly, include <libsys.h> instead.")
 
 	gen:write(string.format([[
 #ifndef __LIBSYS_H_
@@ -66,7 +66,8 @@ function libsys_h.generate(tbl, config, fh)
 
 	for _, v in pairs(s) do
 		if print_decl(v) then
-			gen:write(string.format("typedef %s (__sys_%s_t)(%s);\n",
+			gen:write(string.format(
+			    "typedef %s (__sys_%s_t)(%s);\n",
 			    v.ret, v.name, v.argstr_type))
 		end
 	end

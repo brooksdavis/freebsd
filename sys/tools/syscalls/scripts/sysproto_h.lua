@@ -71,49 +71,57 @@ struct thread;
 
 	--
 	-- Storing each compat entry requires storing multiple levels of file
-	-- generation; compat entries are given ranges of 10 instead to cope with
-	-- this. For example, 13 is indexed as 130; 131 is the second storage level
-	-- of 13.
+	-- generation; compat entries are given ranges of 10 instead to cope
+	-- with this.  For example, 13 is indexed as 130; 131 is the second
+	-- storage level of 13.
 	--
 
 	-- Store all the compat #ifdef from compat_options at their zero index.
 	for _, v in pairs(config.compat_options) do
-		-- Tag an extra newline to the end, so it doesn't have to be worried
-		-- about later.
+		-- Tag an extra newline to the end, so it doesn't have to be
+		-- worried about later.
 		gen:store(string.format("\n#ifdef %s\n\n", v.definition),
 				  v.compatlevel * 10)
 	end
 
 	for _, v in pairs(s) do
 		local c = v:compatLevel()
-		--print("num " .. v.num .. " name " .. v.name)
 
-		-- Audit defines are stored at an arbitrarily large number so that
-		-- they're always at the last storage level, and compat entries can be
-		-- indexed by their compat level (more intuitive).
+		-- Audit defines are stored at an arbitrarily large number so
+		-- that they're always at the last storage level, and compat
+		-- entries can be indexed by their compat level (more 
+		-- intuitive).
 		local audit_idx = 0xffffffff -- this should do
 
 		-- Handle non-compat:
 		if v:native() then
-			-- All these negation conditions are because (in general) these are
-			-- cases where code for sysproto.h is not generated.
+			-- All these negation conditions are because (in
+			-- general) these are cases where code for sysproto.h
+			-- is not generated.
 			if not v.type.NOARGS and not v.type.NOPROTO and
-				not v.type.NODEF then
+			    not v.type.NODEF then
 				if #v.args > 0 then
-					gen:write(string.format("struct %s {\n", v.arg_alias))
+					gen:write(string.format(
+					    "struct %s {\n", v.arg_alias))
 					for _, arg in ipairs(v.args) do
-						if arg.type == "int" and arg.name == "_pad" and
-						   config.abiChanges("pair_64bit") then
+						if arg.type == "int" and
+						   arg.name == "_pad" and
+						   config.abiChanges(
+						       "pair_64bit") then
 							gen:write("#ifdef PAD64_REQUIRED\n")
 						end
-						gen:write(string.format(
-						    "\tchar %s_l_[PADL_(%s)]; %s %s; " ..
-						    "char %s_r_[PADR_(%s)];\n",
+
+						gen:write(string.format([[
+	char %s_l_[PADL_(%s)]; %s %s; char %s_r_[PADR_(%s)];
+]],
 						    arg.name, arg.type,
 						    arg.type, arg.name,
 						    arg.name, arg.type))
-						if arg.type == "int" and arg.name == "_pad" and
-						   config.abiChanges("pair_64bit") then
+
+						if arg.type == "int" and
+						    arg.name == "_pad" and
+						    config.abiChanges(
+							"pair_64bit") then
 							gen:write("#endif\n")
 						end
 					end
@@ -127,15 +135,19 @@ struct thread;
 			if not v.type.NOPROTO and not v.type.NODEF then
 				local sys_prefix = "sys_"
 				if v.name == "nosys" or v.name == "lkmnosys" or
-				   v.name == "sysarch" or v.name:find("^freebsd") or
-				   v.name:find("^linux") then
+				    v.name == "sysarch" or
+				    v.name:find("^freebsd") or
+				    v.name:find("^linux") then
 					sys_prefix = ""
 				end
 				gen:store(string.format(
 				    "%s\t%s%s(struct thread *, struct %s *);\n",
-				    v.rettype, sys_prefix, v.name, v.arg_alias), 1)
-				gen:store(string.format("#define\t%sAUE_%s\t%s\n",
-				    config.syscallprefix, v:symbol(), v.audit), audit_idx)
+				    v.rettype, sys_prefix, v.name, v.arg_alias),
+				    1)
+				gen:store(string.format(
+				    "#define\t%sAUE_%s\t%s\n",
+				    config.syscallprefix, v:symbol(), v.audit),
+				    audit_idx)
 			end
 
 		-- Handle compat (everything >= FREEBSD3):
@@ -144,11 +156,12 @@ struct thread;
 			if not v.type.NOARGS and not v.type.NOPROTO and
 				not v.type.NODEF then
 				if #v.args > 0 then
-					gen:store(string.format("struct %s {\n", v.arg_alias), idx)
+					gen:store(string.format(
+					    "struct %s {\n", v.arg_alias), idx)
 					for _, arg in ipairs(v.args) do
-						gen:store(string.format(
-						    "\tchar %s_l_[PADL_(%s)]; %s %s; " ..
-						    "char %s_r_[PADR_(%s)];\n",
+						gen:store(string.format([[
+	char %s_l_[PADL_(%s)]; %s %s; char %s_r_[PADR_(%s)];
+]],
 						    arg.name, arg.type,
 						    arg.type, arg.name,
 						    arg.name, arg.type), idx)
@@ -156,18 +169,25 @@ struct thread;
 					gen:store("};\n", idx)
 				else
 					-- Not stored, written on the first run.
-					gen:write(string.format(
-					    "struct %s {\n\tsyscallarg_t dummy;\n};\n",
+					gen:write(string.format([[
+struct %s {
+	syscallarg_t dummy;
+};
+]],
 					    v.arg_alias))
 				end
 			end
 			if not v.type.NOPROTO and not v.type.NODEF then
-				gen:store(string.format(
-				    "%s\t%s%s(struct thread *, struct %s *);\n",
-				    v.rettype, v:compatPrefix(), v.name, v.arg_alias), idx + 1)
-				gen:store(string.format(
-				    "#define\t%sAUE_%s%s\t%s\n", config.syscallprefix,
-				    v:compatPrefix(), v.name, v.audit), audit_idx)
+				gen:store(string.format([[
+%s	%s%s(struct thread *, struct %s *);
+]],
+				    v.rettype, v:compatPrefix(), v.name,
+				    v.arg_alias), idx + 1)
+				gen:store(string.format([[
+#define	%sAUE_%s%s	%s
+]],
+				    config.syscallprefix, v:compatPrefix(),
+				    v.name, v.audit), audit_idx)
 			end
 		end
 		-- Do nothing for obsolete, unimplemented, and reserved.
@@ -178,7 +198,8 @@ struct thread;
 		-- Based on how they're indexed, 9 is the last index.
 		local end_idx = (v.compatlevel * 10) + 9
 		-- Need an extra newline after #endif.
-		gen:store(string.format("\n#endif /* %s */\n\n", v.definition), end_idx)
+		gen:store(string.format("\n#endif /* %s */\n\n", v.definition),
+		    end_idx)
 	end
 
 	if gen.storage_levels ~= nil then

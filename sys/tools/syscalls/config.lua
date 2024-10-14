@@ -165,12 +165,13 @@ function config.process(file)
 				trailing_context = nextline:sub(kvp:len() + 1)
 				-- Strip off any trailing comment
 				trailing_context = trailing_context:gsub("#.*$",
-					"")
+				    "")
 				-- Strip off leading/trailing whitespace
 				trailing_context = util.trim(trailing_context)
 				if trailing_context ~= "" then
 					print(trailing_context)
-					util.abort(1, "Malformed line: " .. nextline)
+					util.abort(1,
+					    "Malformed line: " .. nextline)
 				end
 
 				value = util.trim(value, delim)
@@ -180,8 +181,9 @@ function config.process(file)
 				-- Strip off any padding whitespace
 				value = util.trim(value)
 				if value:match("%s") then
-					util.abort(1, "Malformed config line: " ..
-						nextline)
+					util.abort(1,
+					    "Malformed config line: " ..
+					    nextline)
 				end
 			end
 			cfg[key] = value
@@ -207,20 +209,26 @@ function config.merge(fh)
 			if v ~= config[k] then
 				-- Handling of string lists:
 				if k:find("abi_flags") then
-					-- Match for pipe, that's how abi_flags is formatted.
+					-- Match for pipe, that's how abi_flags
+					-- is formatted.
 					config[k] = util.setFromString(v, "[^|]+")
-				elseif k:find("capenabled") or k:find("syscall_abi_change") or
-					k:find("syscall_no_abi_change") or k:find("obsol") or
-					k:find("unimpl") then
-					-- Match for space, that's how these are formatted.
+				elseif k:find("capenabled") or
+				    k:find("syscall_abi_change") or
+				    k:find("syscall_no_abi_change") or
+				    k:find("obsol") or
+				    k:find("unimpl") then
+					-- Match for space, that's how these
+					-- are formatted.
 					config[k] = util.setFromString(v, "[^ ]+")
 				else
 					config[k] = v
 				end
-				-- Construct config modified table as config is processed.
+				-- Construct config modified table as config
+				-- is processed.
 				config.modifications[k] = true
 			end
-			config.modifications[k] = false  -- config wasn't modified
+			-- config wasn't modified
+			config.modifications[k] = false
 		end
 	end
 end
@@ -237,7 +245,8 @@ end
 function config.mergeCompat()
 	if config.compat_set ~= "" then
 		if not compat_option_sets[config.compat_set] then
-			util.abort(1, "Undefined compat set: " .. config.compat_set)
+			util.abort(1, "Undefined compat set: " ..
+			    config.compat_set)
 		end
 
 		config.compat_options = compat_option_sets[config.compat_set]
@@ -279,11 +288,13 @@ function config.mergeCapability()
 	-- We ignore errors here if we're relying on the default configuration.
 	if not config.modifications.capenabled then
 		config.capenabled = grabCapenabled(config.capabilities_conf,
-			config.modifications.capabilities_conf == nil)
+		    config.modifications.capabilities_conf == nil)
 	elseif config.capenabled ~= "" then
-		-- We have a comma separated list from the format of capabilities.conf,
-		-- split it into a set with boolean values for each key.
-		config.capenabled = util.setFromString(config.capenabled, "[^,]+")
+		-- We have a comma separated list from the format of
+		-- capabilities.conf, split it into a set with boolean values
+		-- for each key.
+		config.capenabled = util.setFromString(config.capenabled,
+		    "[^,]+")
 	end
 end
 

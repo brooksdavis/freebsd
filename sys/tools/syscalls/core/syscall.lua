@@ -77,13 +77,15 @@ function syscall:processChangesAbi()
 	if config.syscall_no_abi_change[self.name] then
 		self.changes_abi = false
 	end
-	self.noproto = not util.isEmpty(config.abi_flags) and not self.changes_abi
+	self.noproto = not util.isEmpty(config.abi_flags) and
+	    not self.changes_abi
 	if config.abiChanges("pointer_args") then
 		for _, v in ipairs(self.args) do
 			if util.isPtrType(v.type, config.abi_intptr_t) then
 				if config.syscall_no_abi_change[self.name] then
 					print("WARNING: " .. self.name ..
-					    " in syscall_no_abi_change, but pointers args are present")
+					    " in syscall_no_abi_change, " ..
+					    "but pointers args are present")
 				end
 				self.changes_abi = true
 				goto ptrfound
@@ -121,7 +123,7 @@ function syscall:processFlags()
 end
 
 -- Returns TRUE if prefix and arg_prefix are assigned; FALSE if they're left
--- unassigned. Relies on a valid changes_abi flag, so should be called AFTER
+-- unassigned.  Relies on a valid changes_abi flag, so should be called AFTER
 -- processChangesAbi().
 function syscall:processPrefix()
 	-- If there are ABI changes from native, assign the correct prefixes.
@@ -134,8 +136,8 @@ function syscall:processPrefix()
 end
 
 -- Validate that we're not skipping system calls by comparing this system call
--- number to the previous system call number. Called higher up the call stack by
--- class FreeBSDSyscall.
+-- number to the previous system call number.  Called higher up the call stack
+-- by class FreeBSDSyscall.
 function syscall:validate(prev)
 	return prev + 1 == self.num
 end
@@ -213,7 +215,8 @@ function syscall:addDef(line)
 		self.type = util.setFromString(words[3], "[^|]+")
 		checkType(self.type)
 		self.name = words[4]
-		-- These next three are optional, and either all present or all absent
+		-- These next three are optional, and either all present
+		-- or all absent
 		self.altname = words[5]
 		self.alttag = words[6]
 		self.rettype = words[7]
@@ -249,8 +252,8 @@ function syscall:addFunc(line)
 	return false
 end
 
--- Adds the argument(s) for this system call. Once addFunc() assigns a name for
--- this system call, arguments are next in syscalls.master.
+-- Adds the argument(s) for this system call. Once addFunc() assigns a name
+-- for this system call, arguments are next in syscalls.master.
 function syscall:addArgs(line)
 	if not self.expect_rbrace then
 		if line:match("%);$") then
@@ -263,7 +266,8 @@ function syscall:addArgs(line)
 		if arg:process() then
 			arg:append(self.args)
 		end
-		-- If this argument has ABI changes, set globally for this system call.
+		-- If this argument has ABI changes, set globally for this
+		-- system call.
 		self.changes_abi = self.changes_abi or arg:changesAbi()
 		return true
 	end
@@ -297,14 +301,14 @@ function syscall:finalize()
 	elseif self.arg_alias == nil and self.name ~= nil then
 		-- argalias should be:
 		--   COMPAT_PREFIX + ABI Prefix + funcname
-		self.arg_alias  = self:compatPrefix() .. self.arg_prefix .. self.name ..
-			"_args"
+		self.arg_alias = self:compatPrefix() .. self.arg_prefix ..
+		    self.name .. "_args"
 	elseif self.arg_alias ~= nil then
 		self.arg_alias = self.arg_prefix .. self.arg_alias
 	end
 
-	-- An empty string would not want a prefix; the entry doesn't have a name
-	-- so we want to keep the empty string.
+	-- An empty string would not want a prefix; the entry doesn't have
+	-- a name so we want to keep the empty string.
 	if self.name ~= nil and self.name ~= "" then
 		self.name = self.prefix .. self.name
 	end
@@ -318,7 +322,8 @@ end
 function syscall:processArgsize()
 	if self.type.SYSMUX then	-- catch this first
 		self.args_size = "0"
-	elseif self.arg_alias ~= nil and (#self.args ~= 0 or self.type.NODEF) then
+	elseif self.arg_alias ~= nil and
+	    (#self.args ~= 0 or self.type.NODEF) then
 		self.args_size = "AS(" .. self.arg_alias .. ")"
 	else
 		self.args_size = "0"
@@ -367,18 +372,18 @@ function syscall:add(line)
 end
 
 -- Returns TRUE if this system call was succesfully added. There's two entry
--- points to this function: (1) the entry in syscalls.master is one-line, or (2)
--- the entry is a full system call. This function handles those cases and
--- decides whether to exit early for (1) or validate a full system call for (2).
--- This function also handles cases where we don't want to add, and instead want
--- to abort.
+-- points to this function: (1) the entry in syscalls.master is one-line, or
+-- (2) the entry is a full system call. This function handles those cases and
+-- decides whether to exit early for (1) or validate a full system call for
+-- (2).  This function also handles cases where we don't want to add, and
+-- instead want to abort.
 function syscall:isAdded(line)
 	-- This system call is a range - exit early.
 	if tonumber(self.num) == nil then
 		-- The only allowed types are RESERVED and UNIMPL.
 		if not (self.type.RESERVED or self.type.UNIMPL) then
-			util.abort(1, "Range only allowed with RESERVED and UNIMPL: " ..
-				line)
+			util.abort(1, "Range only allowed with RESERVED " ..
+			    "and UNIMPL: " ..  line)
 		end
 		self:finalize()
 		return true
@@ -387,16 +392,17 @@ function syscall:isAdded(line)
 		   self.rettype ~= nil then
 		self:finalize()
 		return true
-	-- This system call is only one line, and should only be one line (we didn't
-	-- make it to addFunc()) - exit early.
+	-- This system call is only one line, and should only be one line
+	-- (we didn't make it to addFunc()) - exit early.
 	elseif self.name ~= "{"  and self.ret == nil then
 		self:finalize()
 		return true
-	-- This is a full system call and we've passed multiple states to get here -
-	-- final exit.
+	-- This is a full system call and we've passed multiple states to
+	-- get here - final exit.
 	elseif self.expect_rbrace then
 		if not line:match("}$") then
-			util.abort(1, "Expected '}' found '" .. line .. "' instead.")
+			util.abort(1, "Expected '}' found '" .. line ..
+			    "' instead.")
 		end
 		self:finalize()
 		return true
@@ -440,7 +446,8 @@ local function deepCopy(orig, copies)
 			copy = {}
 			copies[orig] = copy
 			for orig_key, orig_value in next, orig, nil do
-				copy[deepCopy(orig_key, copies)] = deepCopy(orig_value, copies)
+				copy[deepCopy(orig_key, copies)] =
+				    deepCopy(orig_value, copies)
 			end
 			setmetatable(copy, deepCopy(getmetatable(orig), copies))
 		end

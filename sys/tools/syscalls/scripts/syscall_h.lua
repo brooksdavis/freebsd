@@ -27,8 +27,8 @@ syscall_h.file = "/dev/null"
 -- replaced system calls dating back to FreeBSD 7. We are lucky that the
 -- system call filename is just the base symbol name for it.
 function syscall_h.generate(tbl, config, fh)
-	-- Grab the master system calls table, and prepare bookkeeping for the max
-	-- system call number.
+	-- Grab the master system calls table, and prepare bookkeeping for
+	-- the max system call number.
 	local s = tbl.syscalls
 	local max = 0
 
@@ -49,9 +49,11 @@ function syscall_h.generate(tbl, config, fh)
 			goto skip
 		elseif v.type.NODEF then
 			goto skip
-		elseif v.type.STD or v.type.NOSTD or v.type.SYSMUX or c >= 7 then
+		elseif v.type.STD or v.type.NOSTD or v.type.SYSMUX or
+		    c >= 7 then
 			gen:write(string.format("#define\t%s%s%s\t%d\n",
-				config.syscallprefix, v:compatPrefix(), v.name, v.num))
+			    config.syscallprefix, v:compatPrefix(), v.name,
+			    v.num))
 		elseif c >= 0 then
 			local comment
 			if c == 0 then
@@ -62,12 +64,12 @@ function syscall_h.generate(tbl, config, fh)
 				comment = "freebsd" .. c
 			end
 			gen:write(string.format("\t\t\t\t/* %d is %s %s */\n",
-				v.num, comment, v.name))
+			    v.num, comment, v.name))
 		end
 		::skip::
 	end
 	gen:write(string.format("#define\t%sMAXSYSCALL\t%d\n",
-		config.syscallprefix, max + 1))
+	    config.syscallprefix, max + 1))
 end
 
 -- Entry of script:

@@ -39,8 +39,8 @@ end
 
 -- Preprocessing of this argument.
 function scarg:init(line)
-	-- Trim whitespace and trailing comma. We don't want them here; these can
-	-- mess with our processing of this argument.
+	-- Trim whitespace and trailing comma. We don't want them here;
+	-- these can mess with our processing of this argument.
 	line = util.trim(line)	-- This provides a clearer abort error.
 	self.scarg = util.trim(line, ',')
 
@@ -67,10 +67,11 @@ end
 -- Returns FALSE if it shouldn't be added (the argument type is void).
 function scarg:process()
 	if self.type ~= "" and self.name ~= "void" then
-		-- util.is64bitType() needs a bare type so check it after argname
-		-- is removed
+		-- util.is64bitType() needs a bare type so check it after
+		-- argname is removed
 		self.changes_abi = self.changes_abi or
-			(config.abiChanges("pair_64bit") and util.is64bitType(self.type))
+			(config.abiChanges("pair_64bit") and
+			util.is64bitType(self.type))
 
 		self.type = self.type:gsub("intptr_t", config.abi_intptr_t)
 		self.type = self.type:gsub("semid_t", config.abi_semid_t)
@@ -80,25 +81,25 @@ function scarg:process()
 			self.type = self.type:gsub("^long", config.abi_long)
 			self.type = self.type:gsub("^u_long", config.abi_u_long)
 			self.type = self.type:gsub("^const u_long", "const " ..
-				config.abi_u_long)
+			   config.abi_u_long)
 		elseif self.type:find("^long$") then
 			self.type = config.abi_long
 		end
 
-		if util.isPtrArrayType(self.type) and config.abi_ptr_array_t ~= "" then
+		if util.isPtrArrayType(self.type) and
+		   config.abi_ptr_array_t ~= "" then
 			-- `* const *` -> `**`
 			self.type = self.type:gsub("[*][ ]*const[ ]*[*]", "**")
 			-- e.g., `struct aiocb **` -> `uint32_t *`
 			self.type = self.type:gsub("[^*]*[*]",
-				config.abi_ptr_array_t .. " ", 1)
+			   config.abi_ptr_array_t .. " ", 1)
 		end
 
-		-- XX TODO: Forward declarations? See: sysstubfwd in CheriBSD
 		if self.arg_abi_change then
 			self.type = self.type:gsub("(struct [^ ]*)", "%1" ..
-				config.abi_type_suffix)
+			    config.abi_type_suffix)
 			self.type = self.type:gsub("(union [^ ]*)", "%1" ..
-				config.abi_type_suffix)
+			    config.abi_type_suffix)
 		end
 		return true
 	end

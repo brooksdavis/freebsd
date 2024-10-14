@@ -52,13 +52,14 @@ function FreeBSDSyscall:parseSysfile()
 	local s
 	for line in fh:lines() do
 		line = line:gsub(commentExpr, "") -- Strip any comments.
-		-- NOTE: Can't use pure pattern matching here because of the 's' test
-		-- and this is shorter than a generic pattern matching pattern
+		-- NOTE: Can't use pure pattern matching here because of
+		-- the 's' test and this is shorter than a generic pattern
+		-- matching pattern
 		if line == nil or line == "" then
 			goto skip	-- Blank line, skip this line.
 		elseif s ~= nil then
-			-- If we have a partial system call object
-			-- s, then feed it one more line
+			-- If we have a partial system call object s,
+			-- then feed it one more line
 			if s:add(line) then
 				-- Append to system call list.
 				for t in s:iter() do
@@ -85,7 +86,9 @@ function FreeBSDSyscall:parseSysfile()
 					if t:validate(t.num - 1) then
 						table.insert(self.syscalls, t)
 					else
-						util.abort(1, "Skipped system call at number " .. t.num)
+						util.abort(1,
+						    "Skipped system call " ..
+						    "at number " .. t.num)
 					end
 				end
 				s = nil

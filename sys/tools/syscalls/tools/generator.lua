@@ -77,7 +77,8 @@ function generator:preamble(str, comment)
 		-- Splits our string into lines split by newline, or is just the
 		-- original string if there's no newlines.
 		for line in str:gmatch("[^\n]*") do
-			-- Only add a space after the comment if there's text on this line.
+			-- Only add a space after the comment if there's
+			-- text on this line.
 			local space
 			if line ~= "" then
 				space = " "
@@ -85,7 +86,8 @@ function generator:preamble(str, comment)
 				space = ""
 			end
 			-- Make sure to append the newline back.
-			self:write(string.format("%s%s%s\n", comment_middle, space, line))
+			self:write(string.format("%s%s%s\n", comment_middle,
+			    space, line))
 		end
 		self:write(string.format([[%s
 %s DO NOT EDIT-- this file is automatically %s.
