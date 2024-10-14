@@ -39,6 +39,7 @@ standalone scripts to generate specific files.
     * `syscall_h.lua` - Generates `syscall.h`.
     * `syscall_mk.lua` - Generates `syscall.mk`.
     * `syscalls.lua` - Generates `syscalls.c`.
+    * `syscalls_map.lua` - Generates `lib/libsys/syscalls.map`.
     * `sysproto_h.lua` - Generates `sysproto.h`.
     * `systrace_args.lua` - Generates `systrace_args.c`.
 
