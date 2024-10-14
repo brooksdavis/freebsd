@@ -35,12 +35,12 @@ standalone scripts to generate specific files.
                               processing.
 
   * `scripts`
-    * `syscalls.lua` - Generates `syscalls.c`.
+    * `init_sysent.lua` - Generates `init_sysent.c`.
     * `syscall_h.lua` - Generates `syscall.h`.
     * `syscall_mk.lua` - Generates `syscall.mk`.
-    * `init_sysent.lua` - Generates `init_sysent.c`.
-    * `systrace_args.lua` - Generates `systrace_args.c`.
+    * `syscalls.lua` - Generates `syscalls.c`.
     * `sysproto_h.lua` - Generates `sysproto.h`.
+    * `systrace_args.lua` - Generates `systrace_args.c`.
 
   * `tools`
     * `util.lua` - Contains utility functions.
