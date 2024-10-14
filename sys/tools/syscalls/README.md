@@ -36,6 +36,7 @@ standalone scripts to generate specific files.
 
   * `scripts`
     * `init_sysent.lua` - Generates `init_sysent.c`.
+    * `libsys_h.lua` - Generates `lib/libsys/_libsys.h`.
     * `syscall_h.lua` - Generates `syscall.h`.
     * `syscall_mk.lua` - Generates `syscall.mk`.
     * `syscalls.lua` - Generates `syscalls.c`.
