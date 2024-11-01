@@ -46,11 +46,14 @@
 ;	NOPROTO	same as STD except do not create structure or
 ;		function prototype in sys/sysproto.h.  Does add a
 ;		definition to syscall.h besides adding a sysent.
+;
+; type flags:
+;	CANCELPT syscall is a pthread cancelation point
+;	CAPENABLED syscall is allowed in capability mode
 ;	NOLIB	don't create stubs in libc or libsys
 ;	NOTSTATIC syscall is loadable
 ;	SYSMUX	syscall multiplexer.  No prototype, argument struct, or
 ;		handler is declared or used.  Handled in MD syscall code.
-;	CAPENABLED syscall is allowed in capability mode
 ;
 ; To support programmatic generation of both the default ABI and 32-bit compat
 ; (freebsd32) we impose a number of restrictions on the types of system calls.
@@ -129,24 +132,24 @@
 		    int rval
 		);
 	}
-2	AUE_FORK	STD|CAPENABLED {
+2	AUE_FORK	STD|CAPENABLED|CANCELPT {
 		int fork(void);
 	}
-3	AUE_READ	STD|CAPENABLED {
+3	AUE_READ	STD|CAPENABLED|CANCELPT {
 		ssize_t read(
 		    int fd,
 		    _Out_writes_bytes_(nbyte) void *buf,
 		    size_t nbyte
 		);
 	}
-4	AUE_WRITE	STD|CAPENABLED {
+4	AUE_WRITE	STD|CAPENABLED|CANCELPT {
 		ssize_t write(
 		    int fd,
 		    _In_reads_bytes_(nbyte) const void *buf,
 		    size_t nbyte
 		);
 	}
-5	AUE_OPEN_RWTC	STD {
+5	AUE_OPEN_RWTC	STD|CANCELPT {
 		int open(
 		    _In_z_ const char *path,
 		    int flags,
@@ -155,12 +158,12 @@
 	}
 ; XXX should be		{ int open(const char *path, int flags, ...); }
 ; but we're not ready for varargs.
-6	AUE_CLOSE	STD|CAPENABLED {
+6	AUE_CLOSE	STD|CAPENABLED|CANCELPT {
 		int close(
 		    int fd
 		);
 	}
-7	AUE_WAIT4	STD|CAPENABLED {
+7	AUE_WAIT4	STD|CAPENABLED|CANCELPT {
 		int wait4(
 		    int pid,
 		    _Out_opt_ int *status,
@@ -263,7 +266,7 @@
 25	AUE_GETEUID	STD|CAPENABLED {
 		uid_t geteuid(void);
 	}
-26	AUE_PTRACE	STD {
+26	AUE_PTRACE	STD|CANCELPT {
 		int ptrace(
 		    int req,
 		    pid_t pid,
@@ -271,21 +274,21 @@
 		    int data
 		);
 	}
-27	AUE_RECVMSG	STD|CAPENABLED {
+27	AUE_RECVMSG	STD|CAPENABLED|CANCELPT {
 		ssize_t recvmsg(
 		    int s,
 		    _Inout_ _Contains_ptr_ struct msghdr *msg,
 		    int flags
 		);
 	}
-28	AUE_SENDMSG	STD|CAPENABLED {
+28	AUE_SENDMSG	STD|CAPENABLED|CANCELPT {
 		ssize_t sendmsg(
 		    int s,
 		    _In_ _Contains_ptr_ const struct msghdr *msg,
 		    int flags
 		);
 	}
-29	AUE_RECVFROM	STD|CAPENABLED {
+29	AUE_RECVFROM	STD|CAPENABLED|CANCELPT {
 		ssize_t recvfrom(
 		    int s,
 		    _Out_writes_bytes_(len) void *buf,
@@ -295,7 +298,7 @@
 		    _Inout_opt_ __socklen_t *fromlenaddr
 		);
 	}
-30	AUE_ACCEPT	STD|CAPENABLED {
+30	AUE_ACCEPT	STD|CAPENABLED|CANCELPT {
 		int accept(
 		    int s,
 		    _Out_writes_bytes_opt_(*anamelen) struct sockaddr *name,
@@ -493,7 +496,7 @@
 64	AUE_NULL	COMPAT|CAPENABLED {
 		int getpagesize(void);
 	}
-65	AUE_MSYNC	STD|CAPENABLED {
+65	AUE_MSYNC	STD|CAPENABLED|CANCELPT {
 		int msync(
 		    _In_ void *addr,
 		    size_t len,
@@ -615,7 +618,7 @@
 		);
 	}
 91	AUE_NULL	RESERVED
-92	AUE_FCNTL	STD|CAPENABLED {
+92	AUE_FCNTL	STD|CAPENABLED|CANCELPT {
 		int fcntl(
 		    int fd,
 		    int cmd,
@@ -624,7 +627,7 @@
 	}
 ; XXX should be { int fcntl(int fd, int cmd, ...); }
 ; but we're not ready for varargs.
-93	AUE_SELECT	STD|CAPENABLED {
+93	AUE_SELECT	STD|CAPENABLED|CANCELPT {
 		int select(
 		    int nd,
 		    _Inout_opt_ fd_set *in,
@@ -634,7 +637,7 @@
 		);
 	}
 94	AUE_NULL	RESERVED
-95	AUE_FSYNC	STD|CAPENABLED {
+95	AUE_FSYNC	STD|CAPENABLED|CANCELPT {
 		int fsync(
 		    int fd
 		);
@@ -653,7 +656,7 @@
 		    int protocol
 		);
 	}
-98	AUE_CONNECT	STD {
+98	AUE_CONNECT	STD|CANCELPT {
 		int connect(
 		    int s,
 		    _In_reads_bytes_(namelen) const struct sockaddr *name,
@@ -784,14 +787,14 @@
 		);
 	}
 119	AUE_NULL	RESERVED
-120	AUE_READV	STD|CAPENABLED {
+120	AUE_READV	STD|CAPENABLED|CANCELPT {
 		ssize_t readv(
 		    int fd,
 		    _In_reads_(iovcnt) _Contains_long_ptr_ const struct iovec *iovp,
 		    u_int iovcnt
 		);
 	}
-121	AUE_WRITEV	STD|CAPENABLED {
+121	AUE_WRITEV	STD|CAPENABLED|CANCELPT {
 		ssize_t writev(
 		    int fd,
 		    _In_reads_(iovcnt) _Contains_long_ptr_ const struct iovec *iovp,
@@ -817,7 +820,7 @@
 		    mode_t mode
 		);
 	}
-125	AUE_RECVFROM	COMPAT|CAPENABLED {
+125	AUE_RECVFROM	COMPAT|CAPENABLED|CANCELPT {
 		int recvfrom(
 		    int s,
 		    _Out_writes_(len) void *buf,
@@ -869,7 +872,7 @@
 		    mode_t mode
 		);
 	}
-133	AUE_SENDTO	STD|CAPENABLED {
+133	AUE_SENDTO	STD|CAPENABLED|CANCELPT {
 		ssize_t sendto(
 		    int s,
 		    _In_reads_bytes_(len) const void *buf,
@@ -1260,7 +1263,7 @@
 		);
 	}
 208	AUE_NULL	RESERVED
-209	AUE_POLL	STD|CAPENABLED {
+209	AUE_POLL	STD|CAPENABLED|CANCELPT {
 		int poll(
 		    _Inout_updates_(nfds) struct pollfd *fds,
 		    u_int nfds,
@@ -1408,7 +1411,7 @@
 		    int timerid
 		);
 	}
-240	AUE_NULL	STD|CAPENABLED {
+240	AUE_NULL	STD|CAPENABLED|CANCELPT {
 		int nanosleep(
 		    _In_ _Contains_long_timet_ const struct timespec *rqtp,
 		    _Out_opt_ _Contains_long_timet_ struct timespec *rmtp
@@ -1429,7 +1432,7 @@
 		    _Out_ _Contains_timet_ struct ffclock_estimate *cest
 		);
 	}
-244	AUE_NULL	STD {
+244	AUE_NULL	STD|CANCELPT {
 		int clock_nanosleep(
 		    clockid_t clock_id,
 		    int flags,
@@ -1646,7 +1649,7 @@
 		    _Inout_ _Contains_long_ptr_ struct aiocb *aiocbp
 		);
 	}
-315	AUE_AIO_SUSPEND	STD|CAPENABLED {
+315	AUE_AIO_SUSPEND	STD|CAPENABLED|CANCELPT {
 		int aio_suspend(
 		    _Inout_updates_(nent) _Contains_long_ptr_ const struct aiocb * const * aiocbp,
 		    int nent,
@@ -1782,14 +1785,14 @@
 		    int a_followSymlinks
 		);
 	}
-340	AUE_SIGPROCMASK	STD|CAPENABLED {
+340	AUE_SIGPROCMASK	STD|CAPENABLED|CANCELPT {
 		int sigprocmask(
 		    int how,
 		    _In_opt_ const sigset_t *set,
 		    _Out_opt_ sigset_t *oset
 		);
 	}
-341	AUE_SIGSUSPEND	STD|CAPENABLED {
+341	AUE_SIGSUSPEND	STD|CAPENABLED|CANCELPT {
 		int sigsuspend(
 		    _In_ const sigset_t *sigmask
 		);
@@ -1811,14 +1814,14 @@
 		    _In_ _Contains_long_ptr_ const struct freebsd4_ucontext *sigcntxp
 		);
 	}
-345	AUE_SIGWAIT	STD|CAPENABLED {
+345	AUE_SIGWAIT	STD|CAPENABLED|CANCELPT {
 		int sigtimedwait(
 		    _In_ const sigset_t *set,
 		    _Out_opt_ _Contains_long_ptr_ struct __siginfo *info,
 		    _In_opt_ _Contains_long_timet_ const struct timespec *timeout
 		);
 	}
-346	AUE_NULL	STD|CAPENABLED {
+346	AUE_NULL	STD|CAPENABLED|CANCELPT {
 		int sigwaitinfo(
 		    _In_ const sigset_t *set,
 		    _Out_opt_ _Contains_long_ptr_ struct __siginfo *info
@@ -2212,7 +2215,7 @@
 		    _In_ _Contains_long_ptr_ struct mac *mac_p
 		);
 	}
-416	AUE_SIGACTION	STD|CAPENABLED {
+416	AUE_SIGACTION	STD|CAPENABLED|CANCELPT {
 		int sigaction(
 		    int sig,
 		    _In_opt_ _Contains_ptr_ const struct sigaction *act,
@@ -2230,12 +2233,12 @@
 		    _Out_ _Contains_long_ptr_ struct __ucontext *ucp
 		);
 	}
-422	AUE_NULL	STD|CAPENABLED {
+422	AUE_NULL	STD|CAPENABLED|CANCELPT {
 		int setcontext(
 		    _In_ _Contains_long_ptr_ const struct __ucontext *ucp
 		);
 	}
-423	AUE_NULL	STD {
+423	AUE_NULL	STD|CANCELPT {
 		int swapcontext(
 		    _Out_ _Contains_long_ptr_ struct __ucontext *oucp,
 		    _In_ _Contains_long_ptr_ const struct __ucontext *ucp
@@ -2273,7 +2276,7 @@
 		    _In_ struct acl *aclp
 		);
 	}
-429	AUE_SIGWAIT	STD|CAPENABLED {
+429	AUE_SIGWAIT	STD|CAPENABLED|CANCELPT {
 		int sigwait(
 		    _In_ const sigset_t *set,
 		    _Out_ int *sig
@@ -2727,7 +2730,7 @@
 		);
 	}
 ; XXX: see the comment for open
-499	AUE_OPENAT_RWTC	STD|CAPENABLED {
+499	AUE_OPENAT_RWTC	STD|CAPENABLED|CANCELPT {
 		int openat(
 		    int fd,
 		    _In_z_ const char *path,
@@ -2839,7 +2842,7 @@
 		    _Out_ u_int *modep
 		);
 	}
-518	AUE_PDFORK	STD|CAPENABLED {
+518	AUE_PDFORK	STD|CAPENABLED|CANCELPT {
 		int pdfork(
 		    _Out_ int *fdp,
 		    int flags
@@ -2858,7 +2861,7 @@
 		);
 	}
 521	AUE_NULL	RESERVED
-522	AUE_SELECT	STD|CAPENABLED {
+522	AUE_SELECT	STD|CAPENABLED|CANCELPT {
 		int pselect(
 		    int nd,
 		    _Inout_opt_ fd_set *in,
@@ -2934,7 +2937,7 @@
 		    int advice
 		);
 	}
-532	AUE_WAIT6	STD {
+532	AUE_WAIT6	STD|CANCELPT {
 		int wait6(
 		    idtype_t idtype,
 		    id_t id,
@@ -3000,7 +3003,7 @@
 		    int atflag
 		);
 	}
-541	AUE_ACCEPT	STD|CAPENABLED {
+541	AUE_ACCEPT	STD|CAPENABLED|CANCELPT {
 		int accept4(
 		    int s,
 		    _Out_writes_bytes_opt_(*anamelen) struct sockaddr *name,
@@ -3027,7 +3030,7 @@
 		    _In_opt_ void *data
 		);
 	}
-545	AUE_POLL	STD|CAPENABLED {
+545	AUE_POLL	STD|CAPENABLED|CANCELPT {
 		int ppoll(
 		    _Inout_updates_(nfds) struct pollfd *fds,
 		    u_int nfds,
@@ -3051,7 +3054,7 @@
 	}
 548	AUE_NULL	OBSOL	numa_getaffinity
 549	AUE_NULL	OBSOL	numa_setaffinity
-550	AUE_FSYNC	STD|CAPENABLED {
+550	AUE_FSYNC	STD|CAPENABLED|CANCELPT {
 		int fdatasync(
 		    int fd
 		);
@@ -3117,7 +3120,7 @@
 		    dev_t dev
 		);
 	}
-560	AUE_KEVENT	STD|CAPENABLED {
+560	AUE_KEVENT	STD|CAPENABLED|CANCELPT {
 		int kevent(
 		    int fd,
 		    _In_reads_opt_(nchanges) _Contains_ptr_ const struct kevent *changelist,

@@ -26,6 +26,7 @@ syscall.known_flags = util.set {
 	"NOSTD",
 
 	-- flags beyond this point are modifiers
+	"CANCELPT",
 	"CAPENABLED",
 	"NOLIB",
 	"NOTSTATIC",

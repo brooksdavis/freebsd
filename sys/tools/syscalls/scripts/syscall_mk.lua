@@ -33,6 +33,8 @@ function syscall_mk.generate(tbl, config, fh)
 	-- call (no backslash).
 	local size = #s
 	local idx = 0
+	local inter_storage_idx = 1
+	local cancelpts = 0
 
 	-- Bind the generator to the parameter file.
 	local gen = generator:new({}, fh)
@@ -40,19 +42,31 @@ function syscall_mk.generate(tbl, config, fh)
 	-- Write the generated preamble.
 	gen:preamble("FreeBSD system call object files.", "#")
 
-	gen:write("MIASM =  \\\n") -- preamble
+	gen:write("MIASM =") -- preamble
 	for _, v in pairs(s) do
 		local c = v:compatLevel()
-		local bs = " \\"
 		idx = idx + 1
 		if (v:native() or c >= 7) and not v.type.NODEF and not v.type.NOLIB then
-			if idx >= size then
-				-- At last system call, no backslash.
-				bs = ""
+			gen:write(string.format(" \\\n\t%s.o", v:symbol()))
+			if v.type.CANCELPT then
+				if cancelpts == 0 then
+					gen:store("\nINTERPOSED =",
+					    inter_storage_idx)
+				end
+				cancelpts = cancelpts + 1
+				gen:store(string.format(" \\\n\t%s", v:symbol(),
+				    inter_storage_idx))
 			end
-			gen:write(string.format("\t%s.o%s\n", v:symbol(), bs))
 		end
 	end
+
+	-- terminate that last entry
+	gen:write("\n")
+	if cancelpts > 0 then
+		gen:store("\n", inter_storage_idx)
+	end
+
+	gen:writeStorage()
 end
 
 -- Entry of script:
