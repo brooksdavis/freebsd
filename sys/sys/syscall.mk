@@ -4,7 +4,7 @@
 # DO NOT EDIT-- this file is automatically @generated.
 #
 
-MIASM =  \
+MIASM = \
 	syscall.o \
 	exit.o \
 	fork.o \
@@ -434,3 +434,44 @@ MIASM =  \
 	getrlimitusage.o \
 	fchroot.o \
 	setcred.o
+
+INTERPOSED = \
+	fork \
+	read \
+	write \
+	open \
+	close \
+	wait4 \
+	ptrace \
+	recvmsg \
+	sendmsg \
+	recvfrom \
+	accept \
+	msync \
+	fcntl \
+	select \
+	fsync \
+	connect \
+	readv \
+	writev \
+	sendto \
+	poll \
+	nanosleep \
+	clock_nanosleep \
+	aio_suspend \
+	sigprocmask \
+	sigsuspend \
+	sigtimedwait \
+	sigwaitinfo \
+	sigaction \
+	setcontext \
+	swapcontext \
+	sigwait \
+	openat \
+	pdfork \
+	pselect \
+	wait6 \
+	accept4 \
+	ppoll \
+	fdatasync \
+	kevent
