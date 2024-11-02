@@ -24,19 +24,13 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
-#include <sys/param.h>
 #include <sys/fcntl.h>
-#include <sys/syscall.h>
 #include <sys/stat.h>
-#include <unistd.h>
-#include "libc_private.h"
 
-int __sys_mknodat(int, const char *, mode_t, dev_t);
+#include <libsys.h>
 
 int
 mknod(const char *path, mode_t mode, dev_t dev)
 {
-
 	return (__sys_mknodat(AT_FDCWD, path, mode, dev));
 }
