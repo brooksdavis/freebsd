@@ -33,7 +33,7 @@
 .Nm sbrk
 .Nd change data segment size
 .Sh LIBRARY
-.Lb libsbrk
+.Lb libc
 .Sh SYNOPSIS
 .In unistd.h
 .Ft int
@@ -81,11 +81,6 @@ The
 function
 sets the break to
 .Fa addr .
-.Bf -symbolic
-It is implemented in the
-.Lb libc
-as a compatibility symbol and no mechanism is provided to link it.
-.Ef
 .Pp
 The
 .Fn sbrk
@@ -100,12 +95,6 @@ is negative,
 the break is lowered by
 .Fa incr
 bytes.
-.Bf -symbolic
-It is implemented in the
-.Lb libc
-as a compatibility symbol and can be linked via the
-.Lb libsbrk .
-.Ef
 .Sh NOTES
 While the actual process data segment size maintained by the kernel will only
 grow or shrink in page sizes, these functions allow setting the break
