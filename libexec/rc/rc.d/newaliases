@@ -1,0 +1,42 @@
+#!/bin/sh
+#
+# SPDX-License-Identifier: BSD-2-Clause
+#
+# Copyright (c) 2025 SRI International
+#
+# This software was developed by SRI International, the University of
+# Cambridge Computer Laboratory (Department of Computer Science and
+# Technology), and Capabilities Limited under Defense Advanced Research
+# Projects Agency (DARPA) Contract No. FA8750-24-C-B047 ("DEC").
+#
+
+# PROVIDE: newaliases
+# REQUIRE: FILESYSTEMS
+# BEFORE: mail
+# KEYWORD: firstboot
+
+. /etc/rc.subr
+
+name="newaliases"
+desc="Create email aliases database if required"
+command="/usr/bin/newaliases"
+start_cmd="newaliases_start"
+stop_cmd=":"
+
+load_rc_config $name
+
+newaliases_start()
+{
+	if [ ! -f /etc/mail/aliases ]; then
+		return 0
+	fi
+	if [ ! -f /etc/mail/aliases.db ]; then
+		if [ ! -x $command ]; then
+			warn "$command not found"
+			return 1
+		fi
+		$command
+	fi
+}
+
+run_rc_command "$1"

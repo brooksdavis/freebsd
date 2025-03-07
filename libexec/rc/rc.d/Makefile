@@ -51,6 +51,7 @@ CONFS=	DAEMON \
 	netoptions \
 	netwait \
 	noshutdown \
+	newaliases \
 	${_nscd} \
 	${_opensm} \
 	os-release \
