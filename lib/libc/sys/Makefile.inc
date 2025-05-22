@@ -6,7 +6,7 @@
 .include "${LIBSYS_SRCTOP}/Makefile.sys"
 
 # emit empty assembly stubs for syscalls in dynamic libc
-SHARED_CFLAGS+=	-D'_SYSCALL_BODY(name)='
+PICO_CFLAGS+=	-D'_SYSCALL_BODY(name)='
 
 SYM_MAPS+=	${LIBC_SRCTOP}/sys/Symbol.map
 
