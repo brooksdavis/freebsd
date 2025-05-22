@@ -127,12 +127,6 @@ ACFLAGS.${SRC}
 ACFLAGS.${.TARGET:T}
 		Flags dependent on output file name.
 
-AFLAGS		Flags to the assembler when assembling .s files.
-AFLAGS.${SRC}
-		Flags dependent on source file name.
-AFLAGS.${.TARGET:T}
-		Flags dependent on output file name.
-
 CFLAGS		Flags to the compiler when compiling most things
 		processed by the C preprocessor.  This includes .asm, .c,
 		and .S source files as well as related inputs like symbol

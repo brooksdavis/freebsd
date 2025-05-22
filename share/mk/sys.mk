@@ -137,7 +137,6 @@ RANLIBFLAGS	?=	-D
 .endif
 
 AS		?=	as
-AFLAGS		?=
 ACFLAGS		?=
 
 .if defined(%POSIX)
