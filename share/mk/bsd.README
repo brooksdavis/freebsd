@@ -133,7 +133,10 @@ AFLAGS.${SRC}
 AFLAGS.${.TARGET:T}
 		Flags dependent on output file name.
 
-CFLAGS		Flags to the compiler when creating C objects.
+CFLAGS		Flags to the compiler when compiling most things
+		processed by the C preprocessor.  This includes .asm, .c,
+		and .S source files as well as related inputs like symbol
+		version maps.
 CFLAGS.${SRC}
 		Flags dependent on source file name.
 CFLAGS.${.TARGET:T}
@@ -146,6 +149,9 @@ CFLAGS_NO_SIMD	Add this to CFLAGS for programs that don't want any SIMD
 		instructions generated. It is setup in bsd.cpu.mk to an
 		appropriate value for the compiler and target.
 
+CXXFLAGS	Flags to the compiler when compiling from C++ sources.
+		By default it is equal to CFLAGS with any -std= arguments
+		and a few warning flags removed.
 CXXFLAGS.${COMPILER_TYPE}
 		Flags dependent on compiler added to CXXFLAGS.
 CXXFLAGS.${MACHINE_ARCH}
