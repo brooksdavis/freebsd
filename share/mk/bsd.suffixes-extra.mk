@@ -60,13 +60,14 @@ PIEFLAG?=-fpie
 
 .asm.pico:
 	${CC:N${CCACHE_BIN}} -x assembler-with-cpp ${PICFLAG} -DPIC \
-	    ${PICO_CFLAGS} ${CFLAGS} ${ACFLAGS} \
+	    ${PICO_CFLAGS} ${SHARED_CFLAGS} ${CFLAGS} ${ACFLAGS} \
 	    -c ${.IMPSRC} -o ${.TARGET}
 	${CTFCONVERT_CMD}
 
 .asm.nossppico:
 	${CC:N${CCACHE_BIN}} -x assembler-with-cpp ${PICFLAG} -DPIC \
 	    ${NOSSPPICO_CFLAGS} \
+	    ${SHARED_CFLAGS:C/^-fstack-protector.*$//:C/^-fstack-clash-protection.*$//} \
 	    ${CFLAGS:C/^-fstack-protector.*$//:C/^-fstack-clash-protection.*$//} \
 	    ${ACFLAGS} \
 	    -c ${.IMPSRC} -o ${.TARGET}
@@ -74,19 +75,20 @@ PIEFLAG?=-fpie
 
 .asm.pieo:
 	${CC:N${CCACHE_BIN}} -x assembler-with-cpp ${PIEFLAG} -DPIC \
-	    ${PIEO_CFLAGS} ${CFLAGS} ${ACFLAGS} \
+	    ${PIEO_CFLAGS} ${SHARED_CFLAGS} ${CFLAGS} ${ACFLAGS} \
 	    -c ${.IMPSRC} -o ${.TARGET}
 	${CTFCONVERT_CMD}
 
 .S.pico:
 	${CC:N${CCACHE_BIN}} ${PICFLAG} -DPIC \
-	    ${PICO_CFLAGS} ${CFLAGS} ${ACFLAGS} \
+	    ${PICO_CFLAGS} ${SHARED_CFLAGS} ${CFLAGS} ${ACFLAGS} \
 	    -c ${.IMPSRC} -o ${.TARGET}
 	${CTFCONVERT_CMD}
 
 .S.nossppico:
 	${CC:N${CCACHE_BIN}} ${PICFLAG} -DPIC \
 	    ${NOSSPPICO_CFLAGS} \
+	    ${SHARED_CFLAGS:C/^-fstack-protector.*$//:C/^-fstack-clash-protection.*$//} \
 	    ${CFLAGS:C/^-fstack-protector.*$//:C/^-fstack-clash-protection.*$//} \
 	    ${ACFLAGS} \
 	    -c ${.IMPSRC} -o ${.TARGET}
@@ -94,7 +96,7 @@ PIEFLAG?=-fpie
 
 .S.pieo:
 	${CC:N${CCACHE_BIN}} ${PIEFLAG} -DPIC \
-	    ${PIEO_CFLAGS} ${CFLAGS} ${ACFLAGS} \
+	    ${PIEO_CFLAGS} ${SHARED_CFLAGS} ${CFLAGS} ${ACFLAGS} \
 	    -c ${.IMPSRC} -o ${.TARGET}
 	${CTFCONVERT_CMD}
 
