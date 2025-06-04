@@ -144,7 +144,7 @@
 #endif
 
 /* Define to 1 if you have the `mallctl' function. */
-#if defined(__FreeBSD__)
+#if 0
 #define HAVE_MALLCTL 1
 #endif
 
@@ -182,7 +182,9 @@
 #define HAVE_PTHREAD_RWLOCK_INIT 1
 
 /* Define to 1 if you have the `sbrk' function. */
+#if 0
 #define HAVE_SBRK 1
+#endif
 
 /* Define to 1 if you have the `setenv' function. */
 #define HAVE_SETENV 1

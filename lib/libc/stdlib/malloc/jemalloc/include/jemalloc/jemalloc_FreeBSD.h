@@ -131,17 +131,6 @@ extern int __isthreaded;
 #define	je_realloc		__realloc
 #define	je_free			__free
 #define	je_malloc_usable_size	__malloc_usable_size
-#define	je_mallocx		__mallocx
-#define	je_rallocx		__rallocx
-#define	je_xallocx		__xallocx
-#define	je_sallocx		__sallocx
-#define	je_dallocx		__dallocx
-#define	je_sdallocx		__sdallocx
-#define	je_nallocx		__nallocx
-#define	je_mallctl		__mallctl
-#define	je_mallctlnametomib	__mallctlnametomib
-#define	je_mallctlbymib		__mallctlbymib
-#define	je_malloc_stats_print	__malloc_stats_print
 #define	open			_open
 #define	read			_read
 #define	write			_write
@@ -170,27 +159,49 @@ __weak_reference(__aligned_alloc, aligned_alloc);
 __weak_reference(__realloc, realloc);
 __weak_reference(__free, free);
 __weak_reference(__malloc_usable_size, malloc_usable_size);
-__weak_reference(__mallocx, mallocx);
-__weak_reference(__rallocx, rallocx);
-__weak_reference(__xallocx, xallocx);
-__weak_reference(__sallocx, sallocx);
-__weak_reference(__dallocx, dallocx);
-__weak_reference(__sdallocx, sdallocx);
-__weak_reference(__nallocx, nallocx);
-__weak_reference(__mallctl, mallctl);
-__weak_reference(__mallctlnametomib, mallctlnametomib);
-__weak_reference(__mallctlbymib, mallctlbymib);
-__weak_reference(__malloc_stats_print, malloc_stats_print);
+__weak_reference(je_mallocx, weak_mallocx);
+__weak_reference(je_rallocx, weak_rallocx);
+__weak_reference(je_xallocx, weak_xallocx);
+__weak_reference(je_sallocx, weak_sallocx);
+__weak_reference(je_dallocx, weak_dallocx);
+__weak_reference(je_nallocx, weak_nallocx);
+__weak_reference(je_sdallocx, weak_sdallocx);
+__weak_reference(je_mallctl, weak_mallctl);
+__weak_reference(je_mallctlnametomib, weak_mallctlnametomib);
+__weak_reference(je_mallctlbymib, weak_mallctlbymib);
+__weak_reference(je_malloc_stats_print, weak_malloc_stats_print);
 __weak_reference(je_allocm, weak_allocm);
 __weak_reference(je_rallocm, weak_rallocm);
 __weak_reference(je_sallocm, weak_sallocm);
 __weak_reference(je_dallocm, weak_dallocm);
 __weak_reference(je_nallocm, weak_nallocm);
+__sym_compat(__mallocx, je_mallocx, FBSD_1.3);
+__sym_compat(__rallocx, je_rallocx, FBSD_1.3);
+__sym_compat(__xallocx, je_xallocx, FBSD_1.3);
+__sym_compat(__sallocx, je_sallocx, FBSD_1.3);
+__sym_compat(__dallocx, je_dallocx, FBSD_1.3);
+__sym_compat(__nallocx, je_nallocx, FBSD_1.3);
+__sym_compat(__sdallocx, je_sdallocx, FBSD_1.4);
+__sym_compat(__mallctl, je_mallctl, FBSD_1.4);
+__sym_compat(__mallctlnametomib, je_mallctlnametomib, FBSD_1.4);
+__sym_compat(__mallctlbymib, je_mallctlbymib, FBSD_1.4);
+__sym_compat(__malloc_stats_print, je_malloc_stats_print, FBSD_1.4);
 __sym_compat(__allocm, je_allocm, FBSD_1.3);
 __sym_compat(__rallocm, je_rallocm, FBSD_1.3);
 __sym_compat(__sallocm, je_sallocm, FBSD_1.3);
 __sym_compat(__dallocm, je_dallocm, FBSD_1.3);
 __sym_compat(__nallocm, je_nallocm, FBSD_1.3);
+__sym_compat(mallocx, weak_mallocx, FBSD_1.3);
+__sym_compat(rallocx, weak_rallocx, FBSD_1.3);
+__sym_compat(xallocx, weak_xallocx, FBSD_1.3);
+__sym_compat(sallocx, weak_sallocx, FBSD_1.3);
+__sym_compat(dallocx, weak_dallocx, FBSD_1.3);
+__sym_compat(nallocx, weak_nallocx, FBSD_1.3);
+__sym_compat(sdallocx, weak_sdallocx, FBSD_1.4);
+__sym_compat(mallctl, weak_mallctl, FBSD_1.3);
+__sym_compat(mallctlnametomib, weak_mallctlnametomib, FBSD_1.3);
+__sym_compat(mallctlbymib, weak_mallctlbymib, FBSD_1.3);
+__sym_compat(malloc_stats_print, weak_malloc_stats_print, FBSD_1.3);
 __sym_compat(allocm, weak_allocm, FBSD_1.3);
 __sym_compat(rallocm, weak_rallocm, FBSD_1.3);
 __sym_compat(sallocm, weak_sallocm, FBSD_1.3);
