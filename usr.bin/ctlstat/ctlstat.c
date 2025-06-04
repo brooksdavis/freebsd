@@ -49,6 +49,7 @@
 #include <sys/time.h>
 #include <assert.h>
 #include <bsdxml.h>
+#define	_WANT_JEMALLOC_NP
 #include <malloc_np.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -69,6 +70,12 @@
 #include <cam/ctl/ctl_util.h>
 #include <cam/ctl/ctl_backend.h>
 #include <cam/ctl/ctl_ioctl.h>
+
+void *libc_rallocx(void *ptr, size_t size, int flags);
+
+asm (".symver libc_rallocx, rallocx@FBSD_1.3");
+
+#define	rallocx	libc_rallocx
 
 /*
  * The default amount of space we allocate for stats storage space.

@@ -72,6 +72,7 @@ struct extent_hooks_s {
 
 size_t	malloc_usable_size(const void *ptr);
 
+#ifdef _WANT_JEMALLOC_NP
 void	malloc_stats_print(void (*write_cb)(void *, const char *),
     void *cbopaque, const char *opts);
 
@@ -98,6 +99,7 @@ size_t	sallocx(const void *ptr, int flags);
 void	dallocx(void *ptr, int flags);
 void	sdallocx(void *ptr, size_t size, int flags);
 size_t	nallocx(size_t size, int flags);
+#endif
 
 void *	__calloc(size_t number, size_t size) __malloc_like;
 void *	__malloc(size_t size) __malloc_like;
@@ -106,6 +108,7 @@ void	__free(void *ptr);
 int	__posix_memalign(void **ptr, size_t alignment, size_t size);
 void	*__aligned_alloc(size_t alignment, size_t size);
 size_t	__malloc_usable_size(const void *ptr);
+#ifdef _WANT_JEMALLOC_NP
 void	__malloc_stats_print(void (*write_cb)(void *, const char *),
     void *cbopaque, const char *opts);
 int	__mallctl(const char *name, void *oldp, size_t *oldlenp, void *newp,
@@ -120,6 +123,7 @@ size_t	__sallocx(const void *ptr, int flags);
 void	__dallocx(void *ptr, int flags);
 void	__sdallocx(void *ptr, size_t size, int flags);
 size_t	__nallocx(size_t size, int flags);
+#endif
 
 void	*memalign(size_t, size_t) __malloc_like __alloc_align(1)
 	    __alloc_size(2);
