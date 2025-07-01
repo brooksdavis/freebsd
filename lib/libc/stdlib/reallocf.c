@@ -26,21 +26,25 @@
  */
 
 #include <stdlib.h>
+#include <errno.h>
 
 void *
 reallocf(void *ptr, size_t size)
 {
 	void *nptr;
 
+	errno = 0;
 	nptr = realloc(ptr, size);
+	if (nptr == NULL) {
+		/*
+		 * When the underlying allocator follows the System V
+		 * convention of freeing ptr when size == 0, avoid a
+		 * double free when realloc returns NULL.
+		 */
+		if (errno == ENOMEM)
+			free(ptr);
+		return (NULL);
+	}
 
-	/*
-	 * When the System V compatibility option (malloc "V" flag) is
-	 * in effect, realloc(ptr, 0) frees the memory and returns NULL.
-	 * So, to avoid double free, call free() only when size != 0.
-	 * realloc(ptr, 0) can't fail when ptr != NULL.
-	 */
-	if (!nptr && ptr && size != 0)
-		free(ptr);
 	return (nptr);
 }
