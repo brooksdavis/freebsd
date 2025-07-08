@@ -40,7 +40,6 @@
  * Does some caching in the hopes of achieving execute-at-most-once semantics.
  */
 
-#include "namespace.h"
 #include "reentrant.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -48,6 +47,7 @@
 #include <rpc/svc_dg.h>
 #include <assert.h>
 #include <errno.h>
+#include <libsys.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -57,7 +57,6 @@
 #include <netdir.h>
 #endif
 #include <err.h>
-#include "un-namespace.h"
 
 #include "rpc_com.h"
 #include "mt_misc.h"
@@ -140,7 +139,7 @@ svc_dg_create(int fd, u_int sendsize, u_int recvsize)
 	xprt->xp_rtaddr.maxlen = sizeof (struct sockaddr_storage);
 
 	slen = sizeof ss;
-	if (_getsockname(fd, (struct sockaddr *)(void *)&ss, &slen) < 0) {
+	if (__sys_getsockname(fd, (struct sockaddr *)(void *)&ss, &slen) < 0) {
 		warnx(svc_dg_str, svc_dg_err3);
 		goto freedata_nowarn;
 	}
@@ -158,8 +157,8 @@ svc_dg_create(int fd, u_int sendsize, u_int recvsize)
 		    su->su_srcaddr.buf = mem_alloc(sizeof (ss));
 		    su->su_srcaddr.maxlen = sizeof (ss);
 
-		    if (_setsockopt(fd, IPPROTO_IP, IP_RECVDSTADDR,
-				    &true_value, sizeof(true_value))) {
+		    if (__sys_setsockopt(fd, IPPROTO_IP, IP_RECVDSTADDR,
+			&true_value, sizeof(true_value))) {
 			    warnx(svc_dg_str,  svc_dg_err4);
 			    goto freedata_nowarn;
 		    }
@@ -210,7 +209,7 @@ svc_dg_recvfrom(int fd, char *buf, int buflen,
 	    msg.msg_control = (caddr_t)tmp;
 	    msg.msg_controllen = CMSG_LEN(sizeof(*lin));
 	}
-	rlen = _recvmsg(fd, &msg, 0);
+	rlen = __sys_recvmsg(fd, &msg, 0);
 	if (rlen >= 0)
 		*raddrlen = msg.msg_namelen;
 
@@ -282,7 +281,7 @@ again:
 	su->su_xid = msg->rm_xid;
 	if (su->su_cache != NULL) {
 		if (cache_get(xprt, msg, &reply, &replylen)) {
-			(void)_sendto(xprt->xp_fd, reply, replylen, 0,
+			(void)__sys_sendto(xprt->xp_fd, reply, replylen, 0,
 			    (struct sockaddr *)(void *)&ss, alen);
 			return (FALSE);
 		}
@@ -321,7 +320,7 @@ svc_dg_sendto(int fd, char *buf, int buflen,
 		memcpy(CMSG_DATA(cmsg), lin, sizeof(*lin));
 	}
 
-	return _sendmsg(fd, &msg, 0);
+	return __sys_sendmsg(fd, &msg, 0);
 }
 
 static bool_t
@@ -392,7 +391,7 @@ svc_dg_destroy(SVCXPRT *xprt)
 
 	xprt_unregister(xprt);
 	if (xprt->xp_fd != -1)
-		(void)_close(xprt->xp_fd);
+		(void)__sys_close(xprt->xp_fd);
 	XDR_DESTROY(&(su->su_xdrs));
 	(void) mem_free(rpc_buffer(xprt), su->su_iosz);
 	if (su->su_srcaddr.buf)

@@ -43,7 +43,6 @@
  * Someday a large, complicated system will replace these routines.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/queue.h>
@@ -63,12 +62,12 @@
 #include <stdio.h>
 #endif
 #include <errno.h>
+#include <libsys.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <netdb.h>
 #include <err.h>
 #include <string.h>
-#include "un-namespace.h"
 
 #include "rpc_com.h"
 
@@ -213,7 +212,7 @@ __rpc_broadenable(int af, int s, struct broadif *bip)
 			return -1;
 	} else
 #endif
-		if (_setsockopt(s, SOL_SOCKET, SO_BROADCAST, &o, sizeof o) < 0)
+		if (__sys_setsockopt(s, SOL_SOCKET, SO_BROADCAST, &o, sizeof o) < 0)
 			return -1;
 
 	return 0;
@@ -318,7 +317,7 @@ rpc_broadcast_exp(rpcprog_t prog, rpcvers_t vers, rpcproc_t proc,
 		    &fdlist[fdlistno].nal) == 0)
 			continue;
 
-		fd = _socket(si.si_af, si.si_socktype, si.si_proto);
+		fd = __sys_socket(si.si_af, si.si_socktype, si.si_proto);
 		if (fd < 0) {
 			stat = RPC_CANTSEND;
 			continue;
@@ -342,7 +341,7 @@ rpc_broadcast_exp(rpcprog_t prog, rpcvers_t vers, rpcproc_t proc,
 			udpbufsz = fdlist[fdlistno].dsize;
 			outbuf_pmap = reallocf(outbuf_pmap, udpbufsz);
 			if (outbuf_pmap == NULL) {
-				_close(fd);
+				__sys_close(fd);
 				stat = RPC_SYSTEMERROR;
 				goto done_broad;
 			}
@@ -453,8 +452,8 @@ rpc_broadcast_exp(rpcprog_t prog, rpcvers_t vers, rpcproc_t proc,
 				 */
 
 				if (!__rpc_lowvers)
-					if (_sendto(fdlist[i].fd, outbuf,
-					    outlen, 0, (struct sockaddr*)addr,
+					if (__sys_sendto(fdlist[i].fd, outbuf,
+					    outlen, 0, (struct sockaddr *)addr,
 					    (size_t)fdlist[i].asize) !=
 					    outlen) {
 #ifdef RPC_DEBUG
@@ -478,8 +477,8 @@ rpc_broadcast_exp(rpcprog_t prog, rpcvers_t vers, rpcproc_t proc,
 				 */
 				if (pmap_flag &&
 				    fdlist[i].proto == IPPROTO_UDP) {
-					if (_sendto(fdlist[i].fd, outbuf_pmap,
-					    outlen_pmap, 0, addr,
+					if (__sys_sendto(fdlist[i].fd,
+					    outbuf_pmap, outlen_pmap, 0, addr,
 					    (size_t)fdlist[i].asize) !=
 						outlen_pmap) {
 						warnx("clnt_bcast: "
@@ -508,7 +507,7 @@ rpc_broadcast_exp(rpcprog_t prog, rpcvers_t vers, rpcproc_t proc,
 		 */
 	recv_again:
 
-		switch (pollretval = _poll(pfd, fdlistno, msec)) {
+		switch (pollretval = __sys_poll(pfd, fdlistno, msec)) {
 		case 0:		/* timed out */
 			stat = RPC_TIMEDOUT;
 			continue;
@@ -540,9 +539,10 @@ rpc_broadcast_exp(rpcprog_t prog, rpcvers_t vers, rpcproc_t proc,
 				fdlist[i].nconf->nc_netid);
 #endif
 		try_again:
-			inlen = _recvfrom(fdlist[i].fd, inbuf, fdlist[i].dsize,
-			    0, (struct sockaddr *)(void *)&fdlist[i].raddr,
-			    &fdlist[i].asize);
+			inlen = __sys_recvfrom(fdlist[i].fd, inbuf,
+					       fdlist[i].dsize, 0,
+					       (struct sockaddr *)(void *)&fdlist[i].raddr,
+					       &fdlist[i].asize);
 			if (inlen < 0) {
 				if (errno == EINTR)
 					goto try_again;
@@ -637,7 +637,7 @@ done_broad:
 	free(outbuf_pmap);
 #endif				/* PORTMAP */
 	for (i = 0; i < fdlistno; i++) {
-		(void)_close(fdlist[i].fd);
+		(void) __sys_close(fdlist[i].fd);
 		__rpc_freebroadifs(&fdlist[i].nal);
 	}
 	AUTH_DESTROY(sys_auth);

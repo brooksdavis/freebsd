@@ -3,9 +3,7 @@
  * It was generated using rpcgen.
  */
 
-#include "namespace.h"
 #include <rpc/key_prot.h>
-#include "un-namespace.h"
 /*-
  * SPDX-License-Identifier: BSD-3-Clause
  *

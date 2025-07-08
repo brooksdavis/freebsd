@@ -32,11 +32,11 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/stat.h>
 
 #include <errno.h>
+#include <libsys.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,7 +45,6 @@
 #ifdef DEBUG
 #include <assert.h>
 #endif
-#include "un-namespace.h"
 
 #include <db.h>
 #include "hash.h"
@@ -116,9 +115,10 @@ __hash_open(const char *file, int flags, int mode,
 	}
 
 	if (file) {
-		if ((hashp->fp = _open(file, flags | O_CLOEXEC, mode)) == -1)
+		if ((hashp->fp = __sys_open(file, flags | O_CLOEXEC, mode)) ==
+		    -1)
 			RETURN_ERROR(errno, error0);
-		new_table = _fstat(hashp->fp, &statbuf) == 0 &&
+		new_table = __sys_fstat(hashp->fp, &statbuf) == 0 &&
 		    statbuf.st_size == 0 &&
 		    ((flags & O_ACCMODE) != O_RDONLY || (flags & O_CREAT) != 0);
 	} else
@@ -134,7 +134,7 @@ __hash_open(const char *file, int flags, int mode,
 		else
 			hashp->hash = __default_hash;
 
-		hdrsize = _read(hashp->fp, &hashp->hdr, sizeof(HASHHDR));
+		hdrsize = __sys_read(hashp->fp, &hashp->hdr, sizeof(HASHHDR));
 #if BYTE_ORDER == LITTLE_ENDIAN
 		swap_header(hashp);
 #endif
@@ -223,7 +223,7 @@ __hash_open(const char *file, int flags, int mode,
 
 error1:
 	if (hashp != NULL)
-		(void)_close(hashp->fp);
+		(void)__sys_close(hashp->fp);
 
 error0:
 	free(hashp);
@@ -419,8 +419,8 @@ hdestroy(HTAB *hashp)
 
 	if (hashp->fp != -1) {
 		if (hashp->save_file)
-			(void)_fsync(hashp->fp);
-		(void)_close(hashp->fp);
+			(void)__sys_fsync(hashp->fp);
+		(void)__sys_close(hashp->fp);
 	}
 
 	free(hashp);
@@ -456,7 +456,7 @@ hash_sync(const DB *dbp, u_int32_t flags)
 		return (0);
 	if (__buf_free(hashp, 0, 1) || flush_meta(hashp))
 		return (ERROR);
-	if (hashp->fp != -1 && _fsync(hashp->fp) != 0)
+	if (hashp->fp != -1 && __sys_fsync(hashp->fp) != 0)
 		return (ERROR);
 	hashp->new_file = 0;
 	return (0);

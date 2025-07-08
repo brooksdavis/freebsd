@@ -29,7 +29,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/socket.h>
 #include <sys/syslog.h>
@@ -40,8 +39,11 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <paths.h>
+#include "namespace.h"
 #include <pthread.h>
+#include "un-namespace.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -50,7 +52,6 @@
 #include <unistd.h>
 
 #include <stdarg.h>
-#include "un-namespace.h"
 
 #include "libc_private.h"
 
@@ -283,7 +284,7 @@ vsyslog1(int pri, const char *fmt, va_list ap)
 		++v;
 		v->iov_base = "\n";
 		v->iov_len = 1;
-		(void)_writev(STDERR_FILENO, iov, 2);
+		(void)__sys_writev(STDERR_FILENO, iov, 2);
 	}
 
 	/* Get connected, output the message to the local logger. */
@@ -315,7 +316,8 @@ vsyslog1(int pri, const char *fmt, va_list ap)
 	 * Make sure the error reported is the one from the syslogd failure.
 	 */
 	if (LogStat & LOG_CONS &&
-	    (fd = _open(_PATH_CONSOLE, O_WRONLY|O_NONBLOCK|O_CLOEXEC, 0)) >=
+	    (fd = __sys_open(_PATH_CONSOLE, O_WRONLY | O_NONBLOCK | O_CLOEXEC,
+		0)) >=
 	    0) {
 		struct iovec iov[2];
 		struct iovec *v = iov;
@@ -326,8 +328,8 @@ vsyslog1(int pri, const char *fmt, va_list ap)
 		++v;
 		v->iov_base = "\r\n";
 		v->iov_len = 2;
-		(void)_writev(fd, iov, 2);
-		(void)_close(fd);
+		(void)__sys_writev(fd, iov, 2);
+		(void)__sys_close(fd);
 	}
 }
 
@@ -358,7 +360,7 @@ disconnectlog(void)
 	 * system services.
 	 */
 	if (LogFile != -1) {
-		_close(LogFile);
+		__sys_close(LogFile);
 		LogFile = -1;
 	}
 	connected = false;			/* retry connect */
@@ -373,15 +375,17 @@ connectlog(void)
 	if (LogFile == -1) {
 		socklen_t len;
 
-		if ((LogFile = _socket(AF_UNIX, SOCK_DGRAM | SOCK_CLOEXEC,
+		if ((LogFile = __sys_socket(AF_UNIX, SOCK_DGRAM | SOCK_CLOEXEC,
 		    0)) == -1)
 			return;
-		if (_getsockopt(LogFile, SOL_SOCKET, SO_SNDBUF, &len,
-		    &(socklen_t){sizeof(len)}) == 0) {
+		if (__sys_getsockopt(LogFile, SOL_SOCKET, SO_SNDBUF, &len,
+		    &(socklen_t){
+			sizeof(len),
+		    }) == 0) {
 			if (len < MAXLINE) {
 				len = MAXLINE;
-				(void)_setsockopt(LogFile, SOL_SOCKET, SO_SNDBUF,
-				    &len, sizeof(len));
+				(void) __sys_setsockopt(LogFile, SOL_SOCKET,
+				    SO_SNDBUF, &len, sizeof(len));
 			}
 		}
 	}
@@ -391,11 +395,11 @@ connectlog(void)
 
 		(void)strncpy(SyslogAddr.sun_path, _PATH_LOG,
 		    sizeof SyslogAddr.sun_path);
-		if (_connect(LogFile, (struct sockaddr *)&SyslogAddr,
+		if (__sys_connect(LogFile, (struct sockaddr *)&SyslogAddr,
 		    sizeof(SyslogAddr)) != -1)
 			connected = true;
 		else {
-			(void)_close(LogFile);
+			(void)__sys_close(LogFile);
 			LogFile = -1;
 		}
 	}
@@ -435,7 +439,7 @@ closelog(void)
 {
 	THREAD_LOCK();
 	if (LogFile != -1) {
-		(void)_close(LogFile);
+		(void)__sys_close(LogFile);
 		LogFile = -1;
 	}
 	LogTag = NULL;

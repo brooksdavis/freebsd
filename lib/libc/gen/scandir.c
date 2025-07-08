@@ -36,14 +36,13 @@
  * struct dirent (through namelist). Returns -1 if there were any errors.
  */
 
-#include "namespace.h"
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 #ifdef	I_AM_SCANDIR_B
 #include "block_abi.h"
@@ -208,7 +207,8 @@ scandirat(int dirfd, const char *dirname, struct dirent ***namelist,
 {
 	int fd, ret, serrno;
 
-	fd = _openat(dirfd, dirname, O_RDONLY | O_DIRECTORY | O_CLOEXEC);
+	fd = __sys_openat(dirfd, dirname, O_RDONLY | O_DIRECTORY | O_CLOEXEC,
+	    0);
 	if (fd == -1)
 		return (-1);
 	ret =
@@ -219,7 +219,7 @@ scandirat(int dirfd, const char *dirname, struct dirent ***namelist,
 #endif
 	    (fd, namelist, select, dcomp);
 	serrno = errno;
-	_close(fd);
+	__sys_close(fd);
 	errno = serrno;
 	return (ret);
 }

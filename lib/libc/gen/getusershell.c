@@ -32,13 +32,14 @@
 #include <sys/cdefs.h>
 __RCSID("$NetBSD: getusershell.c,v 1.17 1999/01/25 01:09:34 lukem Exp $");
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/file.h>
 
 #include <ctype.h>
 #include <errno.h>
+#include "namespace.h"
 #include <nsswitch.h>
+#include "un-namespace.h"
 #include <paths.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -54,7 +55,6 @@ __RCSID("$NetBSD: getusershell.c,v 1.17 1999/01/25 01:09:34 lukem Exp $");
 #include <rpcsvc/ypclnt.h>
 #include <rpcsvc/yp_prot.h>
 #endif
-#include "un-namespace.h"
 
 static const char *const *curshell;
 static StringList	 *sl;

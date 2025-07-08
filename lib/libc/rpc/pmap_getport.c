@@ -37,7 +37,6 @@
  * Copyright (C) 1984, Sun Microsystems, Inc.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -50,7 +49,6 @@
 #include <rpc/rpc.h>
 #include <rpc/pmap_prot.h>
 #include <rpc/pmap_clnt.h>
-#include "un-namespace.h"
 
 static const struct timeval timeout = { 5, 0 };
 static const struct timeval tottimeout = { 60, 0 };

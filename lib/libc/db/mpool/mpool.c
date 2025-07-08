@@ -29,17 +29,16 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/queue.h>
 #include <sys/stat.h>
 
 #include <errno.h>
+#include <libsys.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 #include <db.h>
 
@@ -68,7 +67,7 @@ mpool_open(void *key, int fd, pgno_t pagesize, pgno_t maxcache)
 	 * XXX
 	 * We don't currently handle pipes, although we should.
 	 */
-	if (_fstat(fd, &sb))
+	if (__sys_fstat(fd, &sb))
 		return (NULL);
 	if (!S_ISREG(sb.st_mode)) {
 		errno = ESPIPE;
@@ -324,7 +323,7 @@ mpool_sync(MPOOL *mp)
 			return (RET_ERROR);
 
 	/* Sync the file descriptor. */
-	return (_fsync(mp->fd) ? RET_ERROR : RET_SUCCESS);
+	return (__sys_fsync(mp->fd) ? RET_ERROR : RET_SUCCESS);
 }
 
 /*

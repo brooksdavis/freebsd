@@ -29,13 +29,14 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <dirent.h>
+#include <libsys.h>
+#include "namespace.h"
 #include <pthread.h>
+#include "un-namespace.h"
 #include <stdlib.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 #include "libc_private.h"
 #include "gen-private.h"
@@ -68,6 +69,5 @@ fdclosedir(DIR *dirp)
 int
 closedir(DIR *dirp)
 {
-
-	return (_close(fdclosedir(dirp)));
+	return (__sys_close(fdclosedir(dirp)));
 }

@@ -34,7 +34,6 @@
  * Copyright (c) 1985 by Sun Microsystems, Inc.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -45,7 +44,6 @@
 
 #include <rpc/rpc.h>
 #include <rpc/pmap_clnt.h>
-#include "un-namespace.h"
 
 int
 getrpcport(char *host, int prognum, int versnum, int proto)

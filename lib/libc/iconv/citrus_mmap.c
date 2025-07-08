@@ -28,7 +28,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -36,12 +35,12 @@
 #include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 #include "citrus_namespace.h"
 #include "citrus_region.h"
@@ -59,10 +58,10 @@ _citrus_map_file(struct _citrus_region * __restrict r,
 
 	_region_init(r, NULL, 0);
 
-	if ((fd = _open(path, O_RDONLY | O_CLOEXEC)) == -1)
+	if ((fd = __sys_open(path, O_RDONLY | O_CLOEXEC, 0)) == -1)
 		return (errno);
 
-	if (_fstat(fd, &st)  == -1) {
+	if (__sys_fstat(fd, &st)  == -1) {
 		ret = errno;
 		goto error;
 	}
@@ -80,7 +79,7 @@ _citrus_map_file(struct _citrus_region * __restrict r,
 	_region_init(r, head, (size_t)st.st_size);
 
 error:
-	(void)_close(fd);
+	(void)__sys_close(fd);
 	return (ret);
 }
 

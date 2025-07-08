@@ -29,14 +29,14 @@
  */
 
 #include <sys/queue.h>
-#include "namespace.h"
 #include <errno.h>
 #include <link.h>
+#include "namespace.h"
 #include <pthread.h>
+#include "un-namespace.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 
 /*

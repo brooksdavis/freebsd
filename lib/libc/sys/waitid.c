@@ -28,7 +28,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <stddef.h>
@@ -36,7 +35,6 @@
 #include <signal.h>
 #include <errno.h>
 #include <libsys.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 
 int __waitid(idtype_t, id_t, siginfo_t *, int);

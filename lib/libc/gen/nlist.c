@@ -29,7 +29,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -38,10 +37,10 @@
 
 #include <errno.h>
 #include <a.out.h>
+#include <libsys.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 #include <machine/elf.h>
 #include <elf-hints.h>
@@ -55,11 +54,11 @@ nlist(const char *name, struct nlist *list)
 {
 	int fd, n;
 
-	fd = _open(name, O_RDONLY | O_CLOEXEC, 0);
+	fd = __sys_open(name, O_RDONLY | O_CLOEXEC, 0);
 	if (fd < 0)
 		return (-1);
 	n = __fdnlist(fd, list);
-	(void)_close(fd);
+	(void)__sys_close(fd);
 	return (n);
 }
 
@@ -137,9 +136,9 @@ __elf_fdnlist(int fd, struct nlist *list)
 
 	/* Make sure obj is OK */
 	if (lseek(fd, (off_t)0, SEEK_SET) == -1 ||
-	    _read(fd, &ehdr, sizeof(Elf_Ehdr)) != sizeof(Elf_Ehdr) ||
+	    __sys_read(fd, &ehdr, sizeof(Elf_Ehdr)) != sizeof(Elf_Ehdr) ||
 	    !__elf_is_okay__(&ehdr) ||
-	    _fstat(fd, &st) < 0)
+	    __sys_fstat(fd, &st) < 0)
 		return (-1);
 
 	/* calculate section header table size */
@@ -221,7 +220,7 @@ __elf_fdnlist(int fd, struct nlist *list)
 
 	while (symsize > 0 && nent > 0) {
 		cc = MIN(symsize, sizeof(sbuf));
-		if (_read(fd, sbuf, cc) != cc)
+		if (__sys_read(fd, sbuf, cc) != cc)
 			break;
 		symsize -= cc;
 		for (s = sbuf; cc > 0 && nent > 0; ++s, cc -= sizeof(*s)) {

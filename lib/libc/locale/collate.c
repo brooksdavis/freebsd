@@ -36,14 +36,13 @@
  * Adapted to xlocale by John Marino <draco@marino.st>
  */
 
-#include "namespace.h"
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
 
 #include <assert.h>
 #include <ctype.h>
+#include <libsys.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -51,7 +50,6 @@
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include "un-namespace.h"
 
 #include "collate.h"
 #include "setlocale.h"
@@ -146,24 +144,24 @@ __collate_load_tables_l(const char *encoding, struct xlocale_collate *table)
 	if (asprintf(&buf, "%s/%s/LC_COLLATE", _PathLocale, encoding) == -1)
 		return (_LDP_ERROR);
 
-	if ((fd = _open(buf, O_RDONLY | O_CLOEXEC)) < 0) {
+	if ((fd = __sys_open(buf, O_RDONLY | O_CLOEXEC, 0)) < 0) {
 		free(buf);
 		return (_LDP_ERROR);
 	}
 	free(buf);
-	if (_fstat(fd, &sbuf) < 0) {
-		(void) _close(fd);
+	if (__sys_fstat(fd, &sbuf) < 0) {
+		(void) __sys_close(fd);
 		return (_LDP_ERROR);
 	}
 	if (sbuf.st_size < (COLLATE_FMT_VERSION_LEN +
 			    XLOCALE_DEF_VERSION_LEN +
 			    sizeof (*info))) {
-		(void) _close(fd);
+		(void) __sys_close(fd);
 		errno = EINVAL;
 		return (_LDP_ERROR);
 	}
 	map = mmap(NULL, sbuf.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
-	(void) _close(fd);
+	(void) __sys_close(fd);
 	if ((TMP = map) == MAP_FAILED) {
 		return (_LDP_ERROR);
 	}

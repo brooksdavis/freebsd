@@ -41,11 +41,10 @@
  */
 
 #include <sys/types.h>
-#include "namespace.h"
 #include <sys/acl.h>
-#include "un-namespace.h"
 
 #include <errno.h>
+#include <libsys.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -119,7 +118,7 @@ acl_get_fd_np(int fd, acl_type_t type)
 		return (NULL);
 
 	type = _acl_type_unold(type);
-	error = ___acl_get_fd(fd, type, &aclp->ats_acl);
+	error = __sys___acl_get_fd(fd, type, &aclp->ats_acl);
 	if (error) {
 		acl_free(aclp);
 		return (NULL);

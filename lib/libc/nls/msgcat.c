@@ -33,7 +33,6 @@ up-to-date.  Many thanks.
 
 #define _NLS_PRIVATE
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
@@ -44,15 +43,17 @@ up-to-date.  Many thanks.
 
 #include <errno.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <limits.h>
 #include <nl_types.h>
 #include <paths.h>
+#include "namespace.h"
 #include <pthread.h>
+#include "un-namespace.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 #include "../locale/xlocale_private.h"
 #include "libc_private.h"
@@ -408,21 +409,21 @@ load_msgcat(const char *path, const char *name, const char *lang)
 	}
 	UNLOCK;
 
-	if ((fd = _open(path, O_RDONLY | O_CLOEXEC)) == -1) {
+	if ((fd = __sys_open(path, O_RDONLY | O_CLOEXEC, 0)) == -1) {
 		SAVEFAIL(name, lang, errno);
 		NLRETERR(errno);
 	}
 
-	if (_fstat(fd, &st) != 0) {
+	if (__sys_fstat(fd, &st) != 0) {
 		saved_errno = errno;
-		_close(fd);
+		__sys_close(fd);
 		SAVEFAIL(name, lang, saved_errno);
 		NLRETERR(saved_errno);
 	}
 
 	/* The file is too small to contain a _NLS_MAGIC. */
 	if (st.st_size < sizeof(u_int32_t)) {
-		_close(fd);
+		__sys_close(fd);
 		SAVEFAIL(name, lang, ENOENT);
 		NLRETERR(ENOENT);
 	}
@@ -433,7 +434,7 @@ load_msgcat(const char *path, const char *name, const char *lang)
 	 * that catalog files are usually small.
 	 */
 	if (st.st_size > SIZE_T_MAX) {
-		_close(fd);
+		__sys_close(fd);
 		SAVEFAIL(name, lang, ENOENT);
 		NLRETERR(ENOENT);
 	}
@@ -441,11 +442,11 @@ load_msgcat(const char *path, const char *name, const char *lang)
 	data = mmap(0, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
 	if (data == MAP_FAILED) {
 		saved_errno = errno;
-		_close(fd);
+		__sys_close(fd);
 		SAVEFAIL(name, lang, saved_errno);
 		NLRETERR(saved_errno);
 	}
-	_close(fd);
+	__sys_close(fd);
 
 	if (ntohl((u_int32_t)((struct _nls_cat_hdr *)data)->__magic) !=
 	    _NLS_MAGIC) {

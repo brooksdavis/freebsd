@@ -29,19 +29,18 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/stat.h>
 
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <ssp/ssp.h>
-#include "un-namespace.h"
 
 #include "gen-private.h"
 
@@ -114,7 +113,7 @@ __ssp_real(getcwd)(char *pt, size_t size)
 
 	for (first = 1;; first = 0) {
 		/* Stat the current level. */
-		if (dir != NULL ? _fstat(_dirfd(dir), &s) : lstat(".", &s))
+		if (dir != NULL ? __sys_fstat(_dirfd(dir), &s) : lstat(".", &s))
 			goto err;
 
 		/* Save current node values. */
@@ -136,14 +135,14 @@ __ssp_real(getcwd)(char *pt, size_t size)
 		}
 
 		/* Open and stat parent directory. */
-		fd = _openat(dir != NULL ? _dirfd(dir) : AT_FDCWD,
-				"..", O_RDONLY | O_CLOEXEC);
+		fd = __sys_openat(dir != NULL ? _dirfd(dir) : AT_FDCWD,
+				"..", O_RDONLY | O_CLOEXEC, 0);
 		if (fd == -1)
 			goto err;
 		if (dir)
 			(void) closedir(dir);
-		if (!(dir = fdopendir(fd)) || _fstat(_dirfd(dir), &s)) {
-			_close(fd);
+		if (!(dir = fdopendir(fd)) || __sys_fstat(_dirfd(dir), &s)) {
+			__sys_close(fd);
 			goto err;
 		}
 

@@ -40,13 +40,11 @@
  * Copyright (C) 1984, 1988, Sun Microsystems, Inc.
  */
 
-#include "namespace.h"
 #include <rpc/rpc.h>
 #include <rpc/types.h>
 #include <rpc/xdr.h>
 #include <rpc/rpcb_prot.h>
 #include <rpc/rpc_com.h>
-#include "un-namespace.h"
 
 bool_t
 xdr_rpcb(XDR *xdrs, RPCB *objp)

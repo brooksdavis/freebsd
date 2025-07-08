@@ -34,15 +34,14 @@
  * This is the rpc server side idle loop
  * Wait for input, call server program.
  */
-#include "namespace.h"
 #include "reentrant.h"
 #include <err.h>
 #include <errno.h>
+#include <libsys.h>
 #include <rpc/rpc.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 #include <rpc/rpc.h>
 #include "rpc_com.h"
@@ -62,7 +61,7 @@ svc_run(void)
 		readfds = svc_fdset;
 		cleanfds = svc_fdset;
 		rwlock_unlock(&svc_fd_lock);
-		switch (_select(svc_maxfd+1, &readfds, NULL, NULL, &timeout)) {
+		switch (__sys_select(svc_maxfd + 1, &readfds, NULL, NULL, &timeout)) {
 		case -1:
 			FD_ZERO(&readfds);
 			if (errno == EINTR) {

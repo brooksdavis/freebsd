@@ -1,6 +1,4 @@
-#include "namespace.h"
 #include <stdlib.h>
-#include "un-namespace.h"
 
 #include "libc_private.h"
 

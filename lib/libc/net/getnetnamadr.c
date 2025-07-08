@@ -25,7 +25,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include "reentrant.h"
 #include <sys/param.h>
 #include <sys/socket.h>
@@ -38,6 +37,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include "namespace.h"
 #include <nsswitch.h>
 #include "un-namespace.h"
 #include "netdb_private.h"

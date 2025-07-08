@@ -29,11 +29,11 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/stat.h>
 #include <assert.h>
 #include <errno.h>
+#include <libsys.h>
 #include <unistd.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -42,7 +42,6 @@
 #include <paths.h>
 
 #include <stdarg.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 
 static const char execvPe_err_preamble[] = "execvP: ";
@@ -71,7 +70,7 @@ execl(const char *name, const char *arg, ...)
 	while ((argv[n] = va_arg(ap, char *)) != NULL)
 		n++;
 	va_end(ap);
-	return (_execve(name, __DECONST(char **, argv), environ));
+	return (__sys_execve(name, __DECONST(char **, argv), environ));
 }
 
 int
@@ -99,7 +98,7 @@ execle(const char *name, const char *arg, ...)
 		n++;
 	envp = va_arg(ap, char **);
 	va_end(ap);
-	return (_execve(name, __DECONST(char **, argv), envp));
+	return (__sys_execve(name, __DECONST(char **, argv), envp));
 }
 
 int
@@ -131,7 +130,7 @@ execlp(const char *name, const char *arg, ...)
 int
 execv(const char *name, char * const *argv)
 {
-	(void)_execve(name, argv, environ);
+	(void)__sys_execve(name, __DECONST(char **, argv), environ);
 	return (-1);
 }
 
@@ -152,7 +151,7 @@ execvPe_prog(const char *path, char * const *argv, char * const *envp)
 	size_t cnt;
 	int save_errno;
 
-	(void)_execve(path, argv, envp);
+	(void)__sys_execve(path, argv, envp);
 	/* Grouped roughly by never terminal vs. usually terminal conditions */
 	switch (errno) {
 	case ELOOP:
@@ -190,7 +189,8 @@ execvPe_prog(const char *path, char * const *argv, char * const *envp)
 			memp[2] = NULL;
 		}
 
-		(void)_execve(_PATH_BSHELL, __DECONST(char **, memp), envp);
+		(void)__sys_execve(_PATH_BSHELL, __DECONST(char **, memp),
+		    envp);
 		return (-1);
 	case ENOMEM:
 	case E2BIG:
@@ -306,10 +306,10 @@ execvPe(const char *name, const char *path, char * const *argv,
 		 * via posix_spawnp().
 		 */
 		if (lp + ln + 2 > sizeof(buf)) {
-			(void)_write(STDERR_FILENO, execvPe_err_preamble,
+			(void)__sys_write(STDERR_FILENO, execvPe_err_preamble,
 			    sizeof(execvPe_err_preamble) - 1);
-			(void)_write(STDERR_FILENO, p, lp);
-			(void)_write(STDERR_FILENO, execvPe_err_trailer,
+			(void)__sys_write(STDERR_FILENO, p, lp);
+			(void)__sys_write(STDERR_FILENO, execvPe_err_trailer,
 			    sizeof(execvPe_err_trailer) - 1);
 
 			continue;

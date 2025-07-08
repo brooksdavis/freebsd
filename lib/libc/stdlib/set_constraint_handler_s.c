@@ -23,16 +23,17 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <machine/atomic.h>
 #include <errno.h>
+#include <libsys.h>
+#include "namespace.h"
 #include <pthread.h>
+#include "un-namespace.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 
 /*
@@ -85,9 +86,9 @@ abort_handler_s(const char * restrict msg, void * restrict ptr __unused,
 {
 	static const char ahs[] = "abort_handler_s : ";
 
-	(void) _write(STDERR_FILENO, ahs, sizeof(ahs) - 1);
-	(void) _write(STDERR_FILENO, msg, strlen(msg));
-	(void) _write(STDERR_FILENO, "\n", 1);
+	(void) __sys_write(STDERR_FILENO, ahs, sizeof(ahs) - 1);
+	(void) __sys_write(STDERR_FILENO, msg, strlen(msg));
+	(void) __sys_write(STDERR_FILENO, "\n", 1);
 	abort();
 }
 

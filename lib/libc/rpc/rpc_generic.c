@@ -38,7 +38,6 @@
  *
  */
 
-#include "namespace.h"
 #include "reentrant.h"
 #include <sys/param.h>
 #include <sys/socket.h>
@@ -49,6 +48,7 @@
 #include <arpa/inet.h>
 #include <rpc/rpc.h>
 #include <ctype.h>
+#include <libsys.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <netdb.h>
@@ -57,7 +57,6 @@
 #include <string.h>
 #include <syslog.h>
 #include <rpc/nettype.h>
-#include "un-namespace.h"
 #include "rpc_com.h"
 #include "mt_misc.h"
 
@@ -459,12 +458,12 @@ __rpc_fd2sockinfo(int fd, struct __rpc_sockinfo *sip)
 	struct sockaddr_storage ss;
 
 	len = sizeof ss;
-	if (_getsockname(fd, (struct sockaddr *)(void *)&ss, &len) < 0)
+	if (__sys_getsockname(fd, (struct sockaddr *)(void *)&ss, &len) < 0)
 		return 0;
 	sip->si_alen = len;
 
 	len = sizeof type;
-	if (_getsockopt(fd, SOL_SOCKET, SO_TYPE, &type, &len) < 0)
+	if (__sys_getsockopt(fd, SOL_SOCKET, SO_TYPE, &type, &len) < 0)
 		return 0;
 
 	/* XXX */
@@ -518,7 +517,7 @@ __rpc_nconf2fd(const struct netconfig *nconf)
 	if (!__rpc_nconf2sockinfo(nconf, &si))
 		return 0;
 
-	return _socket(si.si_af, si.si_socktype, si.si_proto);
+	return __sys_socket(si.si_af, si.si_socktype, si.si_proto);
 }
 
 int
@@ -796,7 +795,7 @@ __rpc_sockisbound(int fd)
 	socklen_t slen;
 
 	slen = sizeof (struct sockaddr_storage);
-	if (_getsockname(fd, (struct sockaddr *)(void *)&ss, &slen) < 0)
+	if (__sys_getsockname(fd, (struct sockaddr *)(void *)&ss, &slen) < 0)
 		return 0;
 
 	switch (ss.ss_family) {

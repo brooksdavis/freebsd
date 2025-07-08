@@ -37,13 +37,11 @@
  *
  */
 
-#include "namespace.h"
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include <rpc/rpc.h>
-#include "un-namespace.h"
 
 /*
  * XDR a call message

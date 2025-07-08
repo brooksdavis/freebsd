@@ -32,13 +32,13 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <errno.h>
 #include <link.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "namespace.h"
 #include <pthread.h>
 #include "atexit.h"
 #include "un-namespace.h"

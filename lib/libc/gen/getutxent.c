@@ -26,16 +26,15 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/endian.h>
 #include <sys/param.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <libsys.h>
 #include <stdio.h>
 #include <string.h>
 #include <utmpx.h>
 #include "utxdb.h"
-#include "un-namespace.h"
 
 static _Thread_local FILE *uf = NULL;
 static _Thread_local int udb;
@@ -71,7 +70,7 @@ setutxdb(int db, const char *file)
 
 	if (db != UTXDB_LOG) {
 		/* Safety check: never use broken files. */
-		if (_fstat(fileno(uf), &sb) != -1 &&
+		if (__sys_fstat(fileno(uf), &sb) != -1 &&
 		    sb.st_size % sizeof(struct futx) != 0) {
 			fclose(uf);
 			uf = NULL;

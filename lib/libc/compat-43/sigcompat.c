@@ -29,12 +29,10 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <errno.h>
 #include <signal.h>
 #include <string.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 
 int

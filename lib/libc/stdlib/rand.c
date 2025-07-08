@@ -31,7 +31,6 @@
  * Posix rand_r function added May 1999 by Wes Peters <wes@softweyr.com>.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/sysctl.h>
 #include <assert.h>
@@ -39,7 +38,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <syslog.h>
-#include "un-namespace.h"
 
 #include "libc_private.h"
 #include "random.h"

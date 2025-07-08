@@ -37,14 +37,12 @@
  * Copyright (C) 1984, Sun Microsystems, Inc.
  */
 
-#include "namespace.h"
 #include <assert.h>
 
 #include <rpc/types.h>
 #include <rpc/xdr.h>
 #include <rpc/auth.h>
 #include <rpc/auth_unix.h>
-#include "un-namespace.h"
 
 /*
  * XDR for unix authentication parameters.

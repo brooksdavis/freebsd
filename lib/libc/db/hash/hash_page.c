@@ -48,11 +48,11 @@
  *	open_temp
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 
 #include <errno.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -61,7 +61,6 @@
 #ifdef DEBUG
 #include <assert.h>
 #endif
-#include "un-namespace.h"
 #include "libc_private.h"
 
 #include <db.h>
@@ -697,7 +696,8 @@ overflow_page(HTAB *hashp)
 #define	OVMSG	"HASH: Out of overflow pages.  Increase page size\n"
 	if (offset > SPLITMASK) {
 		if (++splitnum >= NCACHED) {
-			(void)_write(STDERR_FILENO, OVMSG, sizeof(OVMSG) - 1);
+			(void)__sys_write(STDERR_FILENO, OVMSG,
+					   sizeof(OVMSG) - 1);
 			errno = EFBIG;
 			return (0);
 		}
@@ -711,7 +711,8 @@ overflow_page(HTAB *hashp)
 	if (free_bit == (hashp->BSIZE << BYTE_SHIFT) - 1) {
 		free_page++;
 		if (free_page >= NCACHED) {
-			(void)_write(STDERR_FILENO, OVMSG, sizeof(OVMSG) - 1);
+			(void)__sys_write(STDERR_FILENO, OVMSG,
+					   sizeof(OVMSG) - 1);
 			errno = EFBIG;
 			return (0);
 		}
@@ -736,8 +737,8 @@ overflow_page(HTAB *hashp)
 		offset++;
 		if (offset > SPLITMASK) {
 			if (++splitnum >= NCACHED) {
-				(void)_write(STDERR_FILENO, OVMSG,
-				    sizeof(OVMSG) - 1);
+				(void)__sys_write(STDERR_FILENO, OVMSG,
+						   sizeof(OVMSG) - 1);
 				errno = EFBIG;
 				return (0);
 			}
@@ -783,7 +784,7 @@ found:
 	for (i = 0; (i < splitnum) && (bit > hashp->SPARES[i]); i++);
 	offset = (i ? bit - hashp->SPARES[i - 1] : bit);
 	if (offset >= SPLITMASK) {
-		(void)_write(STDERR_FILENO, OVMSG, sizeof(OVMSG) - 1);
+		(void)__sys_write(STDERR_FILENO, OVMSG, sizeof(OVMSG) - 1);
 		errno = EFBIG;
 		return (0);	/* Out of overflow pages */
 	}

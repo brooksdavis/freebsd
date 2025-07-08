@@ -32,13 +32,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <ctype.h>
 #define _NS_PRIVATE
 #include <nsswitch.h>
 #include <string.h>
 #include <syslog.h>
-#include "un-namespace.h"
 
 #include "nsparser.h"
 

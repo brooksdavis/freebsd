@@ -33,10 +33,10 @@
  *
  * Compatibility shims for the GNU C Library-style nsswitch interface.
  */
-#include "namespace.h"
 #include <sys/param.h>
 #include <errno.h>
 #include <nss.h>
+#include "namespace.h"
 #include <pthread.h>
 #include <pthread_np.h>
 #include "un-namespace.h"

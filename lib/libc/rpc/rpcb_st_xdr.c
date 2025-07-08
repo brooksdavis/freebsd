@@ -39,10 +39,8 @@
  * routines used with the rpcbind stats facility.
  */
 
-#include "namespace.h"
 #include <rpc/rpc.h>
 #include <rpc/rpc_com.h>
-#include "un-namespace.h"
 
 /* Link list of all the stats about getport and getaddr */
 

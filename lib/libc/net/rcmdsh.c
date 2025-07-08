@@ -35,20 +35,21 @@
  * Chris Siebenmann <cks@utcc.utoronto.ca>.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
 #include <arpa/inet.h>
 
 #include <errno.h>
+#include <libsys.h>
 #include <netdb.h>
 #include <paths.h>
 #include <pwd.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include "un-namespace.h"
+
+#include "libc_private.h"
 
 /*
  * This is a replacement rcmd() function that uses the rsh(1)
@@ -100,7 +101,7 @@ rcmdsh(char **ahost, int rport, const char *locuser, const char *remuser,
 	}
 
 	/* Get a socketpair we'll use for stdin and stdout. */
-	if (_socketpair(AF_UNIX, SOCK_STREAM, PF_UNSPEC, sp) == -1) {
+	if (__sys_socketpair(AF_UNIX, SOCK_STREAM, PF_UNSPEC, sp) == -1) {
 		perror("rcmdsh: socketpair");
 		return (-1);
 	}
@@ -113,8 +114,8 @@ rcmdsh(char **ahost, int rport, const char *locuser, const char *remuser,
 		/*
 		 * Child.  We use sp[1] to be stdin/stdout, and close sp[0].
 		 */
-		(void)_close(sp[0]);
-		if (_dup2(sp[1], 0) == -1 || _dup2(0, 1) == -1) {
+		(void) __sys_close(sp[0]);
+		if (__sys_dup2(sp[1], 0) == -1 || __sys_dup2(0, 1) == -1) {
 			perror("rcmdsh: dup2 failed");
 			_exit(255);
 		}
@@ -157,9 +158,9 @@ rcmdsh(char **ahost, int rport, const char *locuser, const char *remuser,
 		_exit(255);
 	} else {
 		/* Parent. close sp[1], return sp[0]. */
-		(void)_close(sp[1]);
+		(void) __sys_close(sp[1]);
 		/* Reap child. */
-		(void)_waitpid(cpid, NULL, 0);
+		(void) __waitpid(cpid, NULL, 0);
 		return (sp[0]);
 	}
 	/* NOTREACHED */

@@ -30,14 +30,13 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <errno.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <paths.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 
 int
@@ -81,9 +80,9 @@ daemonfd(int chdirfd, int nullfd)
 		(void)fchdir(chdirfd);
 
 	if (nullfd != -1) {
-		(void)_dup2(nullfd, STDIN_FILENO);
-		(void)_dup2(nullfd, STDOUT_FILENO);
-		(void)_dup2(nullfd, STDERR_FILENO);
+		(void)__sys_dup2(nullfd, STDIN_FILENO);
+		(void)__sys_dup2(nullfd, STDOUT_FILENO);
+		(void)__sys_dup2(nullfd, STDERR_FILENO);
 	}
 	return (0);
 }
@@ -94,22 +93,22 @@ daemon(int nochdir, int noclose)
 	int chdirfd, nullfd, ret;
 
 	if (!noclose)
-		nullfd = _open(_PATH_DEVNULL, O_RDWR, 0);
+		nullfd = __sys_open(_PATH_DEVNULL, O_RDWR, 0);
 	else
 		nullfd = -1;
 
 	if (!nochdir)
-		chdirfd = _open("/", O_EXEC);
+		chdirfd = __sys_open("/", O_EXEC, 0);
 	else
 		chdirfd = -1;
 
 	ret = daemonfd(chdirfd, nullfd);
 
 	if (chdirfd != -1)
-		_close(chdirfd);
+		__sys_close(chdirfd);
 
 	if (nullfd > 2)
-		_close(nullfd);
+		__sys_close(nullfd);
 
 	return (ret);
 }

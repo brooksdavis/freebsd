@@ -37,10 +37,8 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <stdio.h>
 #include <stdarg.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 #include "local.h"
 #include "xlocale_private.h"

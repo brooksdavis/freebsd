@@ -30,9 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <rpc/rpc.h>
-#include "un-namespace.h"
 
 /*
  * This file should only contain common data (global data) that is exported

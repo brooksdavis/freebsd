@@ -33,9 +33,7 @@
 #include <resolv.h>
 #include <stdlib.h>
 
-#include "namespace.h"
 #include "reentrant.h"
-#include "un-namespace.h"
 
 #include "res_private.h"
 

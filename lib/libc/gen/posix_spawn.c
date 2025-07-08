@@ -26,7 +26,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/procctl.h>
 #include <sys/queue.h>
@@ -41,7 +40,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 
 struct __posix_spawnattr {
@@ -159,33 +157,33 @@ process_file_actions_entry(posix_spawn_file_actions_entry_t *fae)
 	switch (fae->fae_action) {
 	case FAE_OPEN:
 		/* Perform an open(), make it use the right fd */
-		fd = _open(fae->fae_path, fae->fae_oflag, fae->fae_mode);
+		fd = __sys_open(fae->fae_path, fae->fae_oflag, fae->fae_mode);
 		if (fd < 0)
 			return (errno);
 		if (fd != fae->fae_fildes) {
-			if (_dup2(fd, fae->fae_fildes) == -1) {
+			if (__sys_dup2(fd, fae->fae_fildes) == -1) {
 				saved_errno = errno;
-				(void)_close(fd);
+				(void)__sys_close(fd);
 				return (saved_errno);
 			}
-			if (_close(fd) != 0) {
+			if (__sys_close(fd) != 0) {
 				if (errno == EBADF)
 					return (EBADF);
 			}
 		}
-		if (_fcntl(fae->fae_fildes, F_SETFD, 0) == -1)
+		if (__sys_fcntl(fae->fae_fildes, F_SETFD, 0) == -1)
 			return (errno);
 		break;
 	case FAE_DUP2:
 		/* Perform a dup2() */
-		if (_dup2(fae->fae_fildes, fae->fae_newfildes) == -1)
+		if (__sys_dup2(fae->fae_fildes, fae->fae_newfildes) == -1)
 			return (errno);
-		if (_fcntl(fae->fae_newfildes, F_SETFD, 0) == -1)
+		if (__sys_fcntl(fae->fae_newfildes, F_SETFD, 0) == -1)
 			return (errno);
 		break;
 	case FAE_CLOSE:
 		/* Perform a close(), do not fail if already closed */
-		(void)_close(fae->fae_fildes);
+		(void)__sys_close(fae->fae_fildes);
 		break;
 	case FAE_CHDIR:
 		if (chdir(fae->fae_path) != 0)
@@ -264,7 +262,8 @@ _posix_spawn_thr(void *data)
 	if (psa->use_env_path)
 		__libc_execvpe(psa->path, psa->argv, envp);
 	else
-		_execve(psa->path, psa->argv, envp);
+		__sys_execve(psa->path, __DECONST(char **, psa->argv),
+		    __DECONST(char **, envp));
 	psa->error = errno;
 
 	/* This is called in such a way that it must not exit. */
@@ -363,7 +362,7 @@ do_posix_spawn(pid_t *pid, const char *path,
 		return (errno);
 	if (psa.error != 0)
 		/* Failed; ready to reap */
-		_waitpid(p, NULL, WNOHANG);
+		__waitpid(p, NULL, WNOHANG);
 	else if (pid != NULL)
 		/* exec succeeded */
 		*pid = p;

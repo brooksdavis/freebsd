@@ -48,18 +48,17 @@
 
 #include "port_before.h"
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/uio.h>
 
 #include <netinet/in.h>
 #include <arpa/nameser.h>
 
+#include <libsys.h>
 #include <netdb.h>
 #include <resolv.h>
 #include <string.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 #include "port_after.h"
 
@@ -101,7 +100,7 @@ herror(const char *s) {
 	DE_CONST("\n", t);
 	v->iov_base = t;
 	v->iov_len = 1;
-	_writev(STDERR_FILENO, iov, (v - iov) + 1);
+	__sys_writev(STDERR_FILENO, iov, (v - iov) + 1);
 }
 
 /*%

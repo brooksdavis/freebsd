@@ -42,7 +42,6 @@
  *
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 
 #include <netinet/in.h>
@@ -51,7 +50,6 @@
 
 #include <rpc/types.h>
 #include <rpc/xdr.h>
-#include "un-namespace.h"
 
 static void xdrmem_destroy(XDR *);
 static bool_t xdrmem_getlong_aligned(XDR *, long *);

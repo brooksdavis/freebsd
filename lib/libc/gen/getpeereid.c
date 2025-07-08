@@ -26,15 +26,14 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/socket.h>
 #include <sys/ucred.h>
 #include <sys/un.h>
 
 #include <errno.h>
+#include <libsys.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 int
 getpeereid(int s, uid_t *euid, gid_t *egid)
@@ -44,7 +43,7 @@ getpeereid(int s, uid_t *euid, gid_t *egid)
 	int error;
 
 	xuclen = sizeof(xuc);
-	error = _getsockopt(s, SOL_LOCAL, LOCAL_PEERCRED, &xuc, &xuclen);
+	error = __sys_getsockopt(s, SOL_LOCAL, LOCAL_PEERCRED, &xuc, &xuclen);
 	if (error != 0)
 		return (error);
 	if (xuc.cr_version != XUCRED_VERSION) {

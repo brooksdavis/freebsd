@@ -41,7 +41,6 @@
  * any interference from the kernel.
  */
 
-#include "namespace.h"
 #include "reentrant.h"
 #include <assert.h>
 #include <err.h>
@@ -50,7 +49,6 @@
 
 #include <rpc/rpc.h>
 #include <rpc/raw.h>
-#include "un-namespace.h"
 #include "mt_misc.h"
 
 #define MCALL_MSG_SIZE 24

@@ -29,9 +29,9 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <dirent.h>
+#include "namespace.h"
 #include <pthread.h>
 #include "un-namespace.h"
 

@@ -27,15 +27,14 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/mount.h>
 #include <sys/statvfs.h>
 
 #include <errno.h>
+#include <libsys.h>
 #include <limits.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 static int	sfs2svfs(const struct statfs *from, struct statvfs *to);
 
@@ -46,7 +45,7 @@ fstatvfs(int fd, struct statvfs *result)
 	int rv;
 	long pcval;
 
-	rv = _fstatfs(fd, &sfs);
+	rv = __sys_fstatfs(fd, &sfs);
 	if (rv != 0)
 		return (rv);
 
@@ -58,7 +57,7 @@ fstatvfs(int fd, struct statvfs *result)
 	 * Whether pathconf's -1 return means error or unlimited does not
 	 * make any difference in this best-effort implementation.
 	 */
-	pcval = _fpathconf(fd, _PC_NAME_MAX);
+	pcval = __sys_fpathconf(fd, _PC_NAME_MAX);
 	if (pcval == -1)
 		result->f_namemax = ~0UL;
 	else

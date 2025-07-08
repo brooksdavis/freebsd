@@ -37,20 +37,19 @@
  * Portions Copyright(C) 1996, Jason Downs.  All rights reserved.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 
 #include <netinet/in.h>
 
 #include <errno.h>
+#include <libsys.h>
 #include <string.h>
 #include <unistd.h>
 
 #include <rpc/rpc.h>
 
 #include <string.h>
-#include "un-namespace.h"
 
 /*
  * Bind a socket to a privileged IP port
@@ -81,7 +80,7 @@ bindresvport_sa(int sd, struct sockaddr *sa)
 		salen = sizeof(myaddr);
 		sa = (struct sockaddr *)&myaddr;
 
-		if (_getsockname(sd, sa, &salen) == -1)
+		if (__sys_getsockname(sd, sa, &salen) == -1)
 			return -1;	/* errno is correctly set */
 
 		af = sa->sa_family;
@@ -118,23 +117,23 @@ bindresvport_sa(int sd, struct sockaddr *sa)
 	if (*portp == 0) {
 		socklen_t oldlen = sizeof(old);
 
-		error = _getsockopt(sd, proto, portrange, &old, &oldlen);
+		error = __sys_getsockopt(sd, proto, portrange, &old, &oldlen);
 		if (error < 0)
 			return (error);
 
-		error = _setsockopt(sd, proto, portrange, &portlow,
+		error = __sys_setsockopt(sd, proto, portrange, &portlow,
 		    sizeof(portlow));
 		if (error < 0)
 			return (error);
 	}
 
-	error = _bind(sd, sa, salen);
+	error = __sys_bind(sd, sa, salen);
 
 	if (*portp == 0) {
 		int saved_errno = errno;
 
 		if (error < 0) {
-			if (_setsockopt(sd, proto, portrange, &old,
+			if (__sys_setsockopt(sd, proto, portrange, &old,
 			    sizeof(old)) < 0)
 				errno = saved_errno;
 			return (error);
@@ -142,7 +141,7 @@ bindresvport_sa(int sd, struct sockaddr *sa)
 
 		if (sa != (struct sockaddr *)&myaddr) {
 			/* Hmm, what did the kernel assign? */
-			if (_getsockname(sd, sa, &salen) < 0)
+			if (__sys_getsockname(sd, sa, &salen) < 0)
 				errno = saved_errno;
 			return (error);
 		}

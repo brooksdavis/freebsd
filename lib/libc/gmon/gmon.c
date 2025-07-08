@@ -29,7 +29,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/time.h>
 #include <sys/gmon.h>
@@ -38,12 +37,12 @@
 
 #include <err.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 #include "libc_private.h"
 
@@ -53,7 +52,7 @@ static int	s_scale;
 /* See profil(2) where this is described (incorrectly). */
 #define	SCALE_SHIFT	16
 
-#define ERR(s) _write(2, s, sizeof(s))
+#define ERR(s) __sys_write(2, s, sizeof(s))
 
 void	moncontrol(int);
 static int hertz(void);
@@ -151,20 +150,22 @@ _mcleanup(void)
 	else
 		snprintf(outname, sizeof(outname), "%s.gmon", _getprogname());
 
-	fd = _open(outname, O_CREAT|O_TRUNC|O_WRONLY|O_CLOEXEC, 0666);
+	fd = __sys_open(outname, O_CREAT | O_TRUNC | O_WRONLY | O_CLOEXEC,
+	    0666);
 	if (fd < 0) {
 		_warn("_mcleanup: %s", outname);
 		return;
 	}
 #ifdef DEBUG
-	log = _open("gmon.log", O_CREAT|O_TRUNC|O_WRONLY|O_CLOEXEC, 0664);
+	log = __sys_open("gmon.log", O_CREAT | O_TRUNC | O_WRONLY | O_CLOEXEC,
+	     0664);
 	if (log < 0) {
 		_warn("_mcleanup: gmon.log");
 		return;
 	}
 	len = sprintf(buf, "[mcleanup1] kcount 0x%p ssiz %lu\n",
 	    p->kcount, p->kcountsize);
-	_write(log, buf, len);
+	__sys_write(log, buf, len);
 #endif
 	hdr = (struct gmonhdr *)&gmonhdr;
 	bzero(hdr, sizeof(*hdr));
@@ -173,8 +174,8 @@ _mcleanup(void)
 	hdr->ncnt = p->kcountsize + sizeof(gmonhdr);
 	hdr->version = GMONVERSION;
 	hdr->profrate = clockinfo.profhz;
-	_write(fd, (char *)hdr, sizeof *hdr);
-	_write(fd, p->kcount, p->kcountsize);
+	__sys_write(fd, (char *)hdr, sizeof *hdr);
+	__sys_write(fd, p->kcount, p->kcountsize);
 	endfrom = p->fromssize / sizeof(*p->froms);
 	for (fromindex = 0; fromindex < endfrom; fromindex++) {
 		if (p->froms[fromindex] == 0)
@@ -189,15 +190,15 @@ _mcleanup(void)
 			"[mcleanup2] frompc 0x%lx selfpc 0x%lx count %lu\n" ,
 				frompc, p->tos[toindex].selfpc,
 				p->tos[toindex].count);
-			_write(log, buf, len);
+			__sys_write(log, buf, len);
 #endif
 			rawarc.raw_frompc = frompc;
 			rawarc.raw_selfpc = p->tos[toindex].selfpc;
 			rawarc.raw_count = p->tos[toindex].count;
-			_write(fd, &rawarc, sizeof rawarc);
+			__sys_write(fd, &rawarc, sizeof rawarc);
 		}
 	}
-	_close(fd);
+	__sys_close(fd);
 }
 
 /*

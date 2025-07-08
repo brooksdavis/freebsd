@@ -30,9 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <unistd.h>
-#include "un-namespace.h"
 
 int _rpc_dtablesize(void);	/* XXX */
 

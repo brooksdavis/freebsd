@@ -29,7 +29,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <netdb.h>
 #if defined(NLS)
 #include <nl_types.h>
@@ -39,7 +38,6 @@
 #include <string.h>
 #include "reentrant.h"
 #endif
-#include "un-namespace.h"
 
 /*
  * Entries EAI_ADDRFAMILY (1) and EAI_NODATA (7) were omitted from RFC 3493,

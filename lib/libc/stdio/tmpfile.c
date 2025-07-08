@@ -32,8 +32,8 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
+#include <libsys.h>
 #include <signal.h>
 #include <unistd.h>
 #include <errno.h>
@@ -41,7 +41,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <paths.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 
 FILE *
@@ -79,7 +78,7 @@ tmpfile(void)
 
 	if ((fp = fdopen(fd, "w+")) == NULL) {
 		sverrno = errno;
-		(void)_close(fd);
+		(void) __sys_close(fd);
 		errno = sverrno;
 		return (NULL);
 	}

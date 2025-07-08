@@ -21,10 +21,10 @@
  * Materiel Command, USAF, under agreement number F39502-99-1-0512.
  */
 
-#include "namespace.h"
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <paths.h>
 #include <pwd.h>
 #include <signal.h>
@@ -32,7 +32,6 @@
 #include <termios.h>
 #include <unistd.h>
 #include <readpassphrase.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 
 static volatile sig_atomic_t signo[NSIG];
@@ -67,7 +66,7 @@ restart:
 	 */
 	input_is_tty = 0;
 	if (!(flags & RPP_STDIN)) {
-        	input = output = _open(_PATH_TTY, O_RDWR | O_CLOEXEC);
+		input = output = __sys_open(_PATH_TTY, O_RDWR | O_CLOEXEC, 0);
 		if (input == -1) {
 			if (flags & RPP_REQUIRE_TTY) {
 				errno = ENOTTY;
@@ -121,10 +120,11 @@ restart:
 	(void)__libc_sigaction(SIGTTOU, &sa, &savettou);
 
 	if (!(flags & RPP_STDIN))
-		(void)_write(output, prompt, strlen(prompt));
+		(void)__sys_write(output, prompt, strlen(prompt));
 	end = buf + bufsiz - 1;
 	p = buf;
-	while ((nr = _read(input, &ch, 1)) == 1 && ch != '\n' && ch != '\r') {
+	while ((nr = __sys_read(input, &ch, 1)) == 1 && ch != '\n' &&
+	    ch != '\r') {
 		if (p < end) {
 			if ((flags & RPP_SEVENBIT))
 				ch &= 0x7f;
@@ -140,7 +140,7 @@ restart:
 	*p = '\0';
 	save_errno = errno;
 	if (!(term.c_lflag & ECHO))
-		(void)_write(output, "\n", 1);
+		(void)__sys_write(output, "\n", 1);
 
 	/* Restore old terminal settings and signals. */
 	if (memcmp(&term, &oterm, sizeof(term)) != 0) {
@@ -158,7 +158,7 @@ restart:
 	(void)__libc_sigaction(SIGTTIN, &savettin, NULL);
 	(void)__libc_sigaction(SIGTTOU, &savettou, NULL);
 	if (input_is_tty)
-		(void)_close(input);
+		(void)__sys_close(input);
 
 	/*
 	 * If we were interrupted by a signal, resend it to ourselves

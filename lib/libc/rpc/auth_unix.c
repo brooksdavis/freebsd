@@ -42,7 +42,6 @@
  *
  */
 
-#include "namespace.h"
 #include "reentrant.h"
 #include <sys/param.h>
 
@@ -57,7 +56,6 @@
 #include <rpc/xdr.h>
 #include <rpc/auth.h>
 #include <rpc/auth_unix.h>
-#include "un-namespace.h"
 #include "mt_misc.h"
 
 /* auth_unix.c */

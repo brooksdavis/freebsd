@@ -32,10 +32,8 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <errno.h>
 #include <stdio.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 
 #undef fileno

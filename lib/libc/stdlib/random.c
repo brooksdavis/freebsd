@@ -29,13 +29,11 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/sysctl.h>
 #include <errno.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include "un-namespace.h"
 
 #include "random.h"
 

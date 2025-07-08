@@ -26,7 +26,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 
 #include <sys/param.h>
 #include <sys/ioctl.h>
@@ -42,10 +41,10 @@
 #include <assert.h>
 #include <errno.h>
 #include <ifaddrs.h>
+#include <libsys.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "un-namespace.h"
 
 /*
  * Advanced (Full-state) multicast group membership APIs [RFC3678]
@@ -321,7 +320,7 @@ setsourcefilter(int s, uint32_t interface, struct sockaddr *group,
 	memcpy(&msfr.msfr_group, &psu->ss, psu->ss.ss_len);
 	msfr.msfr_srcs = slist;		/* pointer */
 
-	return (_setsockopt(s, level, optname, &msfr, sizeof(msfr)));
+	return (__sys_setsockopt(s, level, optname, &msfr, sizeof(msfr)));
 }
 
 /*
@@ -391,7 +390,7 @@ getsourcefilter(int s, uint32_t interface, struct sockaddr *group,
 	 * of filter entries for the group in msfr.msfr_nsrcs.
 	 */
 	msfr.msfr_srcs = slist;
-	err = _getsockopt(s, level, optname, &msfr, &optlen);
+	err = __sys_getsockopt(s, level, optname, &msfr, &optlen);
 	if (err == 0) {
 		*numsrc = msfr.msfr_nsrcs;
 		*fmode = msfr.msfr_fmode;

@@ -91,6 +91,8 @@
 #define	LG_SIZEOF_LONG		LG_SIZEOF_PTR
 #define	LG_SIZEOF_INTMAX_T	3
 
+#include <libsys.h>
+
 #undef CPU_SPINWAIT
 #include <machine/cpu.h>
 #include <machine/cpufunc.h>
@@ -142,10 +144,10 @@ extern int __isthreaded;
 #define	je_mallctlnametomib	__mallctlnametomib
 #define	je_mallctlbymib		__mallctlbymib
 #define	je_malloc_stats_print	__malloc_stats_print
-#define	open			_open
-#define	read			_read
-#define	write			_write
-#define	close			_close
+#define	open			__sys_open
+#define	read			__sys_read
+#define	write			__sys_write
+#define	close			__sys_close
 #define	pthread_join		_pthread_join
 #define	pthread_once		_pthread_once
 #define	pthread_self		_pthread_self

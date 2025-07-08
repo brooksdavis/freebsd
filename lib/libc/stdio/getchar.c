@@ -35,9 +35,7 @@
 /*
  * A subroutine version of the macro getchar.
  */
-#include "namespace.h"
 #include <stdio.h>
-#include "un-namespace.h"
 #include "local.h"
 #include "libc_private.h"
 

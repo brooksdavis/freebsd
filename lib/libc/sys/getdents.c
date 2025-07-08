@@ -24,7 +24,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/syscall.h>
 #include <dirent.h>

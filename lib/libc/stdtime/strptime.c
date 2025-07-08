@@ -37,15 +37,15 @@
  * official policies, either expressed or implied, of Powerdog Industries.
  */
 
-#include "namespace.h"
 #include <time.h>
 #include <ctype.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+#include "namespace.h"
 #include <pthread.h>
-#include "private.h"
 #include "un-namespace.h"
+#include "private.h"
 #include "libc_private.h"
 #include "timelocal.h"
 #include "tzfile.h"

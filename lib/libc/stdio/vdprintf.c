@@ -31,12 +31,10 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <errno.h>
 #include <limits.h>
 #include <stdarg.h>
 #include <stdio.h>
-#include "un-namespace.h"
 
 #include "local.h"
 #include "xlocale_private.h"

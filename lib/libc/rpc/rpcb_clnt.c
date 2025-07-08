@@ -35,7 +35,6 @@
  * interface to rpcbind rpc service.
  */
 
-#include "namespace.h"
 #include "reentrant.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -51,12 +50,12 @@
 #endif				/* PORTMAP */
 #include <stdio.h>
 #include <errno.h>
+#include <libsys.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <netdb.h>
 #include <syslog.h>
-#include "un-namespace.h"
 
 #include "rpc_com.h"
 #include "mt_misc.h"
@@ -429,7 +428,7 @@ local_rpcb(void)
 	 * the netconfig file.
 	 */
 	memset(&sun, 0, sizeof sun);
-	sock = _socket(AF_LOCAL, SOCK_STREAM, 0);
+	sock = __sys_socket(AF_LOCAL, SOCK_STREAM, 0);
 	if (sock < 0)
 		goto try_nconf;
 	sun.sun_family = AF_LOCAL;
@@ -449,7 +448,7 @@ local_rpcb(void)
 	}
 
 	/* Nobody needs this socket anymore; free the descriptor. */
-	_close(sock);
+	__sys_close(sock);
 
 try_nconf:
 
@@ -484,7 +483,7 @@ try_nconf:
 				 */
 				if (fd < 0)
 					continue;
-				_close(fd);
+				__sys_close(fd);
 				tmpnconf = nconf;
 				if (!strcmp(nconf->nc_protofmly, NC_INET))
 					hostname = IN4_LOCALHOST_STRING;
@@ -661,19 +660,19 @@ __rpcbind_is_up(void)
 		return (FALSE);
 
 	memset(&sun, 0, sizeof sun);
-	sock = _socket(AF_LOCAL, SOCK_STREAM, 0);
+	sock = __sys_socket(AF_LOCAL, SOCK_STREAM, 0);
 	if (sock < 0)
 		return (FALSE);
 	sun.sun_family = AF_LOCAL;
 	strncpy(sun.sun_path, _PATH_RPCBINDSOCK, sizeof(sun.sun_path));
 	sun.sun_len = SUN_LEN(&sun);
 
-	if (_connect(sock, (struct sockaddr *)&sun, sun.sun_len) < 0) {
-		_close(sock);
+	if (__sys_connect(sock, (struct sockaddr *)&sun, sun.sun_len) < 0) {
+		__sys_close(sock);
 		return (FALSE);
 	}
 
-	_close(sock);
+	__sys_close(sock);
 	return (TRUE);
 }
 

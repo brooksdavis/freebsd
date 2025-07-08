@@ -32,15 +32,14 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 
 #include <errno.h>
+#include <libsys.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 #include <db.h>
 #include "btree.h"
@@ -98,7 +97,7 @@ __bt_close(DB *dbp)
 	fd = t->bt_fd;
 	free(t);
 	free(dbp);
-	return (_close(fd) ? RET_ERROR : RET_SUCCESS);
+	return (__sys_close(fd) ? RET_ERROR : RET_SUCCESS);
 }
 
 /*

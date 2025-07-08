@@ -29,7 +29,6 @@
  */
 
 #include <sys/param.h>
-#include "namespace.h"
 #include <sys/capsicum.h>
 #include <sys/elf.h>
 #include <sys/fcntl.h>
@@ -37,9 +36,9 @@
 #include <sys/time.h>
 #include <sys/vdso.h>
 #include <errno.h>
+#include <libsys.h>
 #include <string.h>
 #include <unistd.h>
-#include "un-namespace.h"
 #include <machine/atomic.h>
 #include <machine/cpufunc.h>
 #include <machine/pvclock.h>
@@ -261,7 +260,7 @@ __vdso_init_hpet(uint32_t u)
 	 * triggering trap_enocap on the device open by absolute path.
 	 */
 	if ((cap_getmode(&mode) == 0 && mode != 0) ||
-	    (fd = _open(devname, O_RDONLY | O_CLOEXEC)) == -1) {
+	    (fd = __sys_open(devname, O_RDONLY | O_CLOEXEC, 0)) == -1) {
 		/* Prevent the caller from re-entering. */
 		atomic_cmpset_rel_ptr((volatile uintptr_t *)&hpet_dev_map[u],
 		    (uintptr_t)old_map, (uintptr_t)MAP_FAILED);
@@ -269,7 +268,7 @@ __vdso_init_hpet(uint32_t u)
 	}
 
 	new_map = mmap(NULL, PAGE_SIZE, PROT_READ, MAP_SHARED, fd, 0);
-	_close(fd);
+	__sys_close(fd);
 	if (atomic_cmpset_rel_ptr((volatile uintptr_t *)&hpet_dev_map[u],
 	    (uintptr_t)old_map, (uintptr_t)new_map) == 0 &&
 	    new_map != MAP_FAILED)
@@ -297,12 +296,12 @@ __vdso_init_hyperv_tsc(void)
 	if (cap_getmode(&mode) == 0 && mode != 0)
 		goto fail;
 
-	fd = _open(HYPERV_REFTSC_DEVPATH, O_RDONLY | O_CLOEXEC);
+	fd = __sys_open(HYPERV_REFTSC_DEVPATH, O_RDONLY | O_CLOEXEC, 0);
 	if (fd < 0)
 		goto fail;
 	hyperv_ref_tsc = mmap(NULL, sizeof(*hyperv_ref_tsc), PROT_READ,
 	    MAP_SHARED, fd, 0);
-	_close(fd);
+	__sys_close(fd);
 
 	return;
 fail:
@@ -386,11 +385,11 @@ __vdso_init_pvclock_timeinfos(void)
 	timeinfos = MAP_FAILED;
 	if (_elf_aux_info(AT_NCPUS, &ncpus, sizeof(ncpus)) != 0 ||
 	    (cap_getmode(&mode) == 0 && mode != 0) ||
-	    (fd = _open("/dev/" PVCLOCK_CDEVNAME, O_RDONLY | O_CLOEXEC)) < 0)
+	    (fd = __sys_open("/dev/" PVCLOCK_CDEVNAME, O_RDONLY | O_CLOEXEC, 0)) < 0)
 		goto leave;
 	len = ncpus * sizeof(*pvclock_timeinfos);
 	timeinfos = mmap(NULL, len, PROT_READ, MAP_SHARED, fd, 0);
-	_close(fd);
+	__sys_close(fd);
 leave:
 	if (atomic_cmpset_rel_ptr(
 	    (volatile uintptr_t *)&pvclock_timeinfos, (uintptr_t)NULL,

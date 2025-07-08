@@ -32,14 +32,14 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
-
 #include <ctype.h>
 #include <errno.h>
 #include <netdb.h>
+#include "namespace.h"
 #include <nsswitch.h>
 #include <pthread.h>
 #include <pthread_np.h>
+#include "un-namespace.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -30,7 +30,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include "reentrant.h"
 #include <sys/param.h>
 #include <sys/socket.h>
@@ -38,6 +37,7 @@
 #include <sys/uio.h>
 #include <arpa/inet.h>
 #include <errno.h>
+#include <libsys.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -45,7 +45,6 @@
 #include <rpc/rpc.h>
 #include <rpc/xdr.h>
 #include <rpcsvc/yp.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 
 /*
@@ -333,20 +332,21 @@ _yp_dobind(char *dom, struct dom_binding **ypdb)
 		new = 1;
 	} else {
 	/* Check the socket -- may have been hosed by the caller. */
-		if (_getsockname(ysd->dom_socket, (struct sockaddr *)&check,
-		    &checklen) == -1 || check.sin_family != AF_INET ||
+		if (__sys_getsockname(ysd->dom_socket,
+		    (struct sockaddr *)&check, &checklen) == -1 ||
+		    check.sin_family != AF_INET ||
 		    check.sin_port != ysd->dom_local_port) {
 		/* Socket became bogus somehow... need to rebind. */
 			int save, sock;
 
 			sock = ysd->dom_socket;
-			save = _dup(ysd->dom_socket);
+			save = __sys_dup(ysd->dom_socket);
 			if (ysd->dom_client != NULL)
 				clnt_destroy(ysd->dom_client);
 			ysd->dom_vers = 0;
 			ysd->dom_client = NULL;
-			sock = _dup2(save, sock);
-			_close(save);
+			sock = __sys_dup2(save, sock);
+			__sys_close(save);
 		}
 	}
 
@@ -369,13 +369,14 @@ again:
 			ysd->dom_socket = -1;
 		}
 		snprintf(path, sizeof(path), "%s/%s.%d", BINDINGDIR, dom, 2);
-		if ((fd = _open(path, O_RDONLY | O_CLOEXEC)) == -1) {
+		if ((fd = __sys_open(path, O_RDONLY | O_CLOEXEC, 0)) == -1) {
 			/* no binding file, YP is dead. */
 			/* Try to bring it back to life. */
-			_close(fd);
+			__sys_close(fd);
 			goto skipit;
 		}
-		if (_flock(fd, LOCK_EX|LOCK_NB) == -1 && errno == EWOULDBLOCK) {
+		if (__sys_flock(fd, LOCK_EX | LOCK_NB) == -1 &&
+		    errno == EWOULDBLOCK) {
 			struct iovec iov[2];
 			struct ypbind_resp ybr;
 			u_short	ypb_port;
@@ -385,9 +386,9 @@ again:
 			iov[1].iov_base = (caddr_t)&ybr;
 			iov[1].iov_len = sizeof ybr;
 
-			r = _readv(fd, iov, 2);
+			r = __sys_readv(fd, iov, 2);
 			if (r != iov[0].iov_len + iov[1].iov_len) {
-				_close(fd);
+				__sys_close(fd);
 				ysd->dom_vers = -1;
 				goto again;
 			}
@@ -403,12 +404,12 @@ again:
 			    sizeof(ysd->dom_server_addr.sin_port));
 
 			ysd->dom_server_port = ysd->dom_server_addr.sin_port;
-			_close(fd);
+			__sys_close(fd);
 			goto gotit;
 		} else {
 			/* no lock on binding file, YP is dead. */
 			/* Try to bring it back to life. */
-			_close(fd);
+			__sys_close(fd);
 			goto skipit;
 		}
 	}
@@ -484,8 +485,8 @@ skipit:
 
 				time_to_sleep.tv_sec = _yplib_timeout/2;
 				time_to_sleep.tv_nsec = 0;
-				_nanosleep(&time_to_sleep,
-				    &time_remaining);
+				__sys_nanosleep(&time_to_sleep,
+				   &time_remaining);
 				goto again;
 			}
 		}
@@ -525,7 +526,7 @@ gotit:
 			ysd->dom_vers = -1;
 			goto again;
 		}
-		if (_fcntl(ysd->dom_socket, F_SETFD, 1) == -1)
+		if (__sys_fcntl(ysd->dom_socket, F_SETFD, 1) == -1)
 			perror("fcntl: F_SETFD");
 		/*
 		 * We want a port number associated with this socket
@@ -533,9 +534,10 @@ gotit:
 		 */
 		checklen = sizeof(struct sockaddr_in);
 		bzero((char *)&check, checklen);
-		_bind(ysd->dom_socket, (struct sockaddr *)&check, checklen);
+		__sys_bind(ysd->dom_socket, (struct sockaddr *)&check,
+		    checklen);
 		check.sin_family = AF_INET;
-		if (!_getsockname(ysd->dom_socket,
+		if (!__sys_getsockname(ysd->dom_socket,
 		    (struct sockaddr *)&check, &checklen)) {
 			ysd->dom_local_port = check.sin_port;
 		} else {
@@ -572,16 +574,17 @@ _yp_unbind(struct dom_binding *ypb)
 
 	if (ypb->dom_client != NULL) {
 		/* Check the socket -- may have been hosed by the caller. */
-		if (_getsockname(ypb->dom_socket, (struct sockaddr *)&check,
-	    	&checklen) == -1 || check.sin_family != AF_INET ||
-	    	check.sin_port != ypb->dom_local_port) {
+		if (__sys_getsockname(ypb->dom_socket,
+		    (struct sockaddr *)&check, &checklen) == -1 ||
+		    check.sin_family != AF_INET ||
+		    check.sin_port != ypb->dom_local_port) {
 			int save, sock;
 
 			sock = ypb->dom_socket;
-			save = _dup(ypb->dom_socket);
+			save = __sys_dup(ypb->dom_socket);
 			clnt_destroy(ypb->dom_client);
-			sock = _dup2(save, sock);
-			_close(save);
+			sock = __sys_dup2(save, sock);
+			__sys_close(save);
 		} else
 			clnt_destroy(ypb->dom_client);
 	}

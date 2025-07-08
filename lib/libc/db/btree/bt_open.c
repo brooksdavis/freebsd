@@ -40,19 +40,18 @@
  * is wholly independent of the Postgres code.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/stat.h>
 
 #include <errno.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <limits.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 
 #include <db.h>
@@ -193,7 +192,7 @@ __bt_open(const char *fname, int flags, int mode, const BTREEINFO *openinfo, int
 			goto einval;
 		}
 
-		if ((t->bt_fd = _open(fname, flags | O_CLOEXEC, mode)) < 0)
+		if ((t->bt_fd = __sys_open(fname, flags | O_CLOEXEC, mode)) < 0)
 			goto err;
 
 	} else {
@@ -204,10 +203,10 @@ __bt_open(const char *fname, int flags, int mode, const BTREEINFO *openinfo, int
 		F_SET(t, B_INMEM);
 	}
 
-	if (_fstat(t->bt_fd, &sb))
+	if (__sys_fstat(t->bt_fd, &sb))
 		goto err;
 	if (sb.st_size) {
-		if ((nr = _read(t->bt_fd, &m, sizeof(BTMETA))) < 0)
+		if ((nr = __sys_read(t->bt_fd, &m, sizeof(BTMETA))) < 0)
 			goto err;
 		if (nr != sizeof(BTMETA))
 			goto eftype;
@@ -324,7 +323,7 @@ err:	saved_errno = errno;
 		if (t->bt_dbp)
 			free(t->bt_dbp);
 		if (t->bt_fd != -1)
-			(void)_close(t->bt_fd);
+			(void)__sys_close(t->bt_fd);
 		free(t);
 	}
 	errno = saved_errno;

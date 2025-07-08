@@ -32,11 +32,9 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
-#include "un-namespace.h"
 #include "local.h"
 #include "fvwrite.h"
 #include "libc_private.h"

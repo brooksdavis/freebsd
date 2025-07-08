@@ -24,16 +24,16 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#include "namespace.h"
+
 #include <sys/ioctl.h>
 #include <sys/socket.h>
-#include "un-namespace.h"
+#include <libsys.h>
 
 int sockatmark(int s)
 {
 	int atmark;
 
-	if (_ioctl(s, SIOCATMARK, &atmark) == -1)
+	if (__sys_ioctl(s, SIOCATMARK, (char *)&atmark) == -1)
 		return -1;
 	return atmark;
 }

@@ -27,7 +27,6 @@
  *
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/event.h>
@@ -35,11 +34,11 @@
 #include <sys/un.h>
 #include <assert.h>
 #include <errno.h>
+#include <libsys.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "un-namespace.h"
 #include "nscachedcli.h"
 
 #define NS_DEFAULT_CACHED_IO_TIMEOUT	4
@@ -71,13 +70,13 @@ safe_write(struct cached_connection_ *connection, const void *data,
 	timeout.tv_nsec = 0;
 	result = 0;
 	do {
-		nevents = _kevent(connection->write_queue, NULL, 0, &eventlist,
-		    1, &timeout);
+		nevents = __sys_kevent(connection->write_queue, NULL, 0,
+				       &eventlist, 1, &timeout);
 		if ((nevents == 1) && (eventlist.filter == EVFILT_WRITE)) {
-			s_result = _sendto(connection->sockfd, data + result,
-			    eventlist.data < data_size - result ?
-			    eventlist.data : data_size - result, MSG_NOSIGNAL,
-			    NULL, 0);
+			s_result = __sys_sendto(connection->sockfd,
+						data + result,
+						eventlist.data < data_size - result ? eventlist.data : data_size - result,
+						MSG_NOSIGNAL, NULL, 0);
 			if (s_result == -1)
 				return (-1);
 			else
@@ -114,10 +113,10 @@ safe_read(struct cached_connection_ *connection, void *data, size_t data_size)
 	timeout.tv_nsec = 0;
 	result = 0;
 	do {
-		nevents = _kevent(connection->read_queue, NULL, 0, &eventlist,
-		    1, &timeout);
+		nevents = __sys_kevent(connection->read_queue, NULL, 0,
+				       &eventlist, 1, &timeout);
 		if (nevents == 1 && eventlist.filter == EVFILT_READ) {
-			s_result = _read(connection->sockfd, data + result,
+			s_result = __sys_read(connection->sockfd, data + result,
 			    eventlist.data <= data_size - result ?
 			    eventlist.data : data_size - result);
 			if (s_result == -1)
@@ -167,16 +166,18 @@ send_credentials(struct cached_connection_ *connection, int type)
 
 	EV_SET(&eventlist, connection->sockfd, EVFILT_WRITE, EV_ADD,
 	    NOTE_LOWAT, sizeof(int), NULL);
-	(void)_kevent(connection->write_queue, &eventlist, 1, NULL, 0, NULL);
+	(void) __sys_kevent(connection->write_queue, &eventlist, 1, NULL, 0,
+		            NULL);
 
-	nevents = _kevent(connection->write_queue, NULL, 0, &eventlist, 1,
-	    NULL);
+	nevents = __sys_kevent(connection->write_queue, NULL, 0, &eventlist,
+		               1, NULL);
 	if (nevents == 1 && eventlist.filter == EVFILT_WRITE) {
-		result = _sendmsg(connection->sockfd, &mhdr,
-		    MSG_NOSIGNAL) == -1 ? -1 : 0;
+		result = __sys_sendmsg(connection->sockfd, &mhdr,
+				       MSG_NOSIGNAL) == -1 ? -1 : 0;
 		EV_SET(&eventlist, connection->sockfd, EVFILT_WRITE, EV_ADD,
 		    0, 0, NULL);
-		_kevent(connection->write_queue, &eventlist, 1, NULL, 0, NULL);
+		__sys_kevent(connection->write_queue, &eventlist, 1, NULL, 0,
+		             NULL);
 		return (result);
 	} else
 		return (-1);
@@ -196,20 +197,20 @@ __open_cached_connection(struct cached_connection_params const *params)
 
 	assert(params != NULL);
 
-	client_socket = _socket(PF_LOCAL, SOCK_STREAM | SOCK_CLOEXEC, 0);
+	client_socket = __sys_socket(PF_LOCAL, SOCK_STREAM | SOCK_CLOEXEC, 0);
 	client_address.sun_family = PF_LOCAL;
 	strncpy(client_address.sun_path, params->socket_path,
 	    sizeof(client_address.sun_path));
 	client_address_len = sizeof(client_address.sun_family) +
 	    strlen(client_address.sun_path) + 1;
 
-	res = _connect(client_socket, (struct sockaddr *)&client_address,
+	res = __sys_connect(client_socket, (struct sockaddr *)&client_address,
 	    client_address_len);
 	if (res == -1) {
-		_close(client_socket);
+		__sys_close(client_socket);
 		return (NULL);
 	}
-	_fcntl(client_socket, F_SETFL, O_NONBLOCK);
+	__sys_fcntl(client_socket, F_SETFL, O_NONBLOCK);
 
 	retval = malloc(sizeof(struct cached_connection_));
 	assert(retval != NULL);
@@ -221,13 +222,13 @@ __open_cached_connection(struct cached_connection_params const *params)
 	assert(retval->write_queue != -1);
 
 	EV_SET(&eventlist, retval->sockfd, EVFILT_WRITE, EV_ADD, 0, 0, NULL);
-	res = _kevent(retval->write_queue, &eventlist, 1, NULL, 0, NULL);
+	res = __sys_kevent(retval->write_queue, &eventlist, 1, NULL, 0, NULL);
 
 	retval->read_queue = kqueue();
 	assert(retval->read_queue != -1);
 
 	EV_SET(&eventlist, retval->sockfd, EVFILT_READ, EV_ADD, 0, 0, NULL);
-	res = _kevent(retval->read_queue, &eventlist, 1, NULL, 0, NULL);
+	res = __sys_kevent(retval->read_queue, &eventlist, 1, NULL, 0, NULL);
 
 	return (retval);
 }
@@ -237,9 +238,9 @@ __close_cached_connection(struct cached_connection_ *connection)
 {
 	assert(connection != NULL);
 
-	_close(connection->sockfd);
-	_close(connection->read_queue);
-	_close(connection->write_queue);
+	__sys_close(connection->sockfd);
+	__sys_close(connection->read_queue);
+	__sys_close(connection->write_queue);
 	free(connection);
 }
 

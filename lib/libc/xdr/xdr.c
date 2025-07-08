@@ -41,7 +41,6 @@
  * xdr.
  */
 
-#include "namespace.h"
 #include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,7 +50,6 @@
 #include <rpc/rpc_com.h>
 #include <rpc/types.h>
 #include <rpc/xdr.h>
-#include "un-namespace.h"
 
 typedef quad_t          longlong_t;     /* ANSI long long type */
 typedef u_quad_t        u_longlong_t;   /* ANSI unsigned long long type */

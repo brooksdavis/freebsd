@@ -39,20 +39,19 @@
  *
  */
 
-#include "namespace.h"
 #include "reentrant.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <rpc/rpc.h>
 #include <rpc/nettype.h>
+#include <libsys.h>
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <err.h>
-#include "un-namespace.h"
 
 #include "rpc_com.h"
 #include "mt_misc.h"
@@ -234,23 +233,24 @@ svc_tli_create(int fd, const struct netconfig *nconf,
 				memset(&ss, 0, sizeof ss);
 				ss.ss_family = si.si_af;
 				ss.ss_len = si.si_alen;
-				if (_bind(fd, (struct sockaddr *)(void *)&ss,
+				if (__sys_bind(fd,
+				    (struct sockaddr *)(void *)&ss,
 				    (socklen_t)si.si_alen) < 0) {
 					warnx(
 			"svc_tli_create: could not bind to anonymous port");
 					goto freedata;
 				}
 			}
-			_listen(fd, SOMAXCONN);
+			__sys_listen(fd, SOMAXCONN);
 		} else {
-			if (_bind(fd,
+			if (__sys_bind(fd,
 			    (struct sockaddr *)bindaddr->addr.buf,
 			    (socklen_t)si.si_alen) < 0) {
 				warnx(
 		"svc_tli_create: could not bind to requested address");
 				goto freedata;
 			}
-			_listen(fd, (int)bindaddr->qlen);
+			__sys_listen(fd, (int)bindaddr->qlen);
 		}
 			
 	}
@@ -260,8 +260,8 @@ svc_tli_create(int fd, const struct netconfig *nconf,
 	switch (si.si_socktype) {
 		case SOCK_STREAM:
 			slen = sizeof ss;
-			if (_getpeername(fd, (struct sockaddr *)(void *)&ss, &slen)
-			    == 0) {
+			if (__sys_getpeername(fd,
+			    (struct sockaddr *)(void *)&ss, &slen) == 0) {
 				/* accepted socket */
 				xprt = svc_fd_create(fd, sendsz, recvsz);
 			} else
@@ -301,7 +301,7 @@ svc_tli_create(int fd, const struct netconfig *nconf,
 
 freedata:
 	if (madefd)
-		(void)_close(fd);
+		(void)__sys_close(fd);
 	if (xprt) {
 		if (!madefd) /* so that svc_destroy doesnt close fd */
 			xprt->xp_fd = RPC_ANYFD;

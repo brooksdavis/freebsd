@@ -26,18 +26,17 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/endian.h>
 #include <sys/stat.h>
 #include <sys/uio.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <utmpx.h>
 #include "utxdb.h"
-#include "un-namespace.h"
 
 static FILE *
 futx_open(const char *file)
@@ -46,20 +45,21 @@ futx_open(const char *file)
 	struct stat sb;
 	int fd;
 
-	fd = _open(file, O_CREAT|O_RDWR|O_EXLOCK|O_CLOEXEC, 0644);
+	fd = __sys_open(file, O_CREAT|O_RDWR|O_EXLOCK|O_CLOEXEC, 0644);
 	if (fd < 0)
 		return (NULL);
 
 	/* Safety check: never use broken files. */
-	if (_fstat(fd, &sb) != -1 && sb.st_size % sizeof(struct futx) != 0) {
-		_close(fd);
+	if (__sys_fstat(fd, &sb) != -1 &&
+	    sb.st_size % sizeof(struct futx) != 0) {
+		__sys_close(fd);
 		errno = EFTYPE;
 		return (NULL);
 	}
 
 	fp = fdopen(fd, "r+");
 	if (fp == NULL) {
-		_close(fd);
+		__sys_close(fd);
 		return (NULL);
 	}
 	return (fp);
@@ -180,11 +180,11 @@ utx_active_init(const struct futx *fu)
 	int fd;
 
 	/* Initialize utx.active with a single BOOT_TIME record. */
-	fd = _open(_PATH_UTX_ACTIVE, O_CREAT|O_RDWR|O_TRUNC, 0644);
+	fd = __sys_open(_PATH_UTX_ACTIVE, O_CREAT|O_RDWR|O_TRUNC, 0644);
 	if (fd < 0)
 		return;
-	_write(fd, fu, sizeof(*fu));
-	_close(fd);
+	__sys_write(fd, fu, sizeof(*fu));
+	__sys_close(fd);
 }
 
 static void
@@ -237,7 +237,7 @@ utx_lastlogin_upgrade(void)
 	struct stat sb;
 	int fd;
 
-	fd = _open(_PATH_UTX_LASTLOGIN, O_RDWR|O_CLOEXEC, 0644);
+	fd = __sys_open(_PATH_UTX_LASTLOGIN, O_RDWR|O_CLOEXEC, 0644);
 	if (fd < 0)
 		return;
 
@@ -246,9 +246,9 @@ utx_lastlogin_upgrade(void)
 	 * check for older versions of the file format here and try to
 	 * upgrade it.
 	 */
-	if (_fstat(fd, &sb) != -1 && sb.st_size % sizeof(struct futx) != 0)
+	if (__sys_fstat(fd, &sb) != -1 && sb.st_size % sizeof(struct futx) != 0)
 		ftruncate(fd, 0);
-	_close(fd);
+	__sys_close(fd);
 }
 
 static int
@@ -271,14 +271,15 @@ utx_log_add(const struct futx *fu)
 	vec[1].iov_len = l;
 	l = htobe16(l);
 
-	fd = _open(_PATH_UTX_LOG, O_CREAT|O_WRONLY|O_APPEND|O_CLOEXEC, 0644);
+	fd = __sys_open(_PATH_UTX_LOG, O_CREAT|O_WRONLY|O_APPEND|O_CLOEXEC,
+	    0644);
 	if (fd < 0)
 		return (-1);
-	if (_writev(fd, vec, 2) == -1)
+	if (__sys_writev(fd, vec, 2) == -1)
 		error = errno;
 	else
 		error = 0;
-	_close(fd);
+	__sys_close(fd);
 	if (error != 0)
 		errno = error;
 	return (error == 0 ? 0 : 1);

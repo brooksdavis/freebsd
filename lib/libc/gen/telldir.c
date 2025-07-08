@@ -29,14 +29,14 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/queue.h>
 #include <dirent.h>
+#include "namespace.h"
 #include <pthread.h>
+#include "un-namespace.h"
 #include <stdlib.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 #include "libc_private.h"
 #include "gen-private.h"

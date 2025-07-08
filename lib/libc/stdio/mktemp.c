@@ -29,17 +29,16 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <libsys.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 char *_mktemp(char *);
 
@@ -150,7 +149,7 @@ _gettemp(int dfd, char *path, int *doopen, int domkdir, int slen, int oflags)
 	oflags |= O_CREAT | O_EXCL | O_RDWR;
 	for (;;) {
 		if (doopen) {
-			*doopen = _openat(dfd, path, oflags, 0600);
+			*doopen = __sys_openat(dfd, path, oflags, 0600);
 			if (*doopen >= 0)
 				return (1);
 			if (errno != EEXIST)

@@ -4,11 +4,12 @@
  * Copyright (c) 2025 Klara, Inc.
  */
 
-#include "namespace.h"
 #include <sys/fcntl.h>
 #include <sys/inotify.h>
 #include <sys/specialfd.h>
-#include "un-namespace.h"
+#include <libsys.h>
+#include <stddef.h>
+#include <stdint.h>
 #include "libc_private.h"
 
 /*

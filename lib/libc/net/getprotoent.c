@@ -38,9 +38,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "namespace.h"
 #include "reentrant.h"
-#include "un-namespace.h"
 #include "netdb_private.h"
 #ifdef NS_CACHING
 #include "nscache.h"

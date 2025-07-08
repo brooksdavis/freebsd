@@ -47,9 +47,7 @@
 #include <rpcsvc/yp_prot.h>
 #include <rpcsvc/ypclnt.h>
 #endif
-#include "namespace.h"
 #include "reentrant.h"
-#include "un-namespace.h"
 #include "netdb_private.h"
 #ifdef NS_CACHING
 #include "nscache.h"

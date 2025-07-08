@@ -25,7 +25,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/elf_common.h>
 #include <sys/exec.h>
@@ -35,7 +34,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 #include "libc_private.h"
 

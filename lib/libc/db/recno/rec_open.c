@@ -32,18 +32,17 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 
 #include <errno.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <limits.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 #include <db.h>
 #include "recno.h"
@@ -60,7 +59,8 @@ __rec_open(const char *fname, int flags, int mode, const RECNOINFO *openinfo,
 	int rfd, sverrno;
 
 	/* Open the user's file -- if this fails, we're done. */
-	if (fname != NULL && (rfd = _open(fname, flags | O_CLOEXEC, mode)) < 0)
+	if (fname != NULL &&
+	    (rfd = __sys_open(fname, flags | O_CLOEXEC, mode)) < 0)
 		return (NULL);
 
 	/* Create a btree in memory (backed by disk). */
@@ -138,7 +138,7 @@ slow:			if ((t->bt_rfp = fdopen(rfd, "r")) == NULL)
 				goto einval;
 			}
 
-			if (_fstat(rfd, &sb))
+			if (__sys_fstat(rfd, &sb))
 				goto err;
 			/*
 			 * Kluge -- we'd like to test to see if the file is too
@@ -207,7 +207,7 @@ err:	sverrno = errno;
 	if (dbp != NULL)
 		(void)__bt_close(dbp);
 	if (fname != NULL)
-		(void)_close(rfd);
+		(void)__sys_close(rfd);
 	errno = sverrno;
 	return (NULL);
 }

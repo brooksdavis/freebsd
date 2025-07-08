@@ -38,12 +38,10 @@
  *
  */
 
-#include "namespace.h"
 #include "reentrant.h"
 #include <sys/types.h>
 #include <rpc/rpc.h>
 #include <stdlib.h>
-#include "un-namespace.h"
 #include "mt_misc.h"
 
 /*

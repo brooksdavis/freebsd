@@ -40,7 +40,6 @@
  * Copyright (C) 1984, Sun Microsystems, Inc.
  */
 
-#include "namespace.h"
 #include "reentrant.h"
 #include <sys/types.h>
 #include <sys/poll.h>
@@ -53,7 +52,6 @@
 #ifdef PORTMAP
 #include <rpc/pmap_clnt.h>
 #endif				/* PORTMAP */
-#include "un-namespace.h"
 
 #include "rpc_com.h"
 #include "mt_misc.h"

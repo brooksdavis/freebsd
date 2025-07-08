@@ -29,9 +29,9 @@
 
 #include <sys/types.h>
 
-#include "namespace.h"
 #include <err.h>
 #include <errno.h>
+#include <libsys.h>
 #include <ucontext.h>
 #include <sys/thr.h>
 #include <stdatomic.h>
@@ -39,10 +39,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
+#include "namespace.h"
 #include <pthread.h>
 #include "un-namespace.h"
 
 #include "sigev_thread.h"
+#include "libc_private.h"
 
 LIST_HEAD(sigev_list_head, sigev_node);
 #define HASH_QUEUES		17
@@ -333,10 +335,10 @@ sigev_thread_create(int usedefault)
 	sigdelset(&set, SIGFPE);
 	sigdelset(&set, SIGSEGV);
 	sigdelset(&set, SIGTRAP);
-	_sigprocmask(SIG_SETMASK, &set, &oset);
+	__sys_sigprocmask(SIG_SETMASK, &set, &oset);
 	ret = _pthread_create(&tn->tn_thread, &sigev_default_attr,
 		 sigev_service_loop, tn);
-	_sigprocmask(SIG_SETMASK, &oset, NULL);
+	__sys_sigprocmask(SIG_SETMASK, &oset, NULL);
 
 	if (ret != 0) {
 		__sigev_list_lock();

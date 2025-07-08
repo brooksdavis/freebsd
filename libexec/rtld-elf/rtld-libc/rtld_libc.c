@@ -105,9 +105,6 @@ getpagesize(void)
 	return (page_size);
 }
 
-int __sys___sysctl(const int *name, u_int namelen, void *oldp,
-    size_t *oldlenp, const void *newp, size_t newlen);
-
 int
 sysctl(const int *name, u_int namelen, void *oldp, size_t *oldlenp,
     const void *newp, size_t newlen)

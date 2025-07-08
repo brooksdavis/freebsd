@@ -29,13 +29,11 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/wait.h>
 #include <sys/resource.h>
 #include <libsys.h>
-#include "un-namespace.h"
 
 #include "libc_private.h"
 

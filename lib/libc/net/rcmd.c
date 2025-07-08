@@ -29,7 +29,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
@@ -37,6 +36,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include <libsys.h>
 #include <signal.h>
 #include <fcntl.h>
 #include <netdb.h>
@@ -53,7 +53,6 @@
 #include <rpcsvc/ypclnt.h>
 #endif
 #include <arpa/nameser.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 
 extern int innetgr( const char *, const char *, const char *, const char * );
@@ -157,10 +156,10 @@ rcmd_af(char **ahost, int rport, const char *locuser, const char *remuser,
 			    NULL);
 			return (-1);
 		}
-		_fcntl(s, F_SETOWN, pid);
-		if (_connect(s, ai->ai_addr, ai->ai_addrlen) >= 0)
+		__sys_fcntl(s, F_SETOWN, pid);
+		if (__sys_connect(s, ai->ai_addr, ai->ai_addrlen) >= 0)
 			break;
-		(void)_close(s);
+		(void)__sys_close(s);
 		if (errno == EADDRINUSE) {
 			lport--;
 			continue;
@@ -191,7 +190,8 @@ rcmd_af(char **ahost, int rport, const char *locuser, const char *remuser,
 
 			time_to_sleep.tv_sec = timo;
 			time_to_sleep.tv_nsec = 0;
-			(void)_nanosleep(&time_to_sleep, &time_remaining);
+			(void) __sys_nanosleep(&time_to_sleep,
+					       &time_remaining);
 			timo *= 2;
 			ai = res;
 			refused = 0;
@@ -204,7 +204,7 @@ rcmd_af(char **ahost, int rport, const char *locuser, const char *remuser,
 	}
 	lport--;
 	if (fd2p == NULL) {
-		_write(s, "", 1);
+		__sys_write(s, "", 1);
 		lport = 0;
 	} else {
 		int s2 = rresvport_af(&lport, ai->ai_family), s3;
@@ -213,19 +213,19 @@ rcmd_af(char **ahost, int rport, const char *locuser, const char *remuser,
 
 		if (s2 < 0)
 			goto bad;
-		_listen(s2, 1);
+		__sys_listen(s2, 1);
 		(void)snprintf(num, sizeof(num), "%d", lport);
-		if (_write(s, num, strlen(num)+1) != strlen(num)+1) {
+		if (__sys_write(s, num, strlen(num) + 1) != strlen(num)+1) {
 			(void)fprintf(stderr,
 			    "rcmd: write (setting up stderr): %s\n",
 			    strerror(errno));
-			(void)_close(s2);
+			(void)__sys_close(s2);
 			goto bad;
 		}
 		nfds = max(s, s2)+1;
 		if(nfds > FD_SETSIZE) {
 			fprintf(stderr, "rcmd: too many files\n");
-			(void)_close(s2);
+			(void)__sys_close(s2);
 			goto bad;
 		}
 again:
@@ -233,7 +233,7 @@ again:
 		FD_SET(s, &reads);
 		FD_SET(s2, &reads);
 		errno = 0;
-		if (_select(nfds, &reads, 0, 0, 0) < 1 || !FD_ISSET(s2, &reads)){
+		if (__sys_select(nfds, &reads, 0, 0, 0) < 1 || !FD_ISSET(s2, &reads)){
 			if (errno != 0)
 				(void)fprintf(stderr,
 				    "rcmd: select (setting up stderr): %s\n",
@@ -241,10 +241,10 @@ again:
 			else
 				(void)fprintf(stderr,
 				"select: protocol failure in circuit setup\n");
-			(void)_close(s2);
+			(void)__sys_close(s2);
 			goto bad;
 		}
-		s3 = _accept(s2, (struct sockaddr *)&from, &len);
+		s3 = __sys_accept(s2, (struct sockaddr *)&from, &len);
 		switch (from.ss_family) {
 		case AF_INET:
 			aport = ntohs(((struct sockaddr_in *)&from)->sin_port);
@@ -263,10 +263,10 @@ again:
 		 * down and check for the real auxiliary channel to connect.
 		 */
 		if (aport == 20) {
-			_close(s3);
+			__sys_close(s3);
 			goto again;
 		}
-		(void)_close(s2);
+		(void)__sys_close(s2);
 		if (s3 < 0) {
 			(void)fprintf(stderr,
 			    "rcmd: accept: %s\n", strerror(errno));
@@ -280,17 +280,17 @@ again:
 			goto bad2;
 		}
 	}
-	(void)_write(s, locuser, strlen(locuser)+1);
-	(void)_write(s, remuser, strlen(remuser)+1);
-	(void)_write(s, cmd, strlen(cmd)+1);
-	if (_read(s, &c, 1) != 1) {
+	(void)__sys_write(s, locuser, strlen(locuser) + 1);
+	(void)__sys_write(s, remuser, strlen(remuser) + 1);
+	(void)__sys_write(s, cmd, strlen(cmd) + 1);
+	if (__sys_read(s, &c, 1) != 1) {
 		(void)fprintf(stderr,
 		    "rcmd: %s: %s\n", *ahost, strerror(errno));
 		goto bad2;
 	}
 	if (c != 0) {
-		while (_read(s, &c, 1) == 1) {
-			(void)_write(STDERR_FILENO, &c, 1);
+		while (__sys_read(s, &c, 1) == 1) {
+			(void)__sys_write(STDERR_FILENO, &c, 1);
 			if (c == '\n')
 				break;
 		}
@@ -301,9 +301,9 @@ again:
 	return (s);
 bad2:
 	if (lport)
-		(void)_close(*fd2p);
+		(void)__sys_close(*fd2p);
 bad:
-	(void)_close(s);
+	(void)__sys_close(s);
 	__libc_sigprocmask(SIG_SETMASK, (const sigset_t *)&oldmask, NULL);
 	freeaddrinfo(res);
 	return (-1);
@@ -342,7 +342,7 @@ rresvport_af(int *alport, int family)
 		return -1;
 	}
 
-	s = _socket(ss.ss_family, SOCK_STREAM, 0);
+	s = __sys_socket(ss.ss_family, SOCK_STREAM, 0);
 	if (s < 0)
 		return (-1);
 #if 0 /* compat_exact_traditional_rresvport_semantics */
@@ -356,7 +356,7 @@ rresvport_af(int *alport, int family)
 #endif
 	*sport = 0;
 	if (bindresvport_sa(s, (struct sockaddr *)&ss) == -1) {
-		(void)_close(s);
+		(void)__sys_close(s);
 		return (-1);
 	}
 	*alport = (int)ntohs(*sport);
@@ -475,7 +475,7 @@ again:
 			cp = ".rhosts lstat failed";
 		else if (!S_ISREG(sbuf.st_mode))
 			cp = ".rhosts not regular file";
-		else if (_fstat(fileno(hostf), &sbuf) < 0)
+		else if (__sys_fstat(fileno(hostf), &sbuf) < 0)
 			cp = ".rhosts fstat failed";
 		else if (sbuf.st_uid && sbuf.st_uid != pwd->pw_uid)
 			cp = "bad .rhosts owner";

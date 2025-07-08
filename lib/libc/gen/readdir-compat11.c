@@ -28,7 +28,6 @@
  * From: FreeBSD: head/lib/libc/gen/readdir.c 314436 2017-02-28 23:42:47Z imp
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #define	_WANT_FREEBSD11_DIRENT
 #include <dirent.h>
@@ -37,6 +36,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include "namespace.h"
 #include <pthread.h>
 #include "un-namespace.h"
 

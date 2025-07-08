@@ -68,8 +68,6 @@
 
 #include "port_before.h"
 
-#include "namespace.h"
-
 #include <sys/param.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
@@ -80,6 +78,7 @@
 #include <arpa/nameser.h>
 
 #include <ctype.h>
+#include <libsys.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -98,8 +97,6 @@
 #ifndef _MD5_H_
 # define _MD5_H_ 1	/*%< make sure we do not include rsaref md5.h file */
 #endif
-
-#include "un-namespace.h"
 
 #include "port_after.h"
 
@@ -309,7 +306,7 @@ __res_vinit(res_state statp, int preinit) {
 	    struct timespec now;
 
 	    if (statp->_u._ext.ext != NULL) {
-		if (_fstat(fileno(fp), &sb) == 0) {
+		if (__sys_fstat(fileno(fp), &sb) == 0) {
 		    statp->_u._ext.ext->conf_mtim = sb.st_mtim;
 		    if (clock_gettime(CLOCK_MONOTONIC_FAST, &now) == 0) {
 			statp->_u._ext.ext->conf_stat = now.tv_sec;
@@ -789,13 +786,13 @@ res_nclose(res_state statp) {
 	int ns;
 
 	if (statp->_vcsock >= 0) { 
-		(void) _close(statp->_vcsock);
+		(void) __sys_close(statp->_vcsock);
 		statp->_vcsock = -1;
 		statp->_flags &= ~(RES_F_VC | RES_F_CONN);
 	}
 	for (ns = 0; ns < statp->_u._ext.nscount; ns++) {
 		if (statp->_u._ext.nssocks[ns] != -1) {
-			(void) _close(statp->_u._ext.nssocks[ns]);
+			(void) __sys_close(statp->_u._ext.nssocks[ns]);
 			statp->_u._ext.nssocks[ns] = -1;
 		}
 	}

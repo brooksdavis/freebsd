@@ -32,14 +32,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #define _NS_PRIVATE
 #include <nsswitch.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <syslog.h>
-#include "un-namespace.h"
 
 static	void	_nsaddsrctomap(const char *);
 

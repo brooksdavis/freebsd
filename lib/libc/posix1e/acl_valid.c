@@ -32,10 +32,9 @@
  */
 
 #include <sys/types.h>
-#include "namespace.h"
 #include <sys/acl.h>
-#include "un-namespace.h"
 #include <sys/errno.h>
+#include <libsys.h>
 #include <stdlib.h>
 
 #include "acl_support.h"
@@ -119,5 +118,5 @@ acl_valid_fd_np(int fd, acl_type_t type, acl_t acl)
 
 	acl->ats_cur_entry = 0;
 
-	return (___acl_aclcheck_fd(fd, type, &acl->ats_acl));
+	return (__sys___acl_aclcheck_fd(fd, type, &acl->ats_acl));
 }

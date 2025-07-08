@@ -26,11 +26,11 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <paths.h>
 #include <signal.h>
 #include <stdbool.h>
@@ -39,7 +39,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <wordexp.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 static int	we_askshell(const char *, wordexp_t *, int);
 static int	we_check(const char *);
@@ -83,7 +82,7 @@ we_read_fully(int fd, char *buffer, size_t len)
 
 	done = 0;
 	do {
-		nread = _read(fd, buffer + done, len - done);
+		nread = __sys_read(fd, buffer + done, len - done);
 		if (nread == -1 && errno == EINTR)
 			continue;
 		if (nread <= 0)
@@ -101,7 +100,7 @@ we_write_fully(int fd, const char *buffer, size_t len)
 
 	done = 0;
 	do {
-		nwritten = _write(fd, buffer + done, len - done);
+		nwritten = __sys_write(fd, buffer + done, len - done);
 		if (nwritten == -1 && errno == EINTR)
 			continue;
 		if (nwritten <= 0)
@@ -146,8 +145,8 @@ we_askshell(const char *words, wordexp_t *we, int flags)
 		return (WRDE_NOSPACE);	/* XXX */
 	snprintf(wfdstr, sizeof(wfdstr), "%d", pdesw[0]);
 	if (pipe2(pdes, O_CLOEXEC) < 0) {
-		_close(pdesw[0]);
-		_close(pdesw[1]);
+		__sys_close(pdesw[0]);
+		__sys_close(pdesw[1]);
 		return (WRDE_NOSPACE);	/* XXX */
 	}
 	(void)sigemptyset(&newsigblock);
@@ -155,10 +154,10 @@ we_askshell(const char *words, wordexp_t *we, int flags)
 	(void)__libc_sigprocmask(SIG_BLOCK, &newsigblock, &oldsigblock);
 	if ((pid = fork()) < 0) {
 		serrno = errno;
-		_close(pdesw[0]);
-		_close(pdesw[1]);
-		_close(pdes[0]);
-		_close(pdes[1]);
+		__sys_close(pdesw[0]);
+		__sys_close(pdesw[1]);
+		__sys_close(pdes[0]);
+		__sys_close(pdes[1]);
 		(void)__libc_sigprocmask(SIG_SETMASK, &oldsigblock, NULL);
 		errno = serrno;
 		return (WRDE_NOSPACE);	/* XXX */
@@ -169,10 +168,10 @@ we_askshell(const char *words, wordexp_t *we, int flags)
 		 */
 		(void)__libc_sigprocmask(SIG_SETMASK, &oldsigblock, NULL);
 		if ((pdes[1] != STDOUT_FILENO ?
-		    _dup2(pdes[1], STDOUT_FILENO) :
-		    _fcntl(pdes[1], F_SETFD, 0)) < 0)
+		    __sys_dup2(pdes[1], STDOUT_FILENO) :
+		    __sys_fcntl(pdes[1], F_SETFD, 0)) < 0)
 			_exit(1);
-		if (_fcntl(pdesw[0], F_SETFD, 0) < 0)
+		if (__sys_fcntl(pdesw[0], F_SETFD, 0) < 0)
 			_exit(1);
 		execl(_PATH_BSHELL, "sh", flags & WRDE_UNDEF ? "-u" : "+u",
 		    "-c", "IFS=$1;eval \"$2\";"
@@ -189,14 +188,14 @@ we_askshell(const char *words, wordexp_t *we, int flags)
 	/*
 	 * We are the parent; write the words.
 	 */
-	_close(pdes[1]);
-	_close(pdesw[0]);
+	__sys_close(pdes[1]);
+	__sys_close(pdesw[0]);
 	if (!we_write_fully(pdesw[1], words, strlen(words))) {
-		_close(pdesw[1]);
+		__sys_close(pdesw[1]);
 		error = WRDE_SYNTAX;
 		goto cleanup;
 	}
-	_close(pdesw[1]);
+	__sys_close(pdesw[1]);
 	/*
 	 * Read the output of the shell wordexp function,
 	 * which is a byte indicating that the words were parsed successfully,
@@ -256,9 +255,9 @@ we_askshell(const char *words, wordexp_t *we, int flags)
 
 	error = 0;
 cleanup:
-	_close(pdes[0]);
+	__sys_close(pdes[0]);
 	do
-		wpid = _waitpid(pid, &status, 0);
+		wpid = __waitpid(pid, &status, 0);
 	while (wpid < 0 && errno == EINTR);
 	(void)__libc_sigprocmask(SIG_SETMASK, &oldsigblock, NULL);
 	if (error != 0) {

@@ -32,14 +32,12 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <err.h>
 #include <sys/types.h>
 #include <rpc/des_crypt.h>
 #include <rpc/des.h>
 #include <string.h>
 #include <rpcsvc/crypt.h>
-#include "un-namespace.h"
 
 int
 _des_crypt_call(char *buf, int len, struct desparams *dparms)

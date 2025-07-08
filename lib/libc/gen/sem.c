@@ -57,7 +57,6 @@
  * need to be wrapped to provide cancellation points.  The function
  * sem_post() may need to be wrapped to be signal-safe.
  */
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/queue.h>
 #include <machine/atomic.h>
@@ -66,11 +65,12 @@
 #include <sys/_semaphore.h>
 #include <limits.h>
 #include <fcntl.h>
+#include "namespace.h"
 #include <pthread.h>
+#include "un-namespace.h"
 #include <stdarg.h>
 #include <stdlib.h>
 #include <time.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 
 /*

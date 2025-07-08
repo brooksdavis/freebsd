@@ -34,13 +34,11 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <errno.h>
 #include <unistd.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <ssp/ssp.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 #include "local.h"
 

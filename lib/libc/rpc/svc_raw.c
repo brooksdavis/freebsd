@@ -41,13 +41,11 @@
  *
  */
 
-#include "namespace.h"
 #include "reentrant.h"
 #include <rpc/rpc.h>
 #include <sys/types.h>
 #include <rpc/raw.h>
 #include <stdlib.h>
-#include "un-namespace.h"
 #include "mt_misc.h"
 
 #ifndef UDPMSGSIZE

@@ -30,14 +30,15 @@
 #include <sys/syscall.h>
 #include <sys/mqueue.h>
 
-#include "namespace.h"
 #include <errno.h>
+#include <libsys.h>
+#include "namespace.h"
 #include <pthread.h>
+#include "un-namespace.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <signal.h>
 #include "sigev_thread.h"
-#include "un-namespace.h"
 #include "libc_private.h"
 
 struct __mq {

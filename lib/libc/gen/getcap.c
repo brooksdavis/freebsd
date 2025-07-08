@@ -32,18 +32,17 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 #include <db.h>
 
@@ -260,7 +259,7 @@ getent(char **cap, u_int *len, char **db_array, int fd, const char *name,
 				*cap = cbuf;
 				return (retval);
 			} else {
-				fd = _open(*db_p, O_RDONLY | O_CLOEXEC, 0);
+				fd = __sys_open(*db_p, O_RDONLY | O_CLOEXEC, 0);
 				if (fd < 0)
 					continue;
 				myfd = 1;
@@ -295,10 +294,10 @@ getent(char **cap, u_int *len, char **db_array, int fd, const char *name,
 				if (bp >= b_end) {
 					int n;
 
-					n = _read(fd, buf, sizeof(buf));
+					n = __sys_read(fd, buf, sizeof(buf));
 					if (n <= 0) {
 						if (myfd)
-							(void)_close(fd);
+							(void)__sys_close(fd);
 						if (n < 0) {
 							free(record);
 							return (-2);
@@ -337,7 +336,7 @@ getent(char **cap, u_int *len, char **db_array, int fd, const char *name,
 					if (record == NULL) {
 						errno = ENOMEM;
 						if (myfd)
-							(void)_close(fd);
+							(void)__sys_close(fd);
 						return (-2);
 					}
 					r_end = record + newsize;
@@ -429,7 +428,7 @@ tc_exp:	{
 				/* an error */
 				if (iret < -1) {
 					if (myfd)
-						(void)_close(fd);
+						(void)__sys_close(fd);
 					free(record);
 					return (iret);
 				}
@@ -479,7 +478,7 @@ tc_exp:	{
 				if (record == NULL) {
 					errno = ENOMEM;
 					if (myfd)
-						(void)_close(fd);
+						(void)__sys_close(fd);
 					free(icap);
 					return (-2);
 				}
@@ -511,7 +510,7 @@ tc_exp:	{
 	 * return capability, length and success.
 	 */
 	if (myfd)
-		(void)_close(fd);
+		(void)__sys_close(fd);
 	*len = rp - record - 1;	/* don't count NUL */
 	if (r_end > rp)
 		if ((record =

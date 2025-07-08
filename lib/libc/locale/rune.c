@@ -34,9 +34,9 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <arpa/inet.h>
 #include <errno.h>
+#include <libsys.h>
 #include <runetype.h>
 #include <stdio.h>
 #include <string.h>
@@ -46,7 +46,6 @@
 #include <sys/mman.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 #include "runefile.h"
 
@@ -68,26 +67,26 @@ _Read_RuneMagi(const char *fname)
 	int runetype_ext_len = 0;
 	int fd;
 
-	if ((fd = _open(fname, O_RDONLY | O_CLOEXEC)) < 0) {
+	if ((fd = __sys_open(fname, O_RDONLY | O_CLOEXEC, 0)) < 0) {
 		errno = EINVAL;
 		return (NULL);
 	}
 
-	if (_fstat(fd, &sb) < 0) {
-		(void) _close(fd);
+	if (__sys_fstat(fd, &sb) < 0) {
+		(void) __sys_close(fd);
 		errno = EINVAL;
 		return (NULL);
 	}
 
 	if ((size_t)sb.st_size < sizeof (_FileRuneLocale)) {
-		(void) _close(fd);
+		(void) __sys_close(fd);
 		errno = EINVAL;
 		return (NULL);
 	}
 
 
 	fdata = mmap(NULL, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
-	(void) _close(fd);
+	(void) __sys_close(fd);
 	if (fdata == MAP_FAILED) {
 		errno = EINVAL;
 		return (NULL);

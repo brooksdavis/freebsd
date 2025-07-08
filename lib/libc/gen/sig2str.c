@@ -28,7 +28,6 @@
 /*
  * Translate between signal names and numbers
  */
-#include "namespace.h"
 #include <ctype.h>
 #include <limits.h>
 #include <signal.h>
@@ -36,7 +35,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ssp/ssp.h>
-#include "un-namespace.h"
 
 static const char rtmin_str[] = "RTMIN";
 static const char rtmax_str[] = "RTMAX";

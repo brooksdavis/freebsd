@@ -32,12 +32,10 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <errno.h>
 #include <limits.h>
 #include <stdio.h>
-#include "un-namespace.h"
 #include "local.h"
 #include "libc_private.h"
 

@@ -39,7 +39,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <ctype.h>
 #include <inttypes.h>
 #include <stdio.h>
@@ -49,7 +48,6 @@
 #include <string.h>
 #include <wchar.h>
 #include <wctype.h>
-#include "un-namespace.h"
 
 #include "collate.h"
 #include "libc_private.h"

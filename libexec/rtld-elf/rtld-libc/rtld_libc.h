@@ -36,27 +36,14 @@
 #include <sys/fcntl.h>
 #include <sys/stat.h>
 
+#include <libsys.h>
+
 /* Avoid dependencies on libthr (used by closedir/opendir/readdir) */
 #define __isthreaded 0
 #define _pthread_mutex_lock(mtx)	(void)0
 #define _pthread_mutex_unlock(mtx)	(void)0
 #define _pthread_mutex_destroy(mtx)	(void)0
 #define __libc_interposing error, must not use this variable inside rtld
-
-int	__sys_close(int);
-void	__sys__exit(int) __dead2;
-int	__sys_fcntl(int, int, ...);
-int	__sys_fstat(int fd, struct stat *);
-int	__sys_fstatat(int, const char *, struct stat *, int);
-int	__sys___getcwd(char *, size_t);
-int	__sys_open(const char *, int, ...);
-int	__sys_openat(int, const char *, int, ...);
-int	__sys_sigprocmask(int, const sigset_t *, sigset_t *);
-int	__sys_thr_kill(long, int);
-int	__sys_thr_self(long *);
-__ssize_t	__sys_pread(int, void *, __size_t, __off_t);
-__ssize_t	__sys_read(int, void *, __size_t);
-__ssize_t	__sys_write(int, const void *, __size_t);
 
 extern char* __progname;
 const char *_getprogname(void);

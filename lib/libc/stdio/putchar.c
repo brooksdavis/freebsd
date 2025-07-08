@@ -32,9 +32,7 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <stdio.h>
-#include "un-namespace.h"
 #include "local.h"
 #include "libc_private.h"
 

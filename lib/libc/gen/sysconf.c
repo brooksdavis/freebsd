@@ -32,7 +32,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/exterrvar.h>
 #include <sys/time.h>
@@ -42,13 +41,13 @@
 
 #include <elf.h>
 #include <errno.h>
+#include <libsys.h>
 #include <limits.h>
 #include <paths.h>
 #include <pthread.h>		/* we just need the limits */
 #include <semaphore.h>
 #include <time.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 #include "../stdlib/atexit.h"
 #include "tzdir.h"		/* from ../../../contrib/tzcode/stdtime */
@@ -570,10 +569,10 @@ yesno:
 	case _SC_IPV6:
 #if _POSIX_IPV6 == 0
 		sverrno = errno;
-		value = _socket(PF_INET6, SOCK_CLOEXEC | SOCK_DGRAM, 0);
+		value = __sys_socket(PF_INET6, SOCK_CLOEXEC | SOCK_DGRAM, 0);
 		errno = sverrno;
 		if (value >= 0) {
-			_close(value);
+			__sys_close(value);
 			return (200112L);
 		} else
 			return (0);

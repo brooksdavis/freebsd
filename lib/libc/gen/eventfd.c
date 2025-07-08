@@ -24,12 +24,10 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "namespace.h"
 #include <sys/eventfd.h>
 #include <sys/specialfd.h>
 #include <libsys.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 int eventfd(unsigned int initval, int flags)
 {
@@ -42,10 +40,12 @@ int eventfd(unsigned int initval, int flags)
 
 int eventfd_read(int fd, eventfd_t *value)
 {
-	return (sizeof(*value) == _read(fd, value, sizeof(*value)) ? 0 : -1);
+	return (sizeof(*value) == __sys_read(fd, value, sizeof(*value)) ?
+	    0 : -1);
 }
 
 int eventfd_write(int fd, eventfd_t value)
 {
-	return (sizeof(value) == _write(fd, &value, sizeof(value)) ? 0 : -1);
+	return (sizeof(value) == __sys_write(fd, &value, sizeof(value)) ?
+	    0 : -1);
 }

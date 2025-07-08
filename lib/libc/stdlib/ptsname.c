@@ -29,15 +29,14 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/ioctl.h>
 
 #include <errno.h>
+#include <libsys.h>
 #include <paths.h>
 #include <stdlib.h>
 #include <string.h>
-#include "un-namespace.h"
 
 /*
  * __isptmaster():  return whether the file descriptor refers to a
@@ -47,7 +46,7 @@ static int
 __isptmaster(int fildes)
 {
 
-	if (_ioctl(fildes, TIOCPTMASTER) == 0)
+	if (__sys_ioctl(fildes, TIOCPTMASTER, NULL) == 0)
 		return (0);
 
 	if (errno != EBADF)

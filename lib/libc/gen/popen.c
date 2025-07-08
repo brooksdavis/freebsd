@@ -32,7 +32,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/queue.h>
 #include <sys/wait.h>
@@ -40,11 +39,13 @@
 #include <signal.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <paths.h>
+#include "namespace.h"
 #include <pthread.h>
 #include "un-namespace.h"
 #include "libc_private.h"
@@ -88,8 +89,8 @@ popen(const char *command, const char *type)
 		return (NULL);
 
 	if ((cur = malloc(sizeof(struct pid))) == NULL) {
-		(void)_close(pdes[0]);
-		(void)_close(pdes[1]);
+		(void)__sys_close(pdes[0]);
+		(void)__sys_close(pdes[1]);
 		return (NULL);
 	}
 
@@ -101,8 +102,8 @@ popen(const char *command, const char *type)
 		pdes_unused_in_parent = pdes[0];
 	}
 	if (iop == NULL) {
-		(void)_close(pdes[0]);
-		(void)_close(pdes[1]);
+		(void)__sys_close(pdes[0]);
+		(void)__sys_close(pdes[1]);
 		free(cur);
 		return (NULL);
 	}
@@ -117,11 +118,11 @@ popen(const char *command, const char *type)
 	case -1:			/* Error. */
 		THREAD_UNLOCK();
 		/*
-		 * The _close() closes the unused end of pdes[], while
+		 * The __sys_close() closes the unused end of pdes[], while
 		 * the fclose() closes the used end of pdes[], *and* cleans
 		 * up iop.
 		 */
-		(void)_close(pdes_unused_in_parent);
+		(void)__sys_close(pdes_unused_in_parent);
 		free(cur);
 		(void)fclose(iop);
 		return (NULL);
@@ -137,30 +138,31 @@ popen(const char *command, const char *type)
 			 * variables.
 			 */
 			if (pdes[1] != STDOUT_FILENO) {
-				(void)_dup2(pdes[1], STDOUT_FILENO);
+				(void)__sys_dup2(pdes[1], STDOUT_FILENO);
 				if (twoway)
-					(void)_dup2(STDOUT_FILENO, STDIN_FILENO);
+					(void)__sys_dup2(STDOUT_FILENO,
+					    STDIN_FILENO);
 			} else if (twoway && (pdes[1] != STDIN_FILENO)) {
-				(void)_dup2(pdes[1], STDIN_FILENO);
-				(void)_fcntl(pdes[1], F_SETFD, 0);
+				(void)__sys_dup2(pdes[1], STDIN_FILENO);
+				(void)__sys_fcntl(pdes[1], F_SETFD, 0);
 			} else
-				(void)_fcntl(pdes[1], F_SETFD, 0);
+				(void)__sys_fcntl(pdes[1], F_SETFD, 0);
 		} else {
 			if (pdes[0] != STDIN_FILENO) {
-				(void)_dup2(pdes[0], STDIN_FILENO);
+				(void)__sys_dup2(pdes[0], STDIN_FILENO);
 			} else
-				(void)_fcntl(pdes[0], F_SETFD, 0);
+				(void)__sys_fcntl(pdes[0], F_SETFD, 0);
 		}
 		SLIST_FOREACH(p, &pidlist, next)
-			(void)_close(fileno(p->fp));
-		_execve(_PATH_BSHELL, argv, environ);
+			(void)__sys_close(fileno(p->fp));
+		__sys_execve(_PATH_BSHELL, argv, environ);
 		_exit(127);
 		/* NOTREACHED */
 	}
 	THREAD_UNLOCK();
 
 	/* Parent. */
-	(void)_close(pdes_unused_in_parent);
+	(void)__sys_close(pdes_unused_in_parent);
 
 	/* Link into list of file descriptors. */
 	cur->fp = iop;
@@ -175,7 +177,7 @@ popen(const char *command, const char *type)
 	 * the list which will cause an explicit close.
 	 */
 	if (!cloexec)
-		(void)_fcntl(fileno(iop), F_SETFD, 0);
+		(void)__sys_fcntl(fileno(iop), F_SETFD, 0);
 
 	return (iop);
 }
@@ -214,7 +216,7 @@ pclose(FILE *iop)
 	(void)fclose(iop);
 
 	do {
-		pid = _wait4(cur->pid, &pstat, 0, (struct rusage *)0);
+		pid = __sys_wait4(cur->pid, &pstat, 0, (struct rusage *)0);
 	} while (pid == -1 && errno == EINTR);
 
 	free(cur);

@@ -31,7 +31,6 @@
  * $OpenBSD: fts.c,v 1.22 1999/10/03 19:22:22 millert Exp $
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/mount.h>
 #include <sys/stat.h>
@@ -40,11 +39,11 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <fts.h>
+#include <libsys.h>
 #include <stdalign.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 #include "gen-private.h"
 
@@ -199,7 +198,7 @@ __fts_open(FTS *sp, char * const *argv)
 	 * descriptor we run anyway, just more slowly.
 	 */
 	if (!ISSET(FTS_NOCHDIR) &&
-	    (sp->fts_rfd = _open(".", O_RDONLY | O_CLOEXEC, 0)) < 0)
+	    (sp->fts_rfd = __sys_open(".", O_RDONLY | O_CLOEXEC, 0)) < 0)
 		SET(FTS_NOCHDIR);
 
 	return (sp);
@@ -367,7 +366,7 @@ fts_close(FTS *sp)
 	/* Return to original directory, save errno if necessary. */
 	if (!ISSET(FTS_NOCHDIR)) {
 		saved_errno = fchdir(sp->fts_rfd) ? errno : 0;
-		(void)_close(sp->fts_rfd);
+		(void)__sys_close(sp->fts_rfd);
 
 		/* Set errno and return. */
 		if (saved_errno != 0) {
@@ -426,8 +425,8 @@ fts_read(FTS *sp)
 	    (p->fts_info == FTS_SL || p->fts_info == FTS_SLNONE)) {
 		p->fts_info = fts_stat(sp, p, 1, -1);
 		if (p->fts_info == FTS_D && !ISSET(FTS_NOCHDIR)) {
-			if ((p->fts_symfd = _open(".", O_RDONLY | O_CLOEXEC,
-			    0)) < 0) {
+			if ((p->fts_symfd = __sys_open(".",
+			    O_RDONLY | O_CLOEXEC, 0)) < 0) {
 				p->fts_errno = errno;
 				p->fts_info = FTS_ERR;
 			} else
@@ -442,7 +441,7 @@ fts_read(FTS *sp)
 		if (instr == FTS_SKIP ||
 		    (ISSET(FTS_XDEV) && p->fts_dev != sp->fts_dev)) {
 			if (p->fts_flags & FTS_SYMFOLLOW)
-				(void)_close(p->fts_symfd);
+				(void)__sys_close(p->fts_symfd);
 			if (sp->fts_child) {
 				fts_lfree(sp->fts_child);
 				sp->fts_child = NULL;
@@ -519,7 +518,8 @@ next:	tmp = p;
 			p->fts_info = fts_stat(sp, p, 1, -1);
 			if (p->fts_info == FTS_D && !ISSET(FTS_NOCHDIR)) {
 				if ((p->fts_symfd =
-				    _open(".", O_RDONLY | O_CLOEXEC, 0)) < 0) {
+				    __sys_open(".", O_RDONLY | O_CLOEXEC,
+				    0)) < 0) {
 					p->fts_errno = errno;
 					p->fts_info = FTS_ERR;
 				} else
@@ -566,12 +566,12 @@ name:		t = sp->fts_path + NAPPEND(p->fts_parent);
 	} else if (p->fts_flags & FTS_SYMFOLLOW) {
 		if (FCHDIR(sp, p->fts_symfd)) {
 			saved_errno = errno;
-			(void)_close(p->fts_symfd);
+			(void)__sys_close(p->fts_symfd);
 			errno = saved_errno;
 			SET(FTS_STOP);
 			return (NULL);
 		}
-		(void)_close(p->fts_symfd);
+		(void)__sys_close(p->fts_symfd);
 	} else if (!(p->fts_flags & FTS_DONTCHDIR) &&
 	    fts_safe_changedir(sp, p->fts_parent, -1, "..")) {
 		SET(FTS_STOP);
@@ -658,14 +658,14 @@ fts_children(FTS *sp, int instr)
 	    ISSET(FTS_NOCHDIR))
 		return (sp->fts_child = fts_build(sp, instr));
 
-	if ((fd = _open(".", O_RDONLY | O_CLOEXEC, 0)) < 0)
+	if ((fd = __sys_open(".", O_RDONLY | O_CLOEXEC, 0)) < 0)
 		return (NULL);
 	sp->fts_child = fts_build(sp, instr);
 	serrno = (sp->fts_child == NULL) ? errno : 0;
 	rc = fchdir(fd);
 	if (rc < 0 && serrno == 0)
 		serrno = errno;
-	(void)_close(fd);
+	(void)__sys_close(fd);
 	errno = serrno;
 	if (rc < 0)
 		return (NULL);
@@ -1247,15 +1247,15 @@ fts_safe_changedir(FTS *sp, FTSENT *p, int fd, char *path)
 	newfd = fd;
 	if (ISSET(FTS_NOCHDIR))
 		return (0);
-	if (fd < 0 && (newfd = _open(path, O_RDONLY | O_DIRECTORY |
+	if (fd < 0 && (newfd = __sys_open(path, O_RDONLY | O_DIRECTORY |
 	    O_CLOEXEC, 0)) < 0)
 		return (-1);
-	if (_fstat(newfd, &sb)) {
+	if (__sys_fstat(newfd, &sb)) {
 		ret = -1;
 		goto bail;
 	}
 	if (p->fts_dev != sb.st_dev || p->fts_ino != sb.st_ino) {
-		if (_fstatfs(newfd, &sf) != 0 ||
+		if (__sys_fstatfs(newfd, &sf) != 0 ||
 		    (sf.f_flags & MNT_AUTOMOUNTED) == 0) {
 			errno = ENOENT;		/* disinformation */
 			ret = -1;
@@ -1269,7 +1269,7 @@ fts_safe_changedir(FTS *sp, FTSENT *p, int fd, char *path)
 bail:
 	oerrno = errno;
 	if (fd < 0)
-		(void)_close(newfd);
+		(void)__sys_close(newfd);
 	errno = oerrno;
 	return (ret);
 }

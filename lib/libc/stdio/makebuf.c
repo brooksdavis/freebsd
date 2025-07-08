@@ -32,13 +32,12 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <libsys.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "un-namespace.h"
 
 #include "libc_private.h"
 #include "local.h"
@@ -87,7 +86,7 @@ __swhatbuf(FILE *fp, size_t *bufsize, int *couldbetty)
 {
 	struct stat st;
 
-	if (fp->_file < 0 || _fstat(fp->_file, &st) < 0) {
+	if (fp->_file < 0 || __sys_fstat(fp->_file, &st) < 0) {
 		*couldbetty = 0;
 		*bufsize = BUFSIZ;
 		return (__SNPT);

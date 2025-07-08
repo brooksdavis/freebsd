@@ -29,16 +29,15 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <sys/mman.h>
 
 #include <errno.h>
+#include <libsys.h>
 #include <limits.h>
 #include <stdio.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 #include <db.h>
 #include "recno.h"
@@ -79,7 +78,7 @@ __rec_close(DB *dbp)
 			if (fclose(t->bt_rfp))
 				status = RET_ERROR;
 		} else {
-			if (_close(t->bt_rfd))
+			if (__sys_close(t->bt_rfd))
 				status = RET_ERROR;
 		}
 	}
@@ -145,7 +144,7 @@ __rec_sync(const DB *dbp, u_int flags)
 		 */
 		status = (dbp->seq)(dbp, &key, &data, R_FIRST);
 		while (status == RET_SUCCESS) {
-			if (_write(t->bt_rfd, data.data, data.size) !=
+			if (__sys_write(t->bt_rfd, data.data, data.size) !=
 			    (ssize_t)data.size)
 				return (RET_ERROR);
 			status = (dbp->seq)(dbp, &key, &data, R_NEXT);
@@ -158,7 +157,8 @@ __rec_sync(const DB *dbp, u_int flags)
 		while (status == RET_SUCCESS) {
 			iov[0].iov_base = data.data;
 			iov[0].iov_len = data.size;
-			if (_writev(t->bt_rfd, iov, 2) != (ssize_t)(data.size + 1))
+			if (__sys_writev(t->bt_rfd, iov, 2) !=
+			    (ssize_t)(data.size + 1))
 				return (RET_ERROR);
 			status = (dbp->seq)(dbp, &key, &data, R_NEXT);
 		}

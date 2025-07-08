@@ -32,9 +32,7 @@
 /*
  * Almost backwards compatible signal.
  */
-#include "namespace.h"
 #include <signal.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 
 sigset_t _sigintr __hidden;	/* shared with siginterrupt */

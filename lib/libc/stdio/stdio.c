@@ -32,14 +32,14 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <errno.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "un-namespace.h"
+#include "libc_private.h"
 #include "local.h"
 
 /*
@@ -50,7 +50,7 @@ __sread(void *cookie, char *buf, int n)
 {
 	FILE *fp = cookie;
 
-	return(_read(fp->_file, buf, (size_t)n));
+	return(__sys_read(fp->_file, buf, (size_t)n));
 }
 
 int
@@ -58,7 +58,7 @@ __swrite(void *cookie, char const *buf, int n)
 {
 	FILE *fp = cookie;
 
-	return (_write(fp->_file, buf, (size_t)n));
+	return (__sys_write(fp->_file, buf, (size_t)n));
 }
 
 fpos_t
@@ -73,7 +73,7 @@ int
 __sclose(void *cookie)
 {
 
-	return (_close(((FILE *)cookie)->_file));
+	return (__sys_close(((FILE *)cookie)->_file));
 }
 
 /*

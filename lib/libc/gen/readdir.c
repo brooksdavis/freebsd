@@ -29,11 +29,12 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <dirent.h>
 #include <errno.h>
+#include <libsys.h>
 #include <string.h>
+#include "namespace.h"
 #include <pthread.h>
 #include "un-namespace.h"
 
@@ -64,7 +65,7 @@ _readdir_unlocked(DIR *dirp, int flags)
 		    !(dirp->dd_flags & (__DTF_READALL | __DTF_SKIPREAD))) {
 			dirp->dd_size = 0;
 			initial_seek = dirp->dd_seek;
-			ret = _getdirentries(dirp->dd_fd,
+			ret = __sys_getdirentries(dirp->dd_fd,
 			    dirp->dd_buf, dirp->dd_len, &dirp->dd_seek);
 			if (ret <= 0)
 				return (NULL);

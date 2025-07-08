@@ -32,10 +32,9 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
+#include <libsys.h>
 #include <unistd.h>
 #include <stdio.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 #include "local.h"
 
@@ -51,7 +50,7 @@ __gets_unsafe(char *buf)
 	FLOCKFILE_CANCELSAFE(stdin);
 	ORIENT(stdin, -1);
 	if (!warned) {
-		(void) _write(STDERR_FILENO, w, sizeof(w) - 1);
+		(void) __sys_write(STDERR_FILENO, w, sizeof(w) - 1);
 		warned = 1;
 	}
 	for (s = buf; (c = __sgetc(stdin)) != '\n'; ) {

@@ -22,14 +22,12 @@
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#include "namespace.h"
 #include "private.h"
 
 #include "tzfile.h"
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <stdio.h>
-#include "un-namespace.h"
 #include "timelocal.h"
 
 static char *	_add(const char *, char *, const char *);

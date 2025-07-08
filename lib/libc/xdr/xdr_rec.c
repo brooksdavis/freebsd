@@ -48,7 +48,6 @@
  * The other 31 bits encode the byte length of the fragment.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 
 #include <netinet/in.h>
@@ -64,7 +63,6 @@
 #include <rpc/svc.h>
 #include <rpc/clnt.h>
 #include <sys/stddef.h>
-#include "un-namespace.h"
 #include "rpc_com.h"
 
 static bool_t	xdrrec_getlong(XDR *, long *);

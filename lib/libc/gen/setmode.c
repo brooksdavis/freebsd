@@ -32,7 +32,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/sysctl.h>
@@ -48,7 +47,6 @@
 #ifdef SETMODE_DEBUG
 #include <stdio.h>
 #endif
-#include "un-namespace.h"
 #include "libc_private.h"
 
 #define	SET_LEN	6		/* initial # of bitcmd struct to malloc */

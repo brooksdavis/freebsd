@@ -36,7 +36,6 @@
 /*
  * Public key lookup routines
  */
-#include "namespace.h"
 #include <stdio.h>
 #include <pwd.h>
 #include <rpc/rpc.h>
@@ -45,7 +44,6 @@
 #include <rpcsvc/ypclnt.h>
 #include <string.h>
 #include <stdlib.h>
-#include "un-namespace.h"
 
 #define PKFILE "/etc/publickey"
 

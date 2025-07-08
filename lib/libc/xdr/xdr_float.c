@@ -41,14 +41,12 @@
  * xdr.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 
 #include <stdio.h>
 
 #include <rpc/types.h>
 #include <rpc/xdr.h>
-#include "un-namespace.h"
 
 /*
  * NB: Not portable.

@@ -43,7 +43,6 @@
  * This code is large and complicated...
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 
 #include <ctype.h>
@@ -60,7 +59,6 @@
 
 #include <stdarg.h>
 #include "xlocale_private.h"
-#include "un-namespace.h"
 
 #include "libc_private.h"
 #include "local.h"

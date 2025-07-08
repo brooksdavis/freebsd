@@ -29,9 +29,7 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <signal.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 
 /*

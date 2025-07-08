@@ -26,10 +26,8 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <stdarg.h>
 #include <stdio.h>
-#include "un-namespace.h"
 
 int
 dprintf(int fd, const char * __restrict fmt, ...)

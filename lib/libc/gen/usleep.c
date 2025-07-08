@@ -29,11 +29,9 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <libsys.h>
 #include <time.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 #include "libc_private.h"
 

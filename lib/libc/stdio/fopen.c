@@ -32,15 +32,14 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <errno.h>
 #include <limits.h>
-#include "un-namespace.h"
 
 #include "local.h"
 
@@ -55,7 +54,7 @@ fopen(const char * __restrict file, const char * __restrict mode)
 		return (NULL);
 	if ((fp = __sfp()) == NULL)
 		return (NULL);
-	if ((f = _open(file, oflags, DEFFILEMODE)) < 0) {
+	if ((f = __sys_open(file, oflags, DEFFILEMODE)) < 0) {
 		fp->_flags = 0;			/* release */
 		return (NULL);
 	}
@@ -68,7 +67,7 @@ fopen(const char * __restrict file, const char * __restrict mode)
 	 */
 	if (f > SHRT_MAX) {
 		fp->_flags = 0;			/* release */
-		_close(f);
+		__sys_close(f);
 		errno = EMFILE;
 		return (NULL);
 	}

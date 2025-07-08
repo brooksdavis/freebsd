@@ -29,7 +29,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <libsys.h>
@@ -40,7 +39,6 @@
 #include <unistd.h>
 #include <paths.h>
 #include <errno.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 
 #pragma weak system
@@ -97,7 +95,7 @@ __libc_system(const char *command)
 	(void)__libc_sigaction(SIGQUIT, &ign, &quitact);
 	savedpid = pid;
 	do {
-		pid = _wait4(savedpid, &pstat, 0, (struct rusage *)0);
+		pid = __sys_wait4(savedpid, &pstat, 0, (struct rusage *)0);
 	} while (pid == -1 && errno == EINTR);
 	(void)__libc_sigaction(SIGINT, &intact, NULL);
 	(void)__libc_sigaction(SIGQUIT,  &quitact, NULL);

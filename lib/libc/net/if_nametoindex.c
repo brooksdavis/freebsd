@@ -27,18 +27,17 @@
  *	BSDI Id: if_nametoindex.c,v 2.3 2000/04/17 22:38:05 dab Exp
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/sockio.h>
 #include <net/if.h>
 #include <net/if_dl.h>
 #include <ifaddrs.h>
+#include <libsys.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 /*
  * From RFC 2553:
@@ -67,15 +66,15 @@ if_nametoindex(const char *ifname)
 	struct ifaddrs *ifaddrs, *ifa;
 	unsigned int ni;
 
-	s = _socket(AF_INET, SOCK_DGRAM | SOCK_CLOEXEC, 0);
+	s = __sys_socket(AF_INET, SOCK_DGRAM | SOCK_CLOEXEC, 0);
 	if (s != -1) {
 		memset(&ifr, 0, sizeof(ifr));
 		strlcpy(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
-		if (_ioctl(s, SIOCGIFINDEX, &ifr) != -1) {
-			_close(s);
+		if (__sys_ioctl(s, SIOCGIFINDEX, (char *)&ifr) != -1) {
+			__sys_close(s);
 			return (ifr.ifr_index);
 		}
-		_close(s);
+		__sys_close(s);
 	}
 
 	if (getifaddrs(&ifaddrs) < 0)

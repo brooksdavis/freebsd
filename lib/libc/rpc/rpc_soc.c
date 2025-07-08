@@ -47,7 +47,6 @@
  * of TLI/Streams
  */
 
-#include "namespace.h"
 #include "reentrant.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -60,11 +59,11 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <errno.h>
+#include <libsys.h>
 #include <syslog.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 #include "rpc_com.h"
 #include "mt_misc.h"
@@ -145,7 +144,7 @@ syserror:
 	rpc_createerr.cf_error.re_errno = errno;
 
 err:	if (madefd == TRUE)
-		(void)_close(fd);
+		(void)__sys_close(fd);
 	(void) freenetconfigent(nconf);
 	mutex_unlock(&rpcsoc_lock);
 	return (NULL);
@@ -221,12 +220,12 @@ svc_com_create(int fd, u_int sendsize, u_int recvsize, char *netid)
 	memset(&sin, 0, sizeof sin);
 	sin.sin_family = AF_INET;
 	bindresvport(fd, &sin);
-	_listen(fd, SOMAXCONN);
+	__sys_listen(fd, SOMAXCONN);
 	svc = svc_tli_create(fd, nconf, NULL, sendsize, recvsize);
 	(void) freenetconfigent(nconf);
 	if (svc == NULL) {
 		if (madefd)
-			(void)_close(fd);
+			(void)__sys_close(fd);
 		return (NULL);
 	}
 	port = (((struct sockaddr_in *)svc->xp_ltaddr.buf)->sin_port);
@@ -432,14 +431,14 @@ clntunix_create(struct sockaddr_un *raddr, u_long prog, u_long vers, int *sockp,
 		return(cl);
 	}
 	if (*sockp < 0) {
-		*sockp = _socket(AF_LOCAL, SOCK_STREAM, 0);
+		*sockp = __sys_socket(AF_LOCAL, SOCK_STREAM, 0);
 		len = raddr->sun_len = SUN_LEN(raddr);
-		if ((*sockp < 0) || (_connect(*sockp,
+		if ((*sockp < 0) || (__sys_connect(*sockp,
 		    (struct sockaddr *)raddr, len) < 0)) {
 			rpc_createerr.cf_stat = RPC_SYSTEMERROR;
 			rpc_createerr.cf_error.re_errno = errno;
 			if (*sockp != -1)
-				(void)_close(*sockp);
+				(void)__sys_close(*sockp);
 			goto done;
 		}
 	}
@@ -491,7 +490,7 @@ svcunix_create(int sock, u_int sendsize, u_int recvsize, char *path)
 	addrlen = sizeof (struct sockaddr_un);
 	sa = (struct sockaddr *)&sun;
 
-	if (_bind(sock, sa, addrlen) < 0)
+	if (__sys_bind(sock, sa, addrlen) < 0)
 		goto done;
 
 	taddr.addr.len = taddr.addr.maxlen = addrlen;
@@ -501,7 +500,7 @@ svcunix_create(int sock, u_int sendsize, u_int recvsize, char *path)
 	memcpy(taddr.addr.buf, sa, addrlen);
 
 	if (nconf->nc_semantics != NC_TPI_CLTS) {
-		if (_listen(sock, SOMAXCONN) < 0) {
+		if (__sys_listen(sock, SOMAXCONN) < 0) {
 			free(taddr.addr.buf);
 			goto done;
 		}

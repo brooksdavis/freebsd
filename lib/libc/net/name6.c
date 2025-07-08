@@ -85,7 +85,6 @@
  *	Atsushi Onoe <onoe@sm.sony.co.jp>
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/socket.h>
 #include <sys/time.h>
@@ -102,6 +101,7 @@
 #include <arpa/nameser.h>
 
 #include <errno.h>
+#include <libsys.h>
 #include <netdb.h>
 #include <resolv.h>
 #include <stdio.h>
@@ -110,7 +110,6 @@
 #include <stdarg.h>
 #include <nsswitch.h>
 #include <unistd.h>
-#include "un-namespace.h"
 #include "netdb_private.h"
 #include "res_private.h"
 
@@ -234,7 +233,7 @@ getipnodebyname(const char *name, int af, int flags, int *errp)
 	if (flags & AI_ADDRCONFIG) {
 		int s;
 
-		if ((s = _socket(af, SOCK_DGRAM | SOCK_CLOEXEC, 0)) < 0)
+		if ((s = __sys_socket(af, SOCK_DGRAM | SOCK_CLOEXEC, 0)) < 0)
 			return NULL;
 		/*
 		 * TODO:
@@ -243,7 +242,7 @@ getipnodebyname(const char *name, int af, int flags, int *errp)
 		 * (or appropriate interval),
 		 * because addresses will be dynamically assigned or deleted.
 		 */
-		_close(s);
+		__sys_close(s);
 	}
 	
 #ifdef INET6
@@ -867,13 +866,12 @@ set_source(struct hp_order *aio, struct policyhead *ph)
 	}
 
 	/* open a socket to get the source address for the given dst */
-	if ((s = _socket(ss.ss_family, SOCK_DGRAM | SOCK_CLOEXEC,
-	    IPPROTO_UDP)) < 0)
+	if ((s = __sys_socket(ss.ss_family, SOCK_DGRAM | SOCK_CLOEXEC, IPPROTO_UDP)) < 0)
 		return;		/* give up */
-	if (_connect(s, (struct sockaddr *)&ss, ss.ss_len) < 0)
+	if (__sys_connect(s, (struct sockaddr *)&ss, ss.ss_len) < 0)
 		goto cleanup;
 	srclen = ss.ss_len;
-	if (_getsockname(s, &aio->aio_srcsa, &srclen) < 0) {
+	if (__sys_getsockname(s, &aio->aio_srcsa, &srclen) < 0) {
 		aio->aio_srcsa.sa_family = AF_UNSPEC;
 		goto cleanup;
 	}
@@ -887,7 +885,7 @@ set_source(struct hp_order *aio, struct policyhead *ph)
 
 		memset(&ifr6, 0, sizeof(ifr6));
 		memcpy(&ifr6.ifr_addr, &ss, ss.ss_len);
-		if (_ioctl(s, SIOCGIFAFLAG_IN6, &ifr6) == 0) {
+		if (__sys_ioctl(s, SIOCGIFAFLAG_IN6, (char *)&ifr6) == 0) {
 			flags6 = ifr6.ifr_ifru.ifru_flags6;
 			if ((flags6 & IN6_IFF_DEPRECATED))
 				aio->aio_srcflag |= AIO_SRCFLAG_DEPRECATED;
@@ -896,7 +894,7 @@ set_source(struct hp_order *aio, struct policyhead *ph)
 #endif
 
   cleanup:
-	_close(s);
+	__sys_close(s);
 	return;
 }
 

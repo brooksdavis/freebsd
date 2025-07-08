@@ -32,15 +32,14 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "un-namespace.h"
 #include "local.h"
 #include "libc_private.h"
 
@@ -168,7 +167,7 @@ _fseeko(FILE *fp, off_t offset, int whence, int ltest)
 		goto dumb;
 	if ((fp->_flags & __SOPT) == 0) {
 		if (seekfn != __sseek ||
-		    fp->_file < 0 || _fstat(fp->_file, &st) ||
+		    fp->_file < 0 || __sys_fstat(fp->_file, &st) ||
 		    (st.st_mode & S_IFMT) != S_IFREG) {
 			fp->_flags |= __SNPT;
 			goto dumb;
@@ -184,7 +183,7 @@ _fseeko(FILE *fp, off_t offset, int whence, int ltest)
 	if (whence == SEEK_SET)
 		target = offset;
 	else {
-		if (_fstat(fp->_file, &st))
+		if (__sys_fstat(fp->_file, &st))
 			goto dumb;
 		if (offset > 0 && st.st_size > OFF_MAX - offset) {
 			errno = EOVERFLOW;

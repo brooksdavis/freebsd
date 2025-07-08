@@ -32,16 +32,15 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <libsys.h>
 #include <limits.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 #include "local.h"
 
@@ -81,7 +80,7 @@ freopen(const char * __restrict file, const char * __restrict mode,
 			fp = NULL;
 			goto end;
 		}
-		if ((dflags = _fcntl(fp->_file, F_GETFL)) < 0) {
+		if ((dflags = __sys_fcntl(fp->_file, F_GETFL, 0)) < 0) {
 			sverrno = errno;
 			fclose(fp);
 			errno = sverrno;
@@ -101,7 +100,7 @@ freopen(const char * __restrict file, const char * __restrict mode,
 		if ((oflags ^ dflags) & O_APPEND) {
 			dflags &= ~O_APPEND;
 			dflags |= oflags & O_APPEND;
-			if (_fcntl(fp->_file, F_SETFL, dflags) < 0) {
+			if (__sys_fcntl(fp->_file, F_SETFL, dflags) < 0) {
 				sverrno = errno;
 				fclose(fp);
 				errno = sverrno;
@@ -114,9 +113,9 @@ freopen(const char * __restrict file, const char * __restrict mode,
 		if (!(oflags & O_APPEND))
 			(void) _sseek(fp, (fpos_t)0, SEEK_SET);
 		if ((oflags & O_CLOEXEC) != 0) {
-			fdflags = _fcntl(fp->_file, F_GETFD, 0);
+			fdflags = __sys_fcntl(fp->_file, F_GETFD, 0);
 			if (fdflags != -1 && (fdflags & FD_CLOEXEC) == 0)
-				(void) _fcntl(fp->_file, F_SETFD,
+				(void) __sys_fcntl(fp->_file, F_SETFD,
 				    fdflags | FD_CLOEXEC);
 		}
 		f = fp->_file;
@@ -150,14 +149,14 @@ freopen(const char * __restrict file, const char * __restrict mode,
 	}
 
 	/* Get a new descriptor to refer to the new file. */
-	f = _open(file, oflags, DEFFILEMODE);
+	f = __sys_open(file, oflags, DEFFILEMODE);
 	/* If out of fd's close the old one and try again. */
 	if (f < 0 && isopen && wantfd > STDERR_FILENO &&
 	    (errno == ENFILE || errno == EMFILE)) {
 		(void) (*fp->_close)(fp->_cookie);
 		isopen = 0;
 		wantfd = -1;
-		f = _open(file, oflags, DEFFILEMODE);
+		f = __sys_open(file, oflags, DEFFILEMODE);
 	}
 	sverrno = errno;
 
@@ -204,12 +203,13 @@ finish:
 	 * assume stderr is always fd STDERR_FILENO, even if being freopen'd.
 	 */
 	if (wantfd >= 0) {
-		if ((oflags & O_CLOEXEC ? _fcntl(f, F_DUP2FD_CLOEXEC, wantfd) :
-		    _dup2(f, wantfd)) >= 0) {
-			(void)_close(f);
+		if ((oflags & O_CLOEXEC ?
+		     __sys_fcntl(f, F_DUP2FD_CLOEXEC, wantfd) :
+		     __sys_dup2(f, wantfd)) >= 0) {
+			(void) __sys_close(f);
 			f = wantfd;
 		} else
-			(void)_close(fp->_file);
+			(void) __sys_close(fp->_file);
 	}
 
 	/*

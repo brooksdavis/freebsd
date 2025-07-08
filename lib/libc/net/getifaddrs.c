@@ -31,7 +31,6 @@
  * try-and-error for region size.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
@@ -47,7 +46,6 @@
 #include <ifaddrs.h>
 #include <stdlib.h>
 #include <string.h>
-#include "un-namespace.h"
 
 #if !defined(AF_LINK)
 #define	SA_LEN(sa)	sizeof(struct sockaddr)

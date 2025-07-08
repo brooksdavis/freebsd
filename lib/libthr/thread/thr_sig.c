@@ -26,7 +26,6 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/auxv.h>
 #include <sys/elf.h>
@@ -34,8 +33,10 @@
 #include <sys/syscall.h>
 #include <signal.h>
 #include <errno.h>
+#include <libsys.h>
 #include <stdlib.h>
 #include <string.h>
+#include "namespace.h"
 #include <pthread.h>
 #include <pthread_np.h>
 #include "un-namespace.h"

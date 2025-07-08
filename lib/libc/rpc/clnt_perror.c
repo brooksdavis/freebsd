@@ -37,7 +37,6 @@
  * Copyright (C) 1984, Sun Microsystems, Inc.
  *
  */
-#include "namespace.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,7 +46,6 @@
 #include <rpc/types.h>
 #include <rpc/auth.h>
 #include <rpc/clnt.h>
-#include "un-namespace.h"
 
 static char *buf;
 

@@ -40,7 +40,6 @@
  * arrays.  See xdr.h for more info on the interface to xdr.
  */
 
-#include "namespace.h"
 #include <err.h>
 #include <limits.h>
 #include <stdio.h>
@@ -49,7 +48,6 @@
 
 #include <rpc/types.h>
 #include <rpc/xdr.h>
-#include "un-namespace.h"
 
 /*
  * XDR an array of arbitrary elements

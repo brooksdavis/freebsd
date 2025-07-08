@@ -34,7 +34,6 @@
  * Copyright (c) 1989 by Sun Microsystems, Inc.
  */
 
-#include "namespace.h"
 #include "reentrant.h"
 #include <stdio.h>
 #include <errno.h>
@@ -44,7 +43,6 @@
 #include <string.h>
 #include <rpc/rpc.h>
 #include <unistd.h>
-#include "un-namespace.h"
 #include "rpc_com.h"
 
 /*

@@ -51,9 +51,7 @@
 #include <rpcsvc/ypclnt.h>
 #endif
 #include <unistd.h>
-#include "namespace.h"
 #include "reentrant.h"
-#include "un-namespace.h"
 #include "libc_private.h"
 #include "nss_tls.h"
 #ifdef NS_CACHING

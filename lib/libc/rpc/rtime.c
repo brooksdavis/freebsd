@@ -42,18 +42,17 @@
  * subtract seconds before Jan 1, 1970 to get
  * what unix uses.
  */
-#include "namespace.h"
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+#include <libsys.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <netinet/in.h>
 #include <stdio.h>
 #include <netdb.h>
-#include "un-namespace.h"
 
 extern int _rpc_dtablesize( void );
 
@@ -80,7 +79,7 @@ rtime(struct sockaddr_in *addrp, struct timeval *timep,
 	} else {
 		type = SOCK_DGRAM;
 	}
-	s = _socket(AF_INET, type, 0);
+	s = __sys_socket(AF_INET, type, 0);
 	if (s < 0) {
 		return(-1);
 	}
@@ -94,8 +93,8 @@ rtime(struct sockaddr_in *addrp, struct timeval *timep,
 	addrp->sin_port = serv->s_port;
 
 	if (type == SOCK_DGRAM) {
-		res = _sendto(s, (char *)&thetime, sizeof(thetime), 0,
-			     (struct sockaddr *)addrp, sizeof(*addrp));
+		res = __sys_sendto(s, (char *)&thetime, sizeof(thetime), 0,
+		    (struct sockaddr *)addrp, sizeof(*addrp));
 		if (res < 0) {
 			do_close(s);
 			return(-1);
@@ -103,8 +102,8 @@ rtime(struct sockaddr_in *addrp, struct timeval *timep,
 		do {
 			FD_ZERO(&readfds);
 			FD_SET(s, &readfds);
-			res = _select(_rpc_dtablesize(), &readfds,
-				     (fd_set *)NULL, (fd_set *)NULL, timeout);
+			res = __sys_select(_rpc_dtablesize(), &readfds,
+			    (fd_set *)NULL, (fd_set *)NULL, timeout);
 		} while (res < 0 && errno == EINTR);
 		if (res <= 0) {
 			if (res == 0) {
@@ -114,18 +113,19 @@ rtime(struct sockaddr_in *addrp, struct timeval *timep,
 			return(-1);
 		}
 		fromlen = sizeof(from);
-		res = _recvfrom(s, (char *)&thetime, sizeof(thetime), 0,
-			       (struct sockaddr *)&from, &fromlen);
+		res = __sys_recvfrom(s, (char *)&thetime, sizeof(thetime), 0,
+		    (struct sockaddr *)&from, &fromlen);
 		do_close(s);
 		if (res < 0) {
 			return(-1);
 		}
 	} else {
-		if (_connect(s, (struct sockaddr *)addrp, sizeof(*addrp)) < 0) {
+		if (__sys_connect(s, (struct sockaddr *)addrp,
+		    sizeof(*addrp)) < 0) {
 			do_close(s);
 			return(-1);
 		}
-		res = _read(s, (char *)&thetime, sizeof(thetime));
+		res = __sys_read(s, (char *)&thetime, sizeof(thetime));
 		do_close(s);
 		if (res < 0) {
 			return(-1);
@@ -147,6 +147,6 @@ do_close(int s)
 	int save;
 
 	save = errno;
-	(void)_close(s);
+	(void)__sys_close(s);
 	errno = save;
 }

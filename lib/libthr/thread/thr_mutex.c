@@ -38,12 +38,13 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
+#include <libsys.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
 #include <sys/param.h>
 #include <sys/queue.h>
+#include "namespace.h"
 #include <pthread.h>
 #include <pthread_np.h>
 #include "un-namespace.h"
@@ -684,7 +685,7 @@ mutex_lock_sleep(struct pthread *curthread, struct pthread_mutex *m,
 yield_loop:
 	count = m->m_yieldloops;
 	while (count--) {
-		_sched_yield();
+		__sys_sched_yield();
 		owner = m->m_lock.m_owner;
 		if ((owner & ~UMUTEX_CONTESTED) == 0) {
 			if (atomic_cmpset_acq_32(&m->m_lock.m_owner, owner,

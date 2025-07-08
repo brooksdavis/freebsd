@@ -43,13 +43,11 @@
  * routines are also in this program.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 
 #include <assert.h>
 
 #include <rpc/rpc.h>
-#include "un-namespace.h"
 
 static void accepted(enum accept_stat, struct rpc_err *);
 static void rejected(enum reject_stat, struct rpc_err *);

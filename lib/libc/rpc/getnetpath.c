@@ -34,14 +34,12 @@
  * Copyright (c) 1989 by Sun Microsystems, Inc.
  */
 
-#include "namespace.h"
 #include <stdio.h>
 #include <errno.h>
 #include <netconfig.h>
 #include <stdlib.h>
 #include <string.h>
 #include <syslog.h>
-#include "un-namespace.h"
 
 /*
  * internal structure to keep track of a netpath "session"

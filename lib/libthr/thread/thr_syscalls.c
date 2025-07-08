@@ -65,7 +65,6 @@
  *
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/exterrvar.h>
 #include <sys/mman.h>
@@ -80,6 +79,7 @@
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <poll.h>
 #include <signal.h>
 #include <stdarg.h>
@@ -88,6 +88,7 @@
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
+#include "namespace.h"
 #include <pthread.h>
 #include "un-namespace.h"
 

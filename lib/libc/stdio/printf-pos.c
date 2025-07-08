@@ -37,7 +37,6 @@
  * (%m$ and %m$.n$) for vfprintf() and vfwprintf().
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 
 #include <limits.h>
@@ -49,7 +48,6 @@
 #include <string.h>
 #include <wchar.h>
 
-#include "un-namespace.h"
 #include "printflocal.h"
 
 #ifdef	NL_ARGMAX

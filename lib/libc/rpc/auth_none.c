@@ -38,14 +38,12 @@
  * Copyright (C) 1984, Sun Microsystems, Inc.
  */
 
-#include "namespace.h"
 #include "reentrant.h"
 #include <assert.h>
 #include <stdlib.h>
 #include <rpc/types.h>
 #include <rpc/xdr.h>
 #include <rpc/auth.h>
-#include "un-namespace.h"
 #include "mt_misc.h"
 
 #define MAX_MARSHAL_SIZE 20

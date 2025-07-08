@@ -32,11 +32,10 @@
  */
 
 #include <sys/types.h>
-#include "namespace.h"
 #include <sys/acl.h>
-#include "un-namespace.h"
 
 #include <errno.h>
+#include <libsys.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -119,7 +118,7 @@ acl_set_fd_np(int fd, acl_t acl, acl_type_t type)
 
 	acl->ats_cur_entry = 0;
 
-	return (___acl_set_fd(fd, type, &acl->ats_acl));
+	return (__sys___acl_set_fd(fd, type, &acl->ats_acl));
 }
 
 /*

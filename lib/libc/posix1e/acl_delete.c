@@ -32,10 +32,10 @@
  */
 
 #include <sys/types.h>
-#include "namespace.h"
 #include <sys/acl.h>
-#include "un-namespace.h"
 #include <sys/errno.h>
+
+#include <libsys.h>
 
 #include "acl_support.h"
 
@@ -43,14 +43,14 @@ int
 acl_delete_def_file(const char *path_p)
 {
 
-	return (__acl_delete_file(path_p, ACL_TYPE_DEFAULT));
+	return (__sys___acl_delete_file(path_p, ACL_TYPE_DEFAULT));
 }
 
 int
 acl_delete_def_link_np(const char *path_p)
 {
 
-	return (__acl_delete_link(path_p, ACL_TYPE_DEFAULT));
+	return (__sys___acl_delete_link(path_p, ACL_TYPE_DEFAULT));
 }
 
 int
@@ -58,7 +58,7 @@ acl_delete_file_np(const char *path_p, acl_type_t type)
 {
 
 	type = _acl_type_unold(type);
-	return (__acl_delete_file(path_p, type));
+	return (__sys___acl_delete_file(path_p, type));
 }
 
 int
@@ -66,7 +66,7 @@ acl_delete_link_np(const char *path_p, acl_type_t type)
 {
 
 	type = _acl_type_unold(type);
-	return (__acl_delete_link(path_p, type));
+	return (__sys___acl_delete_link(path_p, type));
 }
 
 int
@@ -74,5 +74,5 @@ acl_delete_fd_np(int filedes, acl_type_t type)
 {
 
 	type = _acl_type_unold(type);
-	return (___acl_delete_fd(filedes, type));
+	return (__sys___acl_delete_fd(filedes, type));
 }

@@ -80,8 +80,10 @@
  * stubs.
  */
 
+#include "namespace.h"
 #include <pthread.h>
 #include <pthread_np.h>
+#include "un-namespace.h"
 #include "libc_private.h"
 
 #define mutex_t			pthread_mutex_t

@@ -27,12 +27,10 @@
  *
  */
 
-#include "namespace.h"
 #define _NS_PRIVATE
 #include <nsswitch.h>
 #include <stdlib.h>
 #include <string.h>
-#include "un-namespace.h"
 #include "nscachedcli.h"
 #include "nscache.h"
 

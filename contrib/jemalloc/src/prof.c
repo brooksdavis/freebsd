@@ -1682,7 +1682,12 @@ prof_open_maps(const char *format, ...) {
 	va_end(ap);
 
 #if defined(O_CLOEXEC)
-	mfd = open(filename, O_RDONLY | O_CLOEXEC);
+	mfd = open(filename, O_RDONLY | O_CLOEXEC
+#ifdef open
+	    /* open is redefined and might not be variadic so pass a mode */
+	    , 0
+#endif
+	    );
 #else
 	mfd = open(filename, O_RDONLY);
 	if (mfd != -1) {

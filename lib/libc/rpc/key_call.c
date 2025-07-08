@@ -40,12 +40,12 @@
  * gendeskey(deskey) - generate a secure des key
  */
 
-#include "namespace.h"
 #include "reentrant.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
+#include <libsys.h>
 #include <rpc/rpc.h>
 #include <rpc/auth.h>
 #include <rpc/auth_unix.h>
@@ -57,7 +57,6 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include <sys/fcntl.h>
-#include "un-namespace.h"
 #include "mt_misc.h"
 
 
@@ -403,7 +402,7 @@ getkeyserv_handle(int vers)
 	(void) clnt_control(kcp->client, CLSET_RETRY_TIMEOUT,
 		(char *)&wait_time);
 	if (clnt_control(kcp->client, CLGET_FD, (char *)&fd))
-		_fcntl(fd, F_SETFD, 1);	/* make it "close on exec" */
+		__sys_fcntl(fd, F_SETFD, 1);	/* make it "close on exec" */
 
 	return (kcp->client);
 }

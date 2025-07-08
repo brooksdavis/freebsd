@@ -32,7 +32,6 @@
  * SUCH DAMAGE.
  *
  */
-#include "namespace.h"
 #include <sys/param.h>
 #ifdef YP
 #include <rpc/rpc.h>
@@ -46,16 +45,17 @@
 #include <hesiod.h>
 #endif
 #include <netdb.h>
+#include "namespace.h"
 #include <nsswitch.h>
 #include <pthread.h>
 #include <pthread_np.h>
+#include "un-namespace.h"
 #include <pwd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <syslog.h>
 #include <unistd.h>
-#include "un-namespace.h"
 #include <db.h>
 #include "libc_private.h"
 #include "pw_scan.h"

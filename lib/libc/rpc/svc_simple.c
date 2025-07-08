@@ -45,7 +45,6 @@
  * for the given prognum and procnum.
  */
 
-#include "namespace.h"
 #include "reentrant.h"
 #include <sys/types.h>
 #include <rpc/rpc.h>
@@ -54,7 +53,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <err.h>
-#include "un-namespace.h"
 
 #include "rpc_com.h"
 #include "mt_misc.h"

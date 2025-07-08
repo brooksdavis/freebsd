@@ -24,6 +24,7 @@
  * SUCH DAMAGE.
  */
 
+#include <sys/param.h>
 #include <sys/fcntl.h>
 #include <sys/stat.h>
 #include <libsys.h>

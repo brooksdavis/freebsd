@@ -381,4 +381,16 @@ struct uexterror;
 int __uexterr_format(const struct uexterror *ue, char *buf, size_t bufsz);
 int __libc_uexterr_gettext(char *buf, size_t bufsz);
 
+struct __sFILE;
+
+void _err(int eval, const char *fmt, ...);
+void _flockfile(struct __sFILE *stream);
+void _funlockfile(struct __sFILE *stream);
+const char *_getprogname(void);
+int __waitpid(__pid_t, int *, int);
+void _warn(const char *fmt, ...);
+struct pthread;
+int _pthread_kill(struct pthread *, int);
+int _pthread_sigmask(int, const __sigset_t * __restrict, __sigset_t * __restrict);
+
 #endif /* _LIBC_PRIVATE_H_ */

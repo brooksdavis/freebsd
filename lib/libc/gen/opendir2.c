@@ -29,17 +29,16 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdbool.h>
+#include <libsys.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 #include "gen-private.h"
 #include "telldir.h"
@@ -53,13 +52,14 @@ __opendir2(const char *name, int flags)
 
 	if ((flags & (__DTF_READALL | __DTF_SKIPREAD)) != 0)
 		return (NULL);
-	if ((fd = _open(name, O_DIRECTORY | O_RDONLY | O_CLOEXEC)) == -1)
+	if ((fd = __sys_open(name, O_DIRECTORY | O_RDONLY | O_CLOEXEC, 0)) ==
+	    -1)
 		return (NULL);
 
 	dir = __opendir_common(fd, flags, false);
 	if (dir == NULL) {
 		saved_errno = errno;
-		_close(fd);
+		__sys_close(fd);
 		errno = saved_errno;
 	}
 	return (dir);
@@ -119,14 +119,15 @@ _filldir(DIR *dirp, bool use_current_pos)
 	 * the directory descriptor for fchdir or *at
 	 * functions, such as fts.c.
 	 */
-	if ((fd2 = _openat(dirp->dd_fd, ".", O_RDONLY | O_CLOEXEC)) == -1)
+	if ((fd2 = __sys_openat(dirp->dd_fd, ".", O_RDONLY | O_CLOEXEC,
+	    0)) == -1)
 		return (false);
 
 	if (use_current_pos) {
 		pos = lseek(dirp->dd_fd, 0, SEEK_CUR);
 		if (pos == -1 || lseek(fd2, pos, SEEK_SET) == -1) {
 			saved_errno = errno;
-			_close(fd2);
+			__sys_close(fd2);
 			errno = saved_errno;
 			return (false);
 		}
@@ -143,26 +144,26 @@ _filldir(DIR *dirp, bool use_current_pos)
 			buf = reallocf(buf, len);
 			if (buf == NULL) {
 				saved_errno = errno;
-				_close(fd2);
+				__sys_close(fd2);
 				errno = saved_errno;
 				return (false);
 			}
 			ddptr = buf + (len - space);
 		}
 
-		n = _getdirentries(fd2, ddptr, space, &dirp->dd_seek);
+		n = __sys_getdirentries(fd2, ddptr, space, &dirp->dd_seek);
 		if (n > 0) {
 			ddptr += n;
 			space -= n;
 		}
 		if (n < 0) {
 			saved_errno = errno;
-			_close(fd2);
+			__sys_close(fd2);
 			errno = saved_errno;
 			return (false);
 		}
 	} while (n > 0);
-	_close(fd2);
+	__sys_close(fd2);
 
 	ddeptr = ddptr;
 
@@ -254,7 +255,7 @@ is_unionstack(int fd)
 	 * This call shouldn't fail, but if it does, just assume that the
 	 * answer is no.
 	 */
-	return (_fcntl(fd, F_ISUNIONSTACK, 0) > 0);
+	return (__sys_fcntl(fd, F_ISUNIONSTACK, 0) > 0);
 }
 
 /*
@@ -314,7 +315,7 @@ __opendir_common(int fd, int flags, bool use_current_pos)
 			 * to prime dd_seek.  This also checks if the
 			 * fd passed to fdopendir() is a directory.
 			 */
-			ret = _getdirentries(dirp->dd_fd,
+			ret = __sys_getdirentries(dirp->dd_fd,
 			    dirp->dd_buf, dirp->dd_len, &dirp->dd_seek);
 			if (ret < 0)
 				goto fail;

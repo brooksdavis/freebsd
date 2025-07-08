@@ -29,7 +29,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/filio.h>
@@ -43,7 +42,6 @@
 #include <errno.h>
 #include "reentrant.h"
 #include <ssp/ssp.h>
-#include "un-namespace.h"
 
 #include "libc_private.h"
 

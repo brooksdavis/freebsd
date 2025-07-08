@@ -33,11 +33,10 @@
  * Print the name of the signal indicated
  * along with the supplied message.
  */
-#include "namespace.h"
+#include <libsys.h>
 #include <signal.h>
 #include <string.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 void
 psignal(int sig, const char *s)
@@ -49,11 +48,11 @@ psignal(int sig, const char *s)
 	else
 		c = "Unknown signal";
 	if (s != NULL && *s != '\0') {
-		(void)_write(STDERR_FILENO, s, strlen(s));
-		(void)_write(STDERR_FILENO, ": ", 2);
+		(void)__sys_write(STDERR_FILENO, s, strlen(s));
+		(void)__sys_write(STDERR_FILENO, ": ", 2);
 	}
-	(void)_write(STDERR_FILENO, c, strlen(c));
-	(void)_write(STDERR_FILENO, "\n", 1);
+	(void)__sys_write(STDERR_FILENO, c, strlen(c));
+	(void)__sys_write(STDERR_FILENO, "\n", 1);
 }
 
 void

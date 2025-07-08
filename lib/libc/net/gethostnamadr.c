@@ -25,8 +25,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
-#include "reentrant.h"
 #include <sys/param.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -38,10 +36,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include "namespace.h"
 #include <nsswitch.h>
+#include "un-namespace.h"
 #include <arpa/nameser.h>		/* XXX hack for _res */
 #include <resolv.h>			/* XXX hack for _res */
-#include "un-namespace.h"
+#include "reentrant.h"
 #include "netdb_private.h"
 #ifdef NS_CACHING
 #include "nscache.h"

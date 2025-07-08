@@ -28,11 +28,10 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-#include "un-namespace.h"
+#include <libsys.h>
 
 int __dup3(int, int, int);
 
@@ -54,7 +53,8 @@ __dup3(int oldfd, int newfd, int flags)
 	fdflags = ((flags & O_CLOEXEC) != 0 ? FD_CLOEXEC : 0) |
 	    ((flags & O_CLOFORK) != 0 ? FD_CLOFORK : 0);
 
-	return (_fcntl(oldfd, F_DUP3FD | (fdflags << F_DUP3FD_SHIFT), newfd));
+	return (__sys_fcntl(oldfd, F_DUP3FD | (fdflags << F_DUP3FD_SHIFT),
+	    newfd));
 }
 
 __weak_reference(__dup3, dup3);

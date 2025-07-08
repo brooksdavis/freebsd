@@ -26,16 +26,15 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <ssp/ssp.h>
 #include <errno.h>
+#include <libsys.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 
 static const char CorruptEnvFindMsg[] = "environment corrupt; unable to find ";
@@ -106,11 +105,11 @@ __env_warnx(const char *msg, const char *name, size_t nameLen)
 	static const char nl[] = "\n";
 	static const char progSep[] = ": ";
 
-	_write(STDERR_FILENO, _getprogname(), strlen(_getprogname()));
-	_write(STDERR_FILENO, progSep, sizeof(progSep) - 1);
-	_write(STDERR_FILENO, msg, strlen(msg));
-	_write(STDERR_FILENO, name, nameLen);
-	_write(STDERR_FILENO, nl, sizeof(nl) - 1);
+	__sys_write(STDERR_FILENO, _getprogname(), strlen(_getprogname()));
+	__sys_write(STDERR_FILENO, progSep, sizeof(progSep) - 1);
+	__sys_write(STDERR_FILENO, msg, strlen(msg));
+	__sys_write(STDERR_FILENO, name, nameLen);
+	__sys_write(STDERR_FILENO, nl, sizeof(nl) - 1);
 
 	return;
 }

@@ -26,11 +26,9 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <errno.h>
 #include <stdio.h>
 #include <wchar.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 #include "local.h"
 

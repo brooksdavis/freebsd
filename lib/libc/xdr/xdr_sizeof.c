@@ -37,12 +37,10 @@
  * when serialized using XDR.
  */
 
-#include "namespace.h"
 #include <rpc/types.h>
 #include <rpc/xdr.h>
 #include <sys/types.h>
 #include <stdlib.h>
-#include "un-namespace.h"
 
 /* ARGSUSED */
 static bool_t

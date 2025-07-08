@@ -44,7 +44,6 @@
  * as close as possible to vfprintf.c for ease of maintenance.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 
 #include <ctype.h>
@@ -59,7 +58,6 @@
 #include <string.h>
 #include <wchar.h>
 #include <wctype.h>
-#include "un-namespace.h"
 
 #include "libc_private.h"
 #include "local.h"

@@ -26,7 +26,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/endian.h>
 #include <sys/param.h>
 #include <sys/time.h>
@@ -34,7 +33,6 @@
 #include <string.h>
 #include <utmpx.h>
 #include "utxdb.h"
-#include "un-namespace.h"
 
 #define	UTOF_STRING(ut, fu, field) do { \
 	strncpy((fu)->fu_ ## field, (ut)->ut_ ## field,		\

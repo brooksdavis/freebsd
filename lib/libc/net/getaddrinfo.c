@@ -53,7 +53,6 @@
  * - FreeBSD supported $GAI.  The code does not.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/socket.h>
 #include <net/if.h>
@@ -72,6 +71,7 @@
 #include <rpc/rpc.h>
 #include <rpcsvc/yp_prot.h>
 #include <rpcsvc/ypclnt.h>
+#include <libsys.h>
 #include <netdb.h>
 #include <resolv.h>
 #include <string.h>
@@ -89,6 +89,7 @@
 #endif
 
 #include <stdarg.h>
+#include "namespace.h"
 #include <nsswitch.h>
 #include "un-namespace.h"
 #include "netdb_private.h"
@@ -874,7 +875,7 @@ set_source(struct ai_order *aio, struct policyhead *ph)
 	get_port(&ai, "1", 0);
 
 	/* open a socket to get the source address for the given dst */
-	if ((s = _socket(ai.ai_family, ai.ai_socktype | SOCK_CLOEXEC,
+	if ((s = __sys_socket(ai.ai_family, ai.ai_socktype | SOCK_CLOEXEC,
 	    ai.ai_protocol)) < 0)
 		return;		/* give up */
 #ifdef INET6
@@ -883,14 +884,14 @@ set_source(struct ai_order *aio, struct policyhead *ph)
 		int off = 0;
 
 		if (IN6_IS_ADDR_V4MAPPED(&sin6->sin6_addr))
-			(void)_setsockopt(s, IPPROTO_IPV6, IPV6_V6ONLY,
+			(void) __sys_setsockopt(s, IPPROTO_IPV6, IPV6_V6ONLY,
 			    (char *)&off, sizeof(off));
 	}
 #endif
-	if (_connect(s, ai.ai_addr, ai.ai_addrlen) < 0)
+	if (__sys_connect(s, ai.ai_addr, ai.ai_addrlen) < 0)
 		goto cleanup;
 	srclen = ai.ai_addrlen;
-	if (_getsockname(s, &aio->aio_srcsa, &srclen) < 0) {
+	if (__sys_getsockname(s, &aio->aio_srcsa, &srclen) < 0) {
 		aio->aio_srcsa.sa_family = AF_UNSPEC;
 		goto cleanup;
 	}
@@ -904,7 +905,7 @@ set_source(struct ai_order *aio, struct policyhead *ph)
 
 		memset(&ifr6, 0, sizeof(ifr6));
 		memcpy(&ifr6.ifr_addr, ai.ai_addr, ai.ai_addrlen);
-		if (_ioctl(s, SIOCGIFAFLAG_IN6, &ifr6) == 0) {
+		if (__sys_ioctl(s, SIOCGIFAFLAG_IN6, (char *)&ifr6) == 0) {
 			flags6 = ifr6.ifr_ifru.ifru_flags6;
 			if ((flags6 & IN6_IFF_DEPRECATED))
 				aio->aio_srcflag |= AIO_SRCFLAG_DEPRECATED;
@@ -913,7 +914,7 @@ set_source(struct ai_order *aio, struct policyhead *ph)
 #endif
 
   cleanup:
-	_close(s);
+	__sys_close(s);
 	return;
 }
 
@@ -1206,12 +1207,12 @@ explore_null(const struct addrinfo *pai, const char *servname,
 	 * filter out AFs that are not supported by the kernel
 	 * XXX errno?
 	 */
-	s = _socket(pai->ai_family, SOCK_DGRAM | SOCK_CLOEXEC, 0);
+	s = __sys_socket(pai->ai_family, SOCK_DGRAM | SOCK_CLOEXEC, 0);
 	if (s < 0) {
 		if (errno != EMFILE)
 			return 0;
 	} else
-		_close(s);
+		__sys_close(s);
 
 	afd = find_afd(pai->ai_family);
 	if (afd == NULL)
@@ -1668,15 +1669,15 @@ is_ifdisabled(char *name)
 	struct in6_ndireq nd;
 	int fd;
 
-	if ((fd = _socket(AF_INET6, SOCK_DGRAM | SOCK_CLOEXEC, 0)) < 0)
+	if ((fd = __sys_socket(AF_INET6, SOCK_DGRAM | SOCK_CLOEXEC, 0)) < 0)
 		return (-1);
 	memset(&nd, 0, sizeof(nd));
 	strlcpy(nd.ifname, name, sizeof(nd.ifname));
-	if (_ioctl(fd, SIOCGIFINFO_IN6, &nd) < 0) {
-		_close(fd);
+	if (__sys_ioctl(fd, SIOCGIFINFO_IN6, (char *)&nd) < 0) {
+		__sys_close(fd);
 		return (-1);
 	}
-	_close(fd);
+	__sys_close(fd);
 	return ((nd.ndi.flags & ND6_IFF_IFDISABLED) != 0);
 }
 

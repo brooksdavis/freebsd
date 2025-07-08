@@ -39,17 +39,16 @@
  *
  */
 
-#include "namespace.h"
 #include "reentrant.h"
 #include <sys/param.h>
 #include <stdio.h>
 #include <errno.h>
+#include <libsys.h>
 #include <rpc/rpc.h>
 #include <string.h>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include "un-namespace.h"
 #include "mt_misc.h"
 
 #ifndef MAXHOSTNAMELEN
@@ -176,7 +175,7 @@ rpc_call(const char *host, const rpcprog_t prognum, const rpcvers_t versnum,
 		(void) CLNT_CONTROL(rcp->client,
 				CLSET_RETRY_TIMEOUT, (char *)(void *)&timeout);
 		if (CLNT_CONTROL(rcp->client, CLGET_FD, (char *)(void *)&fd))
-			_fcntl(fd, F_SETFD, 1);	/* make it "close on exec" */
+			__sys_fcntl(fd, F_SETFD, 1);	/* make it "close on exec" */
 		rcp->prognum = prognum;
 		rcp->versnum = versnum;
 		if ((strlen(host) < (size_t)MAXHOSTNAMELEN) &&

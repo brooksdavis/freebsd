@@ -13,7 +13,6 @@
 /*LINTLIBRARY*/
 
 #define LOCALTIME_IMPLEMENTATION
-#include "namespace.h"
 #ifdef DETECT_TZ_CHANGES
 #ifndef DETECT_TZ_CHANGES_INTERVAL
 #define DETECT_TZ_CHANGES_INTERVAL 61
@@ -22,11 +21,13 @@ int __tz_change_interval = DETECT_TZ_CHANGES_INTERVAL;
 #include <sys/stat.h>
 #endif
 #include <fcntl.h>
+#include <libsys.h>
 #if THREAD_SAFE
+#include "namespace.h"
 #include <pthread.h>
+#include "un-namespace.h"
 #endif
 #include "private.h"
-#include "un-namespace.h"
 
 #include "tzdir.h"
 #include "tzfile.h"
@@ -518,17 +519,17 @@ tzloadbody(char const *name, struct state *sp, bool doextend,
 			break;
 		}
 	}
-	fid = _open(name, O_RDONLY | O_BINARY);
+	fid = __sys_open(name, O_RDONLY | O_BINARY, 0);
 	if (fid < 0)
 	  return errno;
 
-	nread = _read(fid, up->buf, sizeof up->buf);
+	nread = __sys_read(fid, up->buf, sizeof up->buf);
 	if (nread < tzheadsize) {
 	  int err = nread < 0 ? errno : EINVAL;
-	  _close(fid);
+	  __sys_close(fid);
 	  return err;
 	}
-	if (_close(fid) < 0)
+	if (__sys_close(fid) < 0)
 	  return errno;
 	for (stored = 4; stored <= 8; stored *= 2) {
 	    char version = up->tzhead.tzh_version[0];

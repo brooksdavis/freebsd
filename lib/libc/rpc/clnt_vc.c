@@ -49,7 +49,6 @@
  * Now go hang yourself.
  */
 
-#include "namespace.h"
 #include "reentrant.h"
 #include <sys/types.h>
 #include <sys/poll.h>
@@ -63,6 +62,7 @@
 #include <assert.h>
 #include <err.h>
 #include <errno.h>
+#include <libsys.h>
 #include <netdb.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -74,7 +74,6 @@
 
 #include <rpc/rpc.h>
 #include <rpc/rpcsec_gss.h>
-#include "un-namespace.h"
 #include "rpc_com.h"
 #include "mt_misc.h"
 
@@ -227,14 +226,15 @@ clnt_vc_create(int fd, const struct netbuf *raddr, const rpcprog_t prog,
 	 * XXX - fvdl connecting while holding a mutex?
 	 */
 	slen = sizeof ss;
-	if (_getpeername(fd, (struct sockaddr *)(void *)&ss, &slen) < 0) {
+	if (__sys_getpeername(fd, (struct sockaddr *)(void *)&ss, &slen) < 0) {
 		if (errno != ENOTCONN) {
 			rpc_createerr.cf_stat = RPC_SYSTEMERROR;
 			rpc_createerr.cf_error.re_errno = errno;
 			mutex_unlock(&clnt_fd_lock);
 			goto err;
 		}
-		if (_connect(fd, (struct sockaddr *)raddr->buf, raddr->len) < 0){
+		if (__sys_connect(fd, (struct sockaddr *)raddr->buf,
+		    raddr->len) < 0){
 			rpc_createerr.cf_stat = RPC_SYSTEMERROR;
 			rpc_createerr.cf_error.re_errno = errno;
 			mutex_unlock(&clnt_fd_lock);
@@ -277,7 +277,7 @@ clnt_vc_create(int fd, const struct netbuf *raddr, const rpcprog_t prog,
 	    XDR_ENCODE);
 	if (! xdr_callhdr(&(ct->ct_xdrs), &call_msg)) {
 		if (ct->ct_closeit) {
-			(void)_close(fd);
+			(void) __sys_close(fd);
 		}
 		goto err;
 	}
@@ -640,7 +640,7 @@ clnt_vc_destroy(CLIENT *cl)
 	elem = vc_fd_find(ct_fd);
 	mutex_lock(&elem->mtx);
 	if (ct->ct_closeit && ct->ct_fd != -1) {
-		(void)_close(ct->ct_fd);
+		(void) __sys_close(ct->ct_fd);
 	}
 	XDR_DESTROY(&(ct->ct_xdrs));
 	free(ct->ct_addr.buf);
@@ -674,7 +674,7 @@ read_vc(void *ctp, void *buf, int len)
 	fd.fd = ct->ct_fd;
 	fd.events = POLLIN;
 	for (;;) {
-		switch (_poll(&fd, 1, milliseconds)) {
+		switch (__sys_poll(&fd, 1, milliseconds)) {
 		case 0:
 			ct->ct_error.re_status = RPC_TIMEDOUT;
 			return (-1);
@@ -690,11 +690,11 @@ read_vc(void *ctp, void *buf, int len)
 	}
 
 	sal = sizeof(sa);
-	if ((_getpeername(ct->ct_fd, &sa, &sal) == 0) &&
+	if ((__sys_getpeername(ct->ct_fd, &sa, &sal) == 0) &&
 	    (sa.sa_family == AF_LOCAL)) {
 		len = __msgread(ct->ct_fd, buf, (size_t)len);
 	} else {
-		len = _read(ct->ct_fd, buf, (size_t)len);
+		len = __sys_read(ct->ct_fd, buf, (size_t)len);
 	}
 
 	switch (len) {
@@ -722,7 +722,7 @@ write_vc(void *ctp, void *buf, int len)
 	int i, cnt;
 
 	sal = sizeof(sa);
-	if ((_getpeername(ct->ct_fd, &sa, &sal) == 0) &&
+	if ((__sys_getpeername(ct->ct_fd, &sa, &sal) == 0) &&
 	    (sa.sa_family == AF_LOCAL)) {
 		for (cnt = len; cnt > 0; cnt -= i, buf = (char *)buf + i) {
 			if ((i = __msgwrite(ct->ct_fd, buf,
@@ -734,7 +734,8 @@ write_vc(void *ctp, void *buf, int len)
 		}
 	} else {
 		for (cnt = len; cnt > 0; cnt -= i, buf = (char *)buf + i) {
-			if ((i = _write(ct->ct_fd, buf, (size_t)cnt)) == -1) {
+			if ((i = __sys_write(ct->ct_fd, buf, (size_t)cnt)) ==
+			    -1) {
 				ct->ct_error.re_errno = errno;
 				ct->ct_error.re_status = RPC_CANTSEND;
 				return (-1);
@@ -801,7 +802,7 @@ __msgread(int sock, void *buf, size_t cnt)
 	msg.msg_controllen = CMSG_SPACE(sizeof(struct cmsgcred));
 	msg.msg_flags = 0;
  
-	return(_recvmsg(sock, &msg, 0));
+	return(__sys_recvmsg(sock, &msg, 0));
 }
 
 static int
@@ -830,5 +831,5 @@ __msgwrite(int sock, void *buf, size_t cnt)
 	msg.msg_controllen = CMSG_SPACE(sizeof(struct cmsgcred));
 	msg.msg_flags = 0;
 
-	return(_sendmsg(sock, &msg, 0));
+	return(__sys_sendmsg(sock, &msg, 0));
 }

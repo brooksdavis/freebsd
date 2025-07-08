@@ -37,7 +37,6 @@
  * Copyright (C) 1984, Sun Microsystems, Inc.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -47,7 +46,6 @@
 #include <rpc/pmap_clnt.h>
 #include <rpc/nettype.h>
 #include <netinet/in.h>
-#include "un-namespace.h"
 
 #include <stdio.h>
 #include <stdlib.h>

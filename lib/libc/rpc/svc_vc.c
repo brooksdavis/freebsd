@@ -38,7 +38,6 @@
  * and a record/tcp stream.
  */
 
-#include "namespace.h"
 #include "reentrant.h"
 #include <sys/param.h>
 #include <sys/poll.h>
@@ -53,6 +52,7 @@
 #include <err.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -62,7 +62,6 @@
 
 #include "rpc_com.h"
 #include "mt_misc.h"
-#include "un-namespace.h"
 
 static SVCXPRT *makefd_xprt(int, u_int, u_int);
 static bool_t rendezvous_request(SVCXPRT *, struct rpc_msg *);
@@ -148,7 +147,8 @@ svc_vc_create(int fd, u_int sendsize, u_int recvsize)
 	xprt->xp_fd = fd;
 
 	slen = sizeof (struct sockaddr_storage);
-	if (_getsockname(fd, (struct sockaddr *)(void *)&sslocal, &slen) < 0) {
+	if (__sys_getsockname(fd, (struct sockaddr *)(void *)&sslocal,
+	    &slen) < 0) {
 		warnx("svc_vc_create: could not retrieve local addr");
 		goto cleanup_svc_vc_create;
 	}
@@ -190,7 +190,7 @@ svc_fd_create(int fd, u_int sendsize, u_int recvsize)
 		return NULL;
 
 	slen = sizeof (struct sockaddr_storage);
-	if (_getsockname(fd, (struct sockaddr *)(void *)&ss, &slen) < 0) {
+	if (__sys_getsockname(fd, (struct sockaddr *)(void *)&ss, &slen) < 0) {
 		warnx("svc_fd_create: could not retrieve local addr");
 		goto freedata;
 	}
@@ -203,7 +203,7 @@ svc_fd_create(int fd, u_int sendsize, u_int recvsize)
 	memcpy(ret->xp_ltaddr.buf, &ss, (size_t)ss.ss_len);
 
 	slen = sizeof (struct sockaddr_storage);
-	if (_getpeername(fd, (struct sockaddr *)(void *)&ss, &slen) < 0) {
+	if (__sys_getpeername(fd, (struct sockaddr *)(void *)&ss, &slen) < 0) {
 		warnx("svc_fd_create: could not retrieve remote addr");
 		goto freedata;
 	}
@@ -287,7 +287,7 @@ rendezvous_request(SVCXPRT *xprt, struct rpc_msg *msg)
 	r = (struct cf_rendezvous *)xprt->xp_p1;
 again:
 	len = sizeof addr;
-	if ((sock = _accept(xprt->xp_fd, (struct sockaddr *)(void *)&addr,
+	if ((sock = __sys_accept(xprt->xp_fd, (struct sockaddr *)(void *)&addr,
 	    &len)) < 0) {
 		if (errno == EINTR)
 			goto again;
@@ -320,7 +320,8 @@ again:
 	if (__rpc_fd2sockinfo(sock, &si) && si.si_proto == IPPROTO_TCP) {
 		len = 1;
 		/* XXX fvdl - is this useful? */
-		_setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &len, sizeof (len));
+		__sys_setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &len,
+				 sizeof(len));
 	}
 
 	cd = (struct cf_conn *)newxprt->xp_p1;
@@ -330,10 +331,10 @@ again:
 	cd->maxrec = r->maxrec;
 
 	if (cd->maxrec != 0) {
-		flags = _fcntl(sock, F_GETFL, 0);
+		flags = __sys_fcntl(sock, F_GETFL, 0);
 		if (flags  == -1)
 			return (FALSE);
-		if (_fcntl(sock, F_SETFL, flags | O_NONBLOCK) == -1)
+		if (__sys_fcntl(sock, F_SETFL, flags | O_NONBLOCK) == -1)
 			return (FALSE);
 		if (cd->recvsize > cd->maxrec)
 			cd->recvsize = cd->maxrec;
@@ -342,7 +343,8 @@ again:
 	} else
 		cd->nonblock = FALSE;
 	slen = sizeof(struct sockaddr_storage);
-	if(_getsockname(sock, (struct sockaddr *)(void *)&sslocal, &slen) < 0) {
+	if (__sys_getsockname(sock, (struct sockaddr *)(void *)&sslocal,
+	    &slen) < 0) {
 		warnx("svc_vc_create: could not retrieve local addr");
 		newxprt->xp_ltaddr.maxlen = newxprt->xp_ltaddr.len = 0;
 	} else {
@@ -387,7 +389,7 @@ __svc_vc_dodestroy(SVCXPRT *xprt)
 	cd = (struct cf_conn *)xprt->xp_p1;
 
 	if (xprt->xp_fd != RPC_ANYFD)
-		(void)_close(xprt->xp_fd);
+		(void)__sys_close(xprt->xp_fd);
 	if (xprt->xp_port != 0) {
 		/* a rendezvouser socket */
 		r = (struct cf_rendezvous *)xprt->xp_p1;
@@ -459,7 +461,7 @@ read_vc(void *xprtp, void *buf, int len)
 	cfp = (struct cf_conn *)xprt->xp_p1;
 
 	if (cfp->nonblock) {
-		len = _read(sock, buf, (size_t)len);
+		len = __sys_read(sock, buf, (size_t)len);
 		if (len < 0) {
 			if (errno == EAGAIN)
 				len = 0;
@@ -475,7 +477,7 @@ read_vc(void *xprtp, void *buf, int len)
 		pollfd.fd = sock;
 		pollfd.events = POLLIN;
 		pollfd.revents = 0;
-		switch (_poll(&pollfd, 1, milliseconds)) {
+		switch (__sys_poll(&pollfd, 1, milliseconds)) {
 		case -1:
 			if (errno == EINTR)
 				continue;
@@ -488,7 +490,7 @@ read_vc(void *xprtp, void *buf, int len)
 		}
 	} while ((pollfd.revents & POLLIN) == 0);
 
-	if ((len = _read(sock, buf, (size_t)len)) > 0) {
+	if ((len = __sys_read(sock, buf, (size_t)len)) > 0) {
 		gettimeofday(&cfp->last_recv_time, NULL);
 		return (len);
 	}
@@ -519,7 +521,7 @@ write_vc(void *xprtp, void *buf, int len)
 		gettimeofday(&tv0, NULL);
 	
 	for (cnt = len; cnt > 0; cnt -= i, buf = (char *)buf + i) {
-		i = _write(xprt->xp_fd, buf, (size_t)cnt);
+		i = __sys_write(xprt->xp_fd, buf, (size_t)cnt);
 		if (i  < 0) {
 			if (errno != EAGAIN || !cd->nonblock) {
 				cd->strm_stat = XPRT_DIED;

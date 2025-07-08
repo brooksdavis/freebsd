@@ -29,20 +29,19 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/mount.h>
 #include <sys/stat.h>
 
 #include <errno.h>
 #include <fstab.h>
+#include <libsys.h>
 #include <paths.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <vis.h>
-#include "un-namespace.h"
 
 static FILE *_fs_fp;
 static struct fstab _fs_fstab;
@@ -283,12 +282,12 @@ error(int err)
 	char *p;
 	char num[30];
 
-	(void)_write(STDERR_FILENO, "fstab: ", 7);
-	(void)_write(STDERR_FILENO, path_fstab, strlen(path_fstab));
-	(void)_write(STDERR_FILENO, ":", 1);
+	(void)__sys_write(STDERR_FILENO, "fstab: ", 7);
+	(void)__sys_write(STDERR_FILENO, path_fstab, strlen(path_fstab));
+	(void)__sys_write(STDERR_FILENO, ":", 1);
 	sprintf(num, "%d: ", LineNo);
-	(void)_write(STDERR_FILENO, num, strlen(num));
+	(void)__sys_write(STDERR_FILENO, num, strlen(num));
 	p = strerror(err);
-	(void)_write(STDERR_FILENO, p, strlen(p));
-	(void)_write(STDERR_FILENO, "\n", 1);
+	(void)__sys_write(STDERR_FILENO, p, strlen(p));
+	(void)__sys_write(STDERR_FILENO, "\n", 1);
 }

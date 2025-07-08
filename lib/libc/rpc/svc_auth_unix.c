@@ -39,13 +39,11 @@
  * Copyright (C) 1984, Sun Microsystems, Inc.
  */
 
-#include "namespace.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
 
 #include <rpc/rpc.h>
-#include "un-namespace.h"
 
 /*
  * Unix longhand authenticator

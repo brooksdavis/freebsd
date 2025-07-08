@@ -32,14 +32,13 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <errno.h>
 #include <limits.h>
-#include "un-namespace.h"
 #include "local.h"
 
 FILE *
@@ -64,7 +63,7 @@ fdopen(int fd, const char *mode)
 		return (NULL);
 
 	/* Make sure the mode the user wants is a subset of the actual mode. */
-	if ((fdflags = _fcntl(fd, F_GETFL, 0)) < 0)
+	if ((fdflags = __sys_fcntl(fd, F_GETFL, 0)) < 0)
 		return (NULL);
 	/* Work around incorrect O_ACCMODE. */
 	tmp = fdflags & (O_ACCMODE | O_EXEC);
@@ -77,13 +76,13 @@ fdopen(int fd, const char *mode)
 		return (NULL);
 
 	if ((oflags & O_CLOEXEC) != 0) {
-		tmp = _fcntl(fd, F_GETFD, 0);
+		tmp = __sys_fcntl(fd, F_GETFD, 0);
 		if (tmp == -1) {
 			fp->_flags = 0;
 			return (NULL);
 		}
 		if ((tmp & FD_CLOEXEC) == 0) {
-			rc = _fcntl(fd, F_SETFD, tmp | FD_CLOEXEC);
+			rc = __sys_fcntl(fd, F_SETFD, tmp | FD_CLOEXEC);
 			if (rc == -1) {
 				fp->_flags = 0;
 				return (NULL);

@@ -34,7 +34,6 @@
  * auth_des.c, client-side implementation of DES authentication
  */
 
-#include "namespace.h"
 #include "reentrant.h"
 #include <err.h>
 #include <errno.h>
@@ -51,7 +50,6 @@
 #include <sys/socket.h>
 #undef NIS
 #include <rpcsvc/nis.h>
-#include "un-namespace.h"
 #include "mt_misc.h"
 
 #define USEC_PER_SEC		1000000

@@ -29,7 +29,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #if defined(NLS)
 #include <nl_types.h>
 #endif
@@ -39,7 +38,6 @@
 #include <string.h>
 #include <signal.h>
 #include "reentrant.h"
-#include "un-namespace.h"
 
 #define	UPREFIX		"Unknown signal"
 

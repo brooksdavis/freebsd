@@ -27,7 +27,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <assert.h>
 #include <errno.h>
 #include <limits.h>
@@ -38,7 +37,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
-#include "un-namespace.h"
 
 /* XXX: There is no FPOS_MAX.  This assumes fpos_t is an off_t. */
 #define	FPOS_MAX	OFF_MAX

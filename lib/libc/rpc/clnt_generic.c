@@ -34,7 +34,6 @@
  * Copyright (c) 1986-1996,1998 by Sun Microsystems, Inc.
  * All rights reserved.
  */
-#include "namespace.h"
 #include "reentrant.h"
 #include <sys/types.h>
 #include <sys/fcntl.h>
@@ -43,6 +42,7 @@
 #include <netinet/tcp.h>
 #include <stdio.h>
 #include <errno.h>
+#include <libsys.h>
 #include <netdb.h>
 #include <syslog.h>
 #include <rpc/rpc.h>
@@ -50,7 +50,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "un-namespace.h"
 #include "rpc_com.h"
 
 extern bool_t __rpc_is_local_host(const char *);
@@ -371,8 +370,8 @@ clnt_tli_create(int fd, const struct netconfig *nconf,
 		break;
 	case NC_TPI_COTS_ORD:
 		if (nconf && ((strcmp(nconf->nc_protofmly, "inet") == 0))) {
-			_setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &one,
-			    sizeof (one));
+			__sys_setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &one,
+			    sizeof(one));
 		}
 		cl = clnt_vc_create(fd, svcaddr, prog, vers, sendsz, recvsz);
 		break;
@@ -403,7 +402,7 @@ err:
 	rpc_createerr.cf_stat = RPC_SYSTEMERROR;
 	rpc_createerr.cf_error.re_errno = errno;
 err1:	if (madefd)
-		(void)_close(fd);
+		(void) __sys_close(fd);
 	return (NULL);
 }
 
@@ -423,15 +422,15 @@ __rpc_raise_fd(int fd)
 	if (fd >= __rpc_minfd)
 		return (fd);
 
-	if ((nfd = _fcntl(fd, F_DUPFD, __rpc_minfd)) == -1)
+	if ((nfd = __sys_fcntl(fd, F_DUPFD, __rpc_minfd)) == -1)
 		return (fd);
 
-	if (_fsync(nfd) == -1) {
-		_close(nfd);
+	if (__sys_fsync(nfd) == -1) {
+		__sys_close(nfd);
 		return (fd);
 	}
 
-	if (_close(fd) == -1) {
+	if (__sys_close(fd) == -1) {
 		/* this is okay, we will syslog an error, then use the new fd */
 		(void) syslog(LOG_ERR,
 			"could not close() fd %d; mem & fd leak", fd);

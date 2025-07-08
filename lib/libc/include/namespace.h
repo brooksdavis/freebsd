@@ -37,49 +37,12 @@
  * ISO C (C90) section.  Most names in libc aren't in ISO C, so they
  * should be here.  Most aren't here...
  */
-#define		err				_err
-#define		warn				_warn
 #define		nsdispatch			_nsdispatch
 
 /*
- * Prototypes for syscalls/functions that need to be overridden
- * in libc_r/libpthread.
+ * Prototypes for pthread functions where we need to call the concrete
+ * implemention, not a potentialy overridden weak symbol.
  */
-#define		accept				_accept
-#define		__acl_aclcheck_fd		___acl_aclcheck_fd
-#define		__acl_delete_fd			___acl_delete_fd
-#define		__acl_get_fd			___acl_get_fd
-#define		__acl_set_fd			___acl_set_fd
-#define		bind				_bind
-#define		__cap_get_fd			___cap_get_fd
-#define		__cap_set_fd			___cap_set_fd
-#define		clock_nanosleep			_clock_nanosleep
-#define		close				_close
-#define		connect				_connect
-#define		dup				_dup
-#define		dup2				_dup2
-#define		execve				_execve
-#define		fcntl				_fcntl
-/*#define		flock				_flock */
-#define		flockfile			_flockfile
-#define		fpathconf			_fpathconf
-#define		fstat				_fstat
-#define		fstatfs				_fstatfs
-#define		fsync				_fsync
-#define		funlockfile			_funlockfile
-#define		getdirentries			_getdirentries
-#define		getlogin			_getlogin
-#define		getpeername			_getpeername
-#define		getprogname			_getprogname
-#define		getsockname			_getsockname
-#define		getsockopt			_getsockopt
-#define		ioctl				_ioctl
-/* #define		kevent				_kevent */
-#define		listen				_listen
-#define		nanosleep			_nanosleep
-#define		open				_open
-#define		openat				_openat
-#define		poll				_poll
 #define		pthread_atfork			_pthread_atfork
 #define		pthread_attr_destroy		_pthread_attr_destroy
 #define		pthread_attr_get_np		_pthread_attr_get_np
@@ -205,64 +168,3 @@
 #define		pthread_testcancel		_pthread_testcancel
 #define		pthread_timedjoin_np		_pthread_timedjoin_np
 #define		pthread_yield			_pthread_yield
-#define		read				_read
-#define		readv				_readv
-#define		recvfrom			_recvfrom
-#define		recvmsg				_recvmsg
-#define		recvmmsg			_recvmmsg
-#define		select				_select
-#define		sem_close			_sem_close
-#define		sem_destroy			_sem_destroy
-#define		sem_getvalue			_sem_getvalue
-#define		sem_init			_sem_init
-#define		sem_open			_sem_open
-#define		sem_post			_sem_post
-#define		sem_timedwait			_sem_timedwait
-#define		sem_clockwait_np		_sem_clockwait_np
-#define		sem_trywait			_sem_trywait
-#define		sem_unlink			_sem_unlink
-#define		sem_wait			_sem_wait
-#define		sendmsg				_sendmsg
-#define		sendmmsg			_sendmmsg
-#define		sendto				_sendto
-#define		setsockopt			_setsockopt
-/*#define		sigaction			_sigaction*/
-#define		sigprocmask			_sigprocmask
-#define		sigsuspend			_sigsuspend
-#define		socket				_socket
-#define		socketpair			_socketpair
-#define		usleep				_usleep
-#define		wait4				_wait4
-#define		wait6				_wait6
-#define		waitpid				_waitpid
-#define		write				_write
-#define		writev				_writev
-
-
-/*
- * Other hidden syscalls/functions that libc_r needs to override
- * but are not used internally by libc.
- *
- * XXX - When modifying libc to use one of the following, remove
- * the prototype from below and place it in the list above.
- */
-#if 0
-#define		creat				_creat
-#define		fchflags			_fchflags
-#define		fchmod				_fchmod
-#define		ftrylockfile			_ftrylockfile
-#define		msync				_msync
-#define		nfssvc				_nfssvc
-#define		pause				_pause
-#define		sched_yield			_sched_yield
-#define		sendfile			_sendfile
-#define		shutdown			_shutdown
-#define		sigaltstack			_sigaltstack
-#define		sigpending			_sigpending
-#define		sigreturn			_sigreturn
-#define		sigsetmask			_sigsetmask
-#define		sleep				_sleep
-#define		system				_system
-#define		tcdrain				_tcdrain
-#define		wait				_wait
-#endif

@@ -26,11 +26,10 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/ioctl.h>
+#include <libsys.h>
 #include <stdlib.h>
-#include "un-namespace.h"
 
 char *
 fdevname_r(int fd, char *buf, int len)
@@ -40,7 +39,7 @@ fdevname_r(int fd, char *buf, int len)
 	fgn.buf = buf;
 	fgn.len = len;
 
-	if (_ioctl(fd, FIODGNAME, &fgn) == -1)
+	if (__sys_ioctl(fd, FIODGNAME, (char *)&fgn) == -1)
 		return (NULL);
 	return (buf);
 }

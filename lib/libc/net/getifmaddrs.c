@@ -26,7 +26,6 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/sysctl.h>
 #include <sys/ioctl.h>
@@ -39,7 +38,6 @@
 #include <ifaddrs.h>
 #include <stdlib.h>
 #include <string.h>
-#include "un-namespace.h"
 
 #define	SALIGN	(sizeof(long) - 1)
 #define	SA_RLEN(sa)	((sa)->sa_len ? (((sa)->sa_len + SALIGN) & ~SALIGN) : \

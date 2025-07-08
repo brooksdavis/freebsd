@@ -29,12 +29,12 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <dirent.h>
+#include "namespace.h"
 #include <pthread.h>
-#include <unistd.h>
 #include "un-namespace.h"
+#include <unistd.h>
 
 #include "libc_private.h"
 #include "gen-private.h"

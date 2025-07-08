@@ -35,12 +35,10 @@
  * authdes_prot.c, XDR routines for DES authentication
  */
 
-#include "namespace.h"
 #include <rpc/types.h>
 #include <rpc/xdr.h>
 #include <rpc/auth.h>
 #include <rpc/auth_des.h>
-#include "un-namespace.h"
 
 #define ATTEMPT(xdr_op) if (!(xdr_op)) return (FALSE)
 

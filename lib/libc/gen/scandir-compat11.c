@@ -35,12 +35,10 @@
  * struct dirent (through namelist). Returns -1 if there were any errors.
  */
 
-#include "namespace.h"
 #define	_WANT_FREEBSD11_DIRENT
 #include <dirent.h>
 #include <stdlib.h>
 #include <string.h>
-#include "un-namespace.h"
 
 #include "gen-compat.h"
 

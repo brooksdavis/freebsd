@@ -29,7 +29,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/queue.h>
 #include <sys/mman.h>
@@ -37,9 +36,12 @@
 #include <errno.h>
 #include <machine/atomic.h>
 #include <sys/umtx.h>
+#include <libsys.h>
 #include <limits.h>
 #include <fcntl.h>
+#include "namespace.h"
 #include <pthread.h>
+#include "un-namespace.h"
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -47,7 +49,6 @@
 #include <time.h>
 #include <semaphore.h>
 #include <unistd.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 
 __weak_reference(_sem_close, sem_close);
@@ -176,9 +177,10 @@ _sem_open(const char *name, int flags, ...)
 	_pthread_mutex_lock(&sem_llock);
 	LIST_FOREACH(ni, &sem_list, next) {
 		if (ni->name != NULL && strcmp(name, ni->name) == 0) {
-			fd = _open(path, flags | O_RDWR | O_CLOEXEC |
-			    O_EXLOCK, mode);
-			if (fd == -1 || _fstat(fd, &sb) == -1) {
+			fd = __sys_open(path,
+					flags | O_RDWR | O_CLOEXEC | O_EXLOCK,
+					mode);
+			if (fd == -1 || __sys_fstat(fd, &sb) == -1) {
 				ni = NULL;
 				goto error;
 			}
@@ -192,7 +194,7 @@ _sem_open(const char *name, int flags, ...)
 			ni->open_count++;
 			sem = ni->sem;
 			_pthread_mutex_unlock(&sem_llock);
-			_close(fd);
+			__sys_close(fd);
 			return (sem);
 		}
 	}
@@ -208,15 +210,16 @@ _sem_open(const char *name, int flags, ...)
 	strcpy(ni->name, name);
 
 	if (fd == -1) {
-		fd = _open(path, flags | O_RDWR | O_CLOEXEC | O_EXLOCK, mode);
-		if (fd == -1 || _fstat(fd, &sb) == -1)
+		fd = __sys_open(path, flags | O_RDWR | O_CLOEXEC | O_EXLOCK,
+				mode);
+		if (fd == -1 || __sys_fstat(fd, &sb) == -1)
 			goto error;
 	}
 	if (sb.st_size < sizeof(sem_t)) {
 		tmp._magic = SEM_MAGIC;
 		tmp._kern._count = value;
 		tmp._kern._flags = USYNC_PROCESS_SHARED | SEM_NAMED;
-		if (_write(fd, &tmp, sizeof(tmp)) != sizeof(tmp))
+		if (__sys_write(fd, &tmp, sizeof(tmp)) != sizeof(tmp))
 			goto error;
 	}
 	flock(fd, LOCK_UN);
@@ -237,14 +240,14 @@ _sem_open(const char *name, int flags, ...)
 	ni->dev = sb.st_dev;
 	ni->ino = sb.st_ino;
 	LIST_INSERT_HEAD(&sem_list, ni, next);
-	_close(fd);
+	__sys_close(fd);
 	_pthread_mutex_unlock(&sem_llock);
 	return (sem);
 
 error:
 	errsave = errno;
 	if (fd != -1)
-		_close(fd);
+		__sys_close(fd);
 	if (sem != NULL)
 		munmap(sem, sizeof(sem_t));
 	free(ni);

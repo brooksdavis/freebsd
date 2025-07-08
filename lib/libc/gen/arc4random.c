@@ -23,13 +23,14 @@
  * ChaCha based random number generator for OpenBSD.
  */
 
-#include "namespace.h"
 #if defined(__FreeBSD__)
 #include <assert.h>
 #endif
 #include <fcntl.h>
 #include <limits.h>
+#include "namespace.h"
 #include <pthread.h>
+#include "un-namespace.h"
 #include <signal.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -40,7 +41,6 @@
 #include <sys/time.h>
  
 #include "libc_private.h"
-#include "un-namespace.h"
 
 #define CHACHA_EMBED
 #define KEYSTREAM_ONLY

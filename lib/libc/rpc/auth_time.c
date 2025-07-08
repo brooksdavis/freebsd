@@ -25,12 +25,12 @@
  *	needed to deal with TCP connections.
  */
 
-#include "namespace.h"
 #include <stdio.h>
 #include <syslog.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <libsys.h>
 #include <netdb.h>
 #include <sys/signal.h>
 #include <sys/errno.h>
@@ -42,7 +42,6 @@
 #include <rpc/rpcb_prot.h>
 #undef NIS
 #include <rpcsvc/nis.h>
-#include "un-namespace.h"
 
 extern int _rpc_dtablesize( void );
 
@@ -379,7 +378,7 @@ __rpc_get_time_offset(struct timeval *td, nis_server *srv, char *thost,
 			goto error;
 		}
 
-		s = _socket(AF_INET, type, 0);
+		s = __sys_socket(AF_INET, type, 0);
 		if (s == -1) {
 			msg("unable to open fd to network.");
 			goto error;
@@ -395,22 +394,23 @@ __rpc_get_time_offset(struct timeval *td, nis_server *srv, char *thost,
 			fd_set readfds;
 			int res;
 
-			if (_sendto(s, &thetime, sizeof(thetime), 0,
-				(struct sockaddr *)&sin, sizeof(sin)) == -1) {
+			if (__sys_sendto(s, &thetime, sizeof(thetime), 0,
+			    (struct sockaddr *)&sin, sizeof(sin)) == -1) {
 				msg("udp : sendto failed.");
 				goto error;
 			}
 			do {
 				FD_ZERO(&readfds);
 				FD_SET(s, &readfds);
-				res = _select(_rpc_dtablesize(), &readfds,
-				     (fd_set *)NULL, (fd_set *)NULL, &timeout);
+				res = __sys_select(_rpc_dtablesize(),
+						   &readfds, (fd_set *)NULL,
+						   (fd_set *)NULL, &timeout);
 			} while (res < 0 && errno == EINTR);
 			if (res <= 0)
 				goto error;
 			len = sizeof(from);
-			res = _recvfrom(s, (char *)&thetime, sizeof(thetime), 0,
-				       (struct sockaddr *)&from, &len);
+			res = __sys_recvfrom(s, (char *)&thetime,
+			    sizeof(thetime), 0, (struct sockaddr *)&from, &len);
 			if (res == -1) {
 				msg("recvfrom failed on udp transport.");
 				goto error;
@@ -422,7 +422,8 @@ __rpc_get_time_offset(struct timeval *td, nis_server *srv, char *thost,
 			oldsig = (void (*)(int))signal(SIGALRM, alarm_hndler);
 			saw_alarm = 0; /* global tracking the alarm */
 			alarm(20); /* only wait 20 seconds */
-			res = _connect(s, (struct sockaddr *)&sin, sizeof(sin));
+			res = __sys_connect(s, (struct sockaddr *)&sin,
+			    sizeof(sin));
 			if (res == -1) {
 				msg("failed to connect to tcp endpoint.");
 				goto error;
@@ -431,7 +432,7 @@ __rpc_get_time_offset(struct timeval *td, nis_server *srv, char *thost,
 				msg("alarm caught it, must be unreachable.");
 				goto error;
 			}
-			res = _read(s, (char *)&thetime, sizeof(thetime));
+			res = __sys_read(s, (char *)&thetime, sizeof(thetime));
 			if (res != sizeof(thetime)) {
 				if (saw_alarm)
 					msg("timed out TCP call.");
@@ -443,7 +444,7 @@ __rpc_get_time_offset(struct timeval *td, nis_server *srv, char *thost,
 			time_valid = 1;
 		}
 		save = errno;
-		(void)_close(s);
+		(void) __sys_close(s);
 		errno = save;
 		s = RPC_ANYSOCK;
 
@@ -462,7 +463,7 @@ error:
 	 */
 
 	if (s != RPC_ANYSOCK)
-		(void)_close(s);
+		(void) __sys_close(s);
 
 	if (clnt != NULL)
 		clnt_destroy(clnt);

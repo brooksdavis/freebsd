@@ -26,17 +26,16 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 
 #include <errno.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 #include "ldpart.h"
 #include "setlocale.h"
@@ -87,9 +86,9 @@ __part_load_locale(const char *name,
 	strcat(filename, name);
 	strcat(filename, "/");
 	strcat(filename, category_filename);
-	if ((fd = _open(filename, O_RDONLY | O_CLOEXEC)) < 0)
+	if ((fd = __sys_open(filename, O_RDONLY | O_CLOEXEC, 0)) < 0)
 		return (_LDP_ERROR);
-	if (_fstat(fd, &st) != 0)
+	if (__sys_fstat(fd, &st) != 0)
 		goto bad_locale;
 	if (st.st_size <= 0) {
 		errno = EFTYPE;
@@ -103,7 +102,7 @@ __part_load_locale(const char *name,
 	(void)strcpy(lbuf, name);
 	p = lbuf + namesize;
 	plim = p + st.st_size;
-	if (_read(fd, p, (size_t) st.st_size) != st.st_size)
+	if (__sys_read(fd, p, (size_t)st.st_size) != st.st_size)
 		goto bad_lbuf;
 	/*
 	 * Parse the locale file into localebuf.
@@ -121,7 +120,7 @@ __part_load_locale(const char *name,
 		errno = EFTYPE;
 		goto bad_lbuf;
 	}
-	(void)_close(fd);
+	(void)__sys_close(fd);
 	/*
 	 * Record the successful parse in the cache.
 	 */
@@ -142,7 +141,7 @@ bad_lbuf:
 	errno = saverr;
 bad_locale:
 	saverr = errno;
-	(void)_close(fd);
+	(void)__sys_close(fd);
 	errno = saverr;
 
 	return (_LDP_ERROR);

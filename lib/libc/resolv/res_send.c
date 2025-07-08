@@ -76,7 +76,6 @@
 #include "fd_setsize.h"
 #endif
 
-#include "namespace.h"
 #include <sys/param.h>
 #include <sys/time.h>
 #include <sys/socket.h>
@@ -87,6 +86,7 @@
 #include <arpa/inet.h>
 
 #include <errno.h>
+#include <libsys.h>
 #include <netdb.h>
 #include <resolv.h>
 #include <signal.h>
@@ -110,7 +110,6 @@
 #endif /* USE_POLL */
 #endif
 
-#include "un-namespace.h"
 
 #include "res_debug.h"
 #include "res_private.h"
@@ -344,7 +343,7 @@ res_nsend(res_state statp,
 				if (EXT(statp).nssocks[ns] == -1)
 					continue;
 				peerlen = sizeof(peer);
-				if (_getpeername(EXT(statp).nssocks[ns],
+				if (__sys_getpeername(EXT(statp).nssocks[ns],
 				    (struct sockaddr *)&peer, &peerlen) < 0) {
 					needclose++;
 					break;
@@ -437,7 +436,7 @@ res_nsend(res_state statp,
 					goto next_ns;
 				case res_done:
 #ifdef USE_KQUEUE
-					_close(kq);
+					__sys_close(kq);
 #endif
 					return (resplen);
 				case res_modified:
@@ -536,7 +535,7 @@ res_nsend(res_state statp,
 
 		}
 #ifdef USE_KQUEUE
-		_close(kq);
+		__sys_close(kq);
 #endif
 		return (resplen);
  next_ns: ;
@@ -544,7 +543,7 @@ res_nsend(res_state statp,
 	} /*foreach retry*/
 	res_nclose(statp);
 #ifdef USE_KQUEUE
-	_close(kq);
+	__sys_close(kq);
 #endif
 	if (!v_circuit) {
 		if (!gotsomewhere)
@@ -557,7 +556,7 @@ res_nsend(res_state statp,
  fail:
 	res_nclose(statp);
 #ifdef USE_KQUEUE
-	_close(kq);
+	__sys_close(kq);
 #endif
 	return (-1);
 }
@@ -636,8 +635,8 @@ send_vc(res_state statp,
 		struct sockaddr_storage peer;
 		ISC_SOCKLEN_T size = sizeof peer;
 
-		if (_getpeername(statp->_vcsock,
-				(struct sockaddr *)&peer, &size) < 0 ||
+		if (__sys_getpeername(statp->_vcsock, (struct sockaddr *)&peer,
+		    &size) < 0 ||
 		    !sock_eq((struct sockaddr *)&peer, nsap)) {
 			res_nclose(statp);
 			statp->_flags &= ~RES_F_VC;
@@ -648,8 +647,8 @@ send_vc(res_state statp,
 		if (statp->_vcsock >= 0)
 			res_nclose(statp);
 
-		statp->_vcsock = _socket(nsap->sa_family, SOCK_STREAM |
-		    SOCK_CLOEXEC, 0);
+		statp->_vcsock = __sys_socket(nsap->sa_family,
+		    SOCK_STREAM | SOCK_CLOEXEC, 0);
 #if !defined(USE_POLL) && !defined(USE_KQUEUE)
 		if (statp->_vcsock > highestFD) {
 			res_nclose(statp);
@@ -679,11 +678,11 @@ send_vc(res_state statp,
 		 *
 		 * Push on even if setsockopt(SO_NOSIGPIPE) fails.
 		 */
-		(void)_setsockopt(statp->_vcsock, SOL_SOCKET, SO_NOSIGPIPE, &on,
-				 sizeof(on));
+		(void)__sys_setsockopt(statp->_vcsock, SOL_SOCKET,
+		    SO_NOSIGPIPE, &on, sizeof(on));
 #endif
 		errno = 0;
-		if (_connect(statp->_vcsock, nsap, nsaplen) < 0) {
+		if (__sys_connect(statp->_vcsock, nsap, nsaplen) < 0) {
 			*terrno = errno;
 			Aerror(statp, stderr, "connect/vc", errno, nsap,
 			    nsaplen);
@@ -700,7 +699,7 @@ send_vc(res_state statp,
 	iov[0] = evConsIovec(&len, INT16SZ);
 	DE_CONST(buf, tmp);
 	iov[1] = evConsIovec(tmp, buflen);
-	if (_writev(statp->_vcsock, iov, 2) != (INT16SZ + buflen)) {
+	if (__sys_writev(statp->_vcsock, iov, 2) != (INT16SZ + buflen)) {
 		*terrno = errno;
 		Perror(statp, stderr, "write failed", errno);
 		res_nclose(statp);
@@ -712,7 +711,7 @@ send_vc(res_state statp,
  read_len:
 	cp = ans;
 	len = INT16SZ;
-	while ((n = _read(statp->_vcsock, (char *)cp, (int)len)) > 0) {
+	while ((n = __sys_read(statp->_vcsock, (char *)cp, (int)len)) > 0) {
 		cp += n;
 		if ((len -= n) == 0)
 			break;
@@ -759,7 +758,7 @@ send_vc(res_state statp,
 	}
 	cp = ans;
 	while (len != 0 &&
-	    (n = _read(statp->_vcsock, (char *)cp, (int)len)) > 0) {
+	    (n = __sys_read(statp->_vcsock, (char *)cp, (int)len)) > 0) {
 		cp += n;
 		len -= n;
 	}
@@ -778,7 +777,7 @@ send_vc(res_state statp,
 		while (len != 0) {
 			char junk[PACKETSZ];
 
-			n = _read(statp->_vcsock, junk,
+			n = __sys_read(statp->_vcsock, junk,
 			    (len > sizeof junk) ? sizeof junk : len);
 			if (n > 0)
 				len -= n;
@@ -839,7 +838,7 @@ send_dg(res_state statp,
 	nsap = get_nsaddr(statp, ns);
 	nsaplen = get_salen(nsap);
 	if (EXT(statp).nssocks[ns] == -1) {
-		EXT(statp).nssocks[ns] = _socket(nsap->sa_family,
+		EXT(statp).nssocks[ns] = __sys_socket(nsap->sa_family,
 		    SOCK_DGRAM | SOCK_CLOEXEC, 0);
 #if !defined(USE_POLL) && !defined(USE_KQUEUE)
 		if (EXT(statp).nssocks[ns] > highestFD) {
@@ -882,7 +881,7 @@ send_dg(res_state statp,
 		 * connecting?
 		 */
 		if (!(statp->options & RES_INSECURE1) &&
-		    _connect(EXT(statp).nssocks[ns], nsap, nsaplen) < 0) {
+		    __sys_connect(EXT(statp).nssocks[ns], nsap, nsaplen) < 0) {
 			Aerror(statp, stderr, "connect(dg)", errno, nsap,
 			    nsaplen);
 			res_nclose(statp);
@@ -895,8 +894,8 @@ send_dg(res_state statp,
 	s = EXT(statp).nssocks[ns];
 #ifndef CANNOT_CONNECT_DGRAM
 	if (statp->options & RES_INSECURE1) {
-		if (_sendto(s,
-		    (const char*)buf, buflen, 0, nsap, nsaplen) != buflen) {
+		if (__sys_sendto(s, (const char *)buf, buflen, 0, nsap,
+		    nsaplen) != buflen) {
 			Aerror(statp, stderr, "sendto", errno, nsap, nsaplen);
 			res_nclose(statp);
 			return (0);
@@ -907,7 +906,8 @@ send_dg(res_state statp,
 		return (0);
 	}
 #else /* !CANNOT_CONNECT_DGRAM */
-	if (_sendto(s, (const char*)buf, buflen, 0, nsap, nsaplen) != buflen)
+	if (__sys_sendto(s, (const char *)buf, buflen, 0, nsap, nsaplen) !=
+	    buflen)
 	{
 		Aerror(statp, stderr, "sendto", errno, nsap, nsaplen);
 		res_nclose(statp);
@@ -937,7 +937,7 @@ send_dg(res_state statp,
 		timeout = evConsTime(0, 0);
 #ifdef USE_KQUEUE
 	EV_SET(&kv, s, EVFILT_READ, EV_ADD | EV_ONESHOT, 0, 0, 0);
-	n = _kevent(kq, &kv, 1, &kv, 1, &timeout);
+	n = __sys_kevent(kq, &kv, 1, &kv, 1, &timeout);
 #else
 	FD_ZERO(&dsmask);
 	FD_SET(s, &dsmask);
@@ -951,7 +951,7 @@ send_dg(res_state statp,
 		timeout.tv_nsec/1000000;
 	pollfd.fd = s;
 	pollfd.events = POLLRDNORM;
-	n = _poll(&pollfd, 1, polltimeout);
+	n = __sys_poll(&pollfd, 1, polltimeout);
 #endif /* USE_POLL */
 
 	if (n == 0) {
@@ -980,8 +980,8 @@ send_dg(res_state statp,
 #endif
 	errno = 0;
 	fromlen = sizeof(from);
-	resplen = _recvfrom(s, (char*)ans, anssiz,0,
-			   (struct sockaddr *)&from, &fromlen);
+	resplen = __sys_recvfrom(s, (char *)ans, anssiz, 0,
+				 (struct sockaddr *)&from, &fromlen);
 	if (resplen <= 0) {
 		Perror(statp, stderr, "recvfrom", errno);
 		res_nclose(statp);

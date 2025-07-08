@@ -31,9 +31,7 @@
 
 #include <sys/param.h>
 
-#include "namespace.h"
 #include <err.h>
-#include "un-namespace.h"
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>

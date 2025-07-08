@@ -201,8 +201,6 @@ static bool matched_symbol(SymLook *, const Obj_Entry *, Sym_Match_Result *,
 void r_debug_state(struct r_debug *, struct link_map *) __noinline __exported;
 void _r_debug_postinit(struct link_map *) __noinline __exported;
 
-int __sys_openat(int, const char *, int, ...);
-
 /*
  * Data declarations.
  */
@@ -2141,7 +2139,7 @@ gethints(bool nostdlib)
 		/* Keep from trying again in case the hints file is bad. */
 		hints = "";
 
-		if ((fd = open(ld_elf_hints_path, O_RDONLY | O_CLOEXEC)) ==
+		if ((fd = open(ld_elf_hints_path, O_RDONLY | O_CLOEXEC, 0)) ==
 		    -1) {
 			dbg("failed to open hints file \"%s\"",
 			    ld_elf_hints_path);
@@ -2876,7 +2874,8 @@ load_object(const char *name, int fd_u, const Obj_Entry *refobj, int flags)
 		 * To avoid a race, we open the file and use fstat() rather than
 		 * using stat().
 		 */
-		if ((fd = open(path, O_RDONLY | O_CLOEXEC | O_VERIFY)) == -1) {
+		if ((fd = open(path, O_RDONLY | O_CLOEXEC | O_VERIFY, 0)) ==
+		    -1) {
 			_rtld_error("Cannot open \"%s\"", path);
 			free(path);
 			return (NULL);
@@ -3648,7 +3647,7 @@ try_library_path(const char *dir, size_t dirlen, void *param)
 		strcpy(pathname + dirlen + 1, arg->name);
 
 		dbg("  Trying \"%s\"", pathname);
-		fd = open(pathname, O_RDONLY | O_CLOEXEC | O_VERIFY);
+		fd = open(pathname, O_RDONLY | O_CLOEXEC | O_VERIFY, 0);
 		if (fd >= 0) {
 			dbg("  Opened \"%s\", fd %d", pathname, fd);
 			pathname = xmalloc(dirlen + 1 + arg->namelen + 1);
@@ -3732,7 +3731,8 @@ search_library_pathfds(const char *name, const char *path, int *fdp)
 			    fdstr);
 			break;
 		}
-		fd = __sys_openat(dirfd, name, O_RDONLY | O_CLOEXEC | O_VERIFY);
+		fd = __sys_openat(dirfd, name, O_RDONLY | O_CLOEXEC | O_VERIFY,
+		    0);
 		if (fd >= 0) {
 			*fdp = fd;
 			len = strlen(fdstr) + strlen(name) + 3;
@@ -6283,7 +6283,7 @@ open_binary_fd(const char *argv0, bool search_in_path, const char **binpath_res)
 				continue;
 			if (strlcat(binpath, argv0, PATH_MAX) >= PATH_MAX)
 				continue;
-			fd = open(binpath, O_RDONLY | O_CLOEXEC | O_VERIFY);
+			fd = open(binpath, O_RDONLY | O_CLOEXEC | O_VERIFY, 0);
 			if (fd != -1 || errno != ENOENT) {
 				res = binpath;
 				break;
@@ -6291,7 +6291,7 @@ open_binary_fd(const char *argv0, bool search_in_path, const char **binpath_res)
 		}
 		free(pathenv);
 	} else {
-		fd = open(argv0, O_RDONLY | O_CLOEXEC | O_VERIFY);
+		fd = open(argv0, O_RDONLY | O_CLOEXEC | O_VERIFY, 0);
 		res = argv0;
 	}
 

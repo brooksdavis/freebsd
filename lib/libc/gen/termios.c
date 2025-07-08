@@ -29,18 +29,17 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/time.h>
 
 #include <errno.h>
+#include <libsys.h>
 #include <string.h>
 #define	TTYDEFCHARS
 #include <termios.h>
 #include <unistd.h>
-#include "un-namespace.h"
 
 #include "libc_private.h"
 
@@ -48,7 +47,7 @@ int
 tcgetattr(int fd, struct termios *t)
 {
 
-	return (_ioctl(fd, TIOCGETA, t));
+	return (__sys_ioctl(fd, TIOCGETA, (char *)t));
 }
 
 int
@@ -63,11 +62,11 @@ tcsetattr(int fd, int opt, const struct termios *t)
 	}
 	switch (opt & ~TCSASOFT) {
 	case TCSANOW:
-		return (_ioctl(fd, TIOCSETA, t));
+		return (__sys_ioctl(fd, TIOCSETA, (char *)t));
 	case TCSADRAIN:
-		return (_ioctl(fd, TIOCSETAW, t));
+		return (__sys_ioctl(fd, TIOCSETAW, (char *)t));
 	case TCSAFLUSH:
-		return (_ioctl(fd, TIOCSETAF, t));
+		return (__sys_ioctl(fd, TIOCSETAF, (char *)t));
 	default:
 		errno = EINVAL;
 		return (-1);
@@ -80,7 +79,7 @@ tcsetpgrp(int fd, pid_t pgrp)
 	int s;
 
 	s = pgrp;
-	return (_ioctl(fd, TIOCSPGRP, &s));
+	return (__sys_ioctl(fd, TIOCSPGRP, (char *)&s));
 }
 
 pid_t
@@ -88,7 +87,7 @@ tcgetpgrp(int fd)
 {
 	int s;
 
-	if (_ioctl(fd, TIOCGPGRP, &s) < 0)
+	if (__sys_ioctl(fd, TIOCGPGRP, (char *)&s) < 0)
 		return ((pid_t)-1);
 
 	return ((pid_t)s);
@@ -99,7 +98,7 @@ tcgetsid(int fd)
 {
 	int s;
 
-	if (_ioctl(fd, TIOCGSID, &s) < 0)
+	if (__sys_ioctl(fd, TIOCGSID, (char *)&s) < 0)
 		return ((pid_t)-1);
 
 	return ((pid_t)s);
@@ -114,7 +113,7 @@ tcsetsid(int fd, pid_t pid)
 		return (-1);
 	}
 
-	return (_ioctl(fd, TIOCSCTTY, NULL));
+	return (__sys_ioctl(fd, TIOCSCTTY, (char *)NULL));
 }
 
 speed_t
@@ -197,10 +196,10 @@ tcsendbreak(int fd, int len __unused)
 
 	sleepytime.tv_sec = 0;
 	sleepytime.tv_usec = 400000;
-	if (_ioctl(fd, TIOCSBRK, 0) == -1)
+	if (__sys_ioctl(fd, TIOCSBRK, (char *)0) == -1)
 		return (-1);
-	(void)_select(0, 0, 0, 0, &sleepytime);
-	if (_ioctl(fd, TIOCCBRK, 0) == -1)
+	(void) __sys_select(0, 0, 0, 0, &sleepytime);
+	if (__sys_ioctl(fd, TIOCCBRK, (char *)0) == -1)
 		return (-1);
 	return (0);
 }
@@ -209,7 +208,7 @@ int
 __libc_tcdrain(int fd)
 {
 
-	return (_ioctl(fd, TIOCDRAIN, 0));
+	return (__sys_ioctl(fd, TIOCDRAIN, (char *)0));
 }
 
 #pragma weak tcdrain
@@ -243,7 +242,7 @@ tcflush(int fd, int which)
 		errno = EINVAL;
 		return (-1);
 	}
-	return (_ioctl(fd, TIOCFLUSH, &com));
+	return (__sys_ioctl(fd, TIOCFLUSH, (char *)&com));
 }
 
 int
@@ -254,15 +253,15 @@ tcflow(int fd, int action)
 
 	switch (action) {
 	case TCOOFF:
-		return (_ioctl(fd, TIOCSTOP, 0));
+		return (__sys_ioctl(fd, TIOCSTOP, (char *)0));
 	case TCOON:
-		return (_ioctl(fd, TIOCSTART, 0));
+		return (__sys_ioctl(fd, TIOCSTART, (char *)0));
 	case TCION:
 	case TCIOFF:
 		if (tcgetattr(fd, &term) == -1)
 			return (-1);
 		c = term.c_cc[action == TCIOFF ? VSTOP : VSTART];
-		if (c != _POSIX_VDISABLE && _write(fd, &c, sizeof(c)) == -1)
+		if (c != _POSIX_VDISABLE && __sys_write(fd, &c, sizeof(c)) == -1)
 			return (-1);
 		return (0);
 	default:
@@ -276,12 +275,12 @@ int
 tcgetwinsize(int fd, struct winsize *w)
 {
 
-	return (_ioctl(fd, TIOCGWINSZ, w));
+	return (__sys_ioctl(fd, TIOCGWINSZ, (char *)w));
 }
 
 int
 tcsetwinsize(int fd, const struct winsize *w)
 {
 
-	return (_ioctl(fd, TIOCSWINSZ, w));
+	return (__sys_ioctl(fd, TIOCSWINSZ, (char *)w));
 }

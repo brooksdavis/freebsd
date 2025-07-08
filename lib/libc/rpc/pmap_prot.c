@@ -37,13 +37,11 @@
  * Copyright (C) 1984, Sun Microsystems, Inc.
  */
 
-#include "namespace.h"
 #include <assert.h>
 
 #include <rpc/types.h>
 #include <rpc/xdr.h>
 #include <rpc/pmap_prot.h>
-#include "un-namespace.h"
 
 
 bool_t

@@ -31,25 +31,24 @@
 
 #include <sys/param.h>
 #include <errno.h>
+#include <libsys.h>
 #include <pwd.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include "namespace.h"
 #include <pthread.h>
-#include <ssp/ssp.h>
 #include "un-namespace.h"
+#include <ssp/ssp.h>
 
 #include "libc_private.h"
-
-extern int		_getlogin(char *, int);
 
 char *
 getlogin(void)
 {
 	static char logname[MAXLOGNAME];
 
-	if (_getlogin(logname, sizeof(logname)) < 0)
+	if (__sys_getlogin(logname, sizeof(logname)) < 0)
 		return (NULL);
 	return (logname[0] != '\0' ? logname : NULL);
 }
@@ -64,7 +63,7 @@ __ssp_real(getlogin_r)(char *logname, size_t namelen)
 		return (ERANGE);
 	logname[0] = '\0';
 
-	if (_getlogin(tmpname, sizeof(tmpname)) < 0)
+	if (__sys_getlogin(tmpname, sizeof(tmpname)) < 0)
 		return (errno);
 	len = strlen(tmpname) + 1;
 	if (len > namelen)

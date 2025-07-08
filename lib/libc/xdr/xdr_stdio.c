@@ -41,13 +41,11 @@
  * from the stream.
  */
 
-#include "namespace.h"
 #include <stdio.h>
 
 #include <arpa/inet.h>
 #include <rpc/types.h>
 #include <rpc/xdr.h>
-#include "un-namespace.h"
 
 static void xdrstdio_destroy(XDR *);
 static bool_t xdrstdio_getlong(XDR *, long *);

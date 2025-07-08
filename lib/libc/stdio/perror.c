@@ -29,15 +29,14 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <unistd.h>
 #include <errno.h>
+#include <libsys.h>
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
-#include "un-namespace.h"
 #include "libc_private.h"
 #include "local.h"
 
@@ -65,7 +64,7 @@ perror(const char *s)
 	v->iov_len = 1;
 	FLOCKFILE_CANCELSAFE(stderr);
 	__sflush(stderr);
-	(void)_writev(stderr->_file, iov, (v - iov) + 1);
+	(void) __sys_writev(stderr->_file, iov, (v - iov) + 1);
 	stderr->_flags &= ~__SOFF;
 	FUNLOCKFILE_CANCELSAFE();
 }

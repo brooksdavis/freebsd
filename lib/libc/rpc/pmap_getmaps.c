@@ -38,7 +38,6 @@
  * Copyright (C) 1984, Sun Microsystems, Inc.
  */
 
-#include "namespace.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
@@ -55,7 +54,6 @@
 #include <rpc/rpc.h>
 #include <rpc/pmap_prot.h>
 #include <rpc/pmap_clnt.h>
-#include "un-namespace.h"
 
 #define NAMELEN 255
 #define MAX_BROADCAST_SIZE 1400

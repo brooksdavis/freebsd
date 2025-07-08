@@ -37,7 +37,6 @@
  * Implements a connectionless client side RPC.
  */
 
-#include "namespace.h"
 #include "reentrant.h"
 #include <sys/types.h>
 #include <sys/event.h>
@@ -50,6 +49,7 @@
 #include <rpc/rpcsec_gss.h>
 #include <assert.h>
 #include <errno.h>
+#include <libsys.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
@@ -57,7 +57,6 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <err.h>
-#include "un-namespace.h"
 #include "rpc_com.h"
 #include "mt_misc.h"
 
@@ -271,7 +270,7 @@ clnt_dg_create(int fd, const struct netbuf *svcaddr, rpcprog_t program,
 #if 0
 	(void)bindresvport_sa(fd, (struct sockaddr *)svcaddr->buf);
 #endif
-	_ioctl(fd, FIONBIO, (char *)(void *)&one);
+	__sys_ioctl(fd, FIONBIO, (char *)(char *)(void *)&one);
 
 	/*
 	 * By default, closeit is always FALSE. It is users responsibility
@@ -350,7 +349,7 @@ clnt_dg_call(CLIENT *cl, rpcproc_t proc, xdrproc_t xargs, void *argsp,
 	}
 
 	if (cu->cu_connect && !cu->cu_connected) {
-		if (_connect(cu->cu_fd, (struct sockaddr *)&cu->cu_raddr,
+		if (__sys_connect(cu->cu_fd, (struct sockaddr *)&cu->cu_raddr,
 		    cu->cu_rlen) < 0) {
 			cu->cu_error.re_errno = errno;
 			cu->cu_error.re_status = RPC_CANTSEND;
@@ -372,7 +371,7 @@ clnt_dg_call(CLIENT *cl, rpcproc_t proc, xdrproc_t xargs, void *argsp,
 
 	/* Clean up in case the last call ended in a longjmp(3) call. */
 	if (cu->cu_kq >= 0)
-		_close(cu->cu_kq);
+		__sys_close(cu->cu_kq);
 	if ((cu->cu_kq = kqueue()) < 0) {
 		cu->cu_error.re_errno = errno;
 		cu->cu_error.re_status = RPC_CANTSEND;
@@ -416,7 +415,8 @@ call_again_same_xid:
 	outlen = (size_t)XDR_GETPOS(xdrs);
 
 send_again:
-	if (_sendto(cu->cu_fd, cu->cu_outbuf, outlen, 0, sa, salen) != outlen) {
+	if (__sys_sendto(cu->cu_fd, cu->cu_outbuf, outlen, 0, sa, salen) !=
+	    outlen) {
 		cu->cu_error.re_errno = errno;
 		cu->cu_error.re_status = RPC_CANTSEND;
 		goto out;
@@ -456,7 +456,7 @@ get_reply:
 			tv.tv_sec = tv.tv_usec = 0;
 		TIMEVAL_TO_TIMESPEC(&tv, &ts);
 
-		n = _kevent(cu->cu_kq, &cu->cu_kin, kin_len, &kv, 1, &ts);
+		n = __sys_kevent(cu->cu_kq, &cu->cu_kin, kin_len, &kv, 1, &ts);
 		/* We don't need to register the event again. */
 		kin_len = 0;
 
@@ -468,8 +468,8 @@ get_reply:
 			}
 			/* We have some data now */
 			do {
-				recvlen = _recvfrom(cu->cu_fd, cu->cu_inbuf,
-				    cu->cu_recvsz, 0, NULL, NULL);
+				recvlen = __sys_recvfrom(cu->cu_fd,
+				    cu->cu_inbuf, cu->cu_recvsz, 0, NULL, NULL);
 			} while (recvlen < 0 && errno == EINTR);
 			if (recvlen < 0 && errno != EWOULDBLOCK) {
 				cu->cu_error.re_errno = errno;
@@ -594,7 +594,7 @@ get_reply:
 	}
 out:
 	if (cu->cu_kq >= 0)
-		_close(cu->cu_kq);
+		__sys_close(cu->cu_kq);
 	cu->cu_kq = -1;
 	release_fd_lock(elem, mask);
 	return (cu->cu_error.re_status);
@@ -789,9 +789,9 @@ clnt_dg_destroy(CLIENT *cl)
 	elem = dg_fd_find(cu_fd);
 	mutex_lock(&elem->mtx);
 	if (cu->cu_closeit)
-		(void)_close(cu_fd);
+		(void) __sys_close(cu_fd);
 	if (cu->cu_kq >= 0)
-		_close(cu->cu_kq);
+		__sys_close(cu->cu_kq);
 	XDR_DESTROY(&(cu->cu_outxdrs));
 	mem_free(cu, (sizeof (*cu) + cu->cu_sendsz + cu->cu_recvsz));
 	if (cl->cl_netid && cl->cl_netid[0])

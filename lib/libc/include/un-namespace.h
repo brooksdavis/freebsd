@@ -26,41 +26,6 @@
  * SUCH DAMAGE.
  */
 
-#undef		accept
-#undef		__acl_aclcheck_fd
-#undef		__acl_delete_fd
-#undef		__acl_get_fd
-#undef		__acl_set_fd
-#undef		bind
-#undef		__cap_get_fd
-#undef		__cap_set_fd
-#undef		clock_nanosleep
-#undef		close
-#undef		connect
-#undef		dup
-#undef		dup2
-#undef		execve
-#undef		fcntl
-#undef		flock
-#undef		flockfile
-#undef		fpathconf
-#undef		fstat
-#undef		fstatfs
-#undef		fsync
-#undef		funlockfile
-#undef		getdirentries
-#undef		getlogin
-#undef		getpeername
-#undef		getprogname
-#undef		getsockname
-#undef		getsockopt
-#undef		ioctl
-#undef		kevent
-#undef		listen
-#undef		nanosleep
-#undef		open
-#undef		openat
-#undef		poll
 #undef		pthread_atfork
 #undef		pthread_attr_destroy
 #undef		pthread_attr_get_np
@@ -186,73 +151,5 @@
 #undef		pthread_testcancel
 #undef		pthread_timedjoin_np
 #undef		pthread_yield
-#undef		read
-#undef		readv
-#undef		recvfrom
-#undef		recvmsg
-#undef		recvmmsg
-#undef		select
-#undef		sem_close
-#undef		sem_destroy
-#undef		sem_getvalue
-#undef		sem_init
-#undef		sem_open
-#undef		sem_post
-#undef		sem_timedwait
-#undef		sem_clockwait_np
-#undef		sem_trywait
-#undef		sem_unlink
-#undef		sem_wait
-#undef		sendmsg
-#undef		sendmmsg
-#undef		sendto
-#undef		setsockopt
-#undef		sigaction
-#undef		sigprocmask
-#undef		sigsuspend
-#undef		socket
-#undef		socketpair
-#undef		usleep
-#undef		wait4
-#undef		wait6
-#undef		waitpid
-#undef		write
-#undef		writev
 
-#if 0
-#undef		creat
-#undef		fchflags
-#undef		fchmod
-#undef		ftrylockfile
-#undef		msync
-#undef		nfssvc
-#undef		pause
-#undef		sched_yield
-#undef		sendfile
-#undef		shutdown
-#undef		sigaltstack
-#undef		sigpending
-#undef		sigreturn
-#undef		sigsetmask
-#undef		sleep
-#undef		system
-#undef		tcdrain
-#undef		wait
-#endif	/* 0 */
-
-#ifdef _SIGNAL_H_
-int     	_sigaction(int, const struct sigaction *, struct sigaction *);
-#endif
-
-#ifdef _SYS_EVENT_H_
-int		_kevent(int, const struct kevent *, int, struct kevent *,
-		    int, const struct timespec *);
-#endif
-
-#ifdef _SYS_FCNTL_H_
-int		_flock(int, int);
-#endif
-
-#undef		err
-#undef		warn
 #undef		nsdispatch

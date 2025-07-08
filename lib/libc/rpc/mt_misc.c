@@ -1,12 +1,10 @@
 /*	$NetBSD: mt_misc.c,v 1.1 2000/06/02 23:11:11 fvdl Exp $	*/
 
-#include "namespace.h"
 #include "reentrant.h"
 #include <rpc/rpc.h>
 #include <sys/time.h>
 #include <stdlib.h>
 #include <string.h>
-#include "un-namespace.h"
 #include "mt_misc.h"
 
 /* Take these objects out of the application namespace. */
