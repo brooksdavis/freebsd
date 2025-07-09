@@ -29,10 +29,9 @@
  * SUCH DAMAGE.
  */
 
+#include <libsys.h>
 #include <signal.h>
 #include <unistd.h>
-
-#include "libc_private.h"
 
 __weak_reference(__raise, raise);
 __weak_reference(__raise, _raise);

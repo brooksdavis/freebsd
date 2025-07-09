@@ -37,8 +37,6 @@
 #include <sys/_types.h>
 #include <sys/_pthreadtypes.h>
 
-#include <libsys.h>
-
 extern char **environ;
 
 /*

@@ -30,6 +30,7 @@
  */
 
 #include <sys/types.h>
+#include <libsys.h>
 #include <unistd.h>
 #include "libc_private.h"
 

@@ -29,12 +29,11 @@
 #include <sys/fcntl.h>
 #include <sys/syscall.h>
 #include <sys/stat.h>
+#include <libsys.h>
 #include <unistd.h>
-#include "libc_private.h"
 
 int
 lstat(const char *path, struct stat *sb)
 {
-
 	return (__sys_fstatat(AT_FDCWD, path, sb, AT_SYMLINK_NOFOLLOW));
 }

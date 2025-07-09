@@ -26,9 +26,8 @@
  */
 
 #include <sys/param.h>
+#include <libsys.h>
 #include <unistd.h>
-
-#include "libc_private.h"
 
 void
 closefrom(int lowfd)

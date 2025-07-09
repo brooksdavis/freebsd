@@ -31,6 +31,7 @@
 
 #include <sys/types.h>
 #include <sys/aio.h>
+#include <libsys.h>
 #include "libc_private.h"
 
 #pragma weak aio_suspend

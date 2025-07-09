@@ -29,7 +29,7 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
-#include "libc_private.h"
+#include <libsys.h>
 
 ssize_t
 sendmmsg(int s, struct mmsghdr *__restrict msgvec, size_t vlen, int flags)

@@ -32,6 +32,7 @@
 #include <sys/types.h>
 #include <sys/fcntl.h>
 #include <sys/mman.h>
+#include <libsys.h>
 #include "libc_private.h"
 
 #pragma weak msync

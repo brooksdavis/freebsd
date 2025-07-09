@@ -26,8 +26,8 @@
  */
 
 #include <errno.h>
+#include <libsys.h>
 #include <signal.h>
-#include "libc_private.h"
 
 /* XXX: why does this symbol exist? */
 __weak_reference(__libsys_sigwait, __sigwait);

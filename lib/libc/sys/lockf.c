@@ -33,6 +33,7 @@
 #include "namespace.h"
 #include <errno.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <unistd.h>
 #include "un-namespace.h"
 #include "libc_private.h"

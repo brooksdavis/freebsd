@@ -60,6 +60,7 @@
 #include <sys/syscall.h>
 #include "namespace.h"
 #include <errno.h>
+#include <libsys.h>
 #include <link.h>
 #include <string.h>
 #include <stdlib.h>

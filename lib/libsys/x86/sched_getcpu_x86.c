@@ -32,6 +32,7 @@
 #include <machine/sysarch.h>
 #include <x86/ifunc.h>
 #include <errno.h>
+#include <libsys.h>
 #include <sched.h>
 #include "libc_private.h"
 

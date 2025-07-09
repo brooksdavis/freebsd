@@ -34,6 +34,7 @@
 #ifdef _PTHREAD_FORCED_UNWIND
 #include <dlfcn.h>
 #endif
+#include <libsys.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>

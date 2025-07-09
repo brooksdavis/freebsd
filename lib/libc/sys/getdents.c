@@ -28,11 +28,10 @@
 #include <sys/param.h>
 #include <sys/syscall.h>
 #include <dirent.h>
-#include "libc_private.h"
+#include <libsys.h>
 
 ssize_t
 getdents(int fd, char *buf, size_t nbytes)
 {
-
 	return (__sys_getdirentries(fd, buf, nbytes, NULL));
 }

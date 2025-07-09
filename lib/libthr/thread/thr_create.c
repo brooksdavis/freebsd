@@ -34,6 +34,7 @@
 #include <sys/signalvar.h>
 #include <sys/exterrvar.h>
 #include <errno.h>
+#include <libsys.h>
 #include <link.h>
 #include <stdlib.h>
 #include <string.h>

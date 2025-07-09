@@ -32,10 +32,11 @@
  * SUCH DAMAGE.
  */
 
-#include <fcntl.h>
-#include <stdarg.h>
 #include <sys/types.h>
 #include <sys/syscall.h>
+#include <fcntl.h>
+#include <libsys.h>
+#include <stdarg.h>
 #include "libc_private.h"
 
 #pragma weak fcntl

@@ -30,6 +30,7 @@
  */
 
 #include <sys/types.h>
+#include <libsys.h>
 #include "libc_private.h"
 
 #define	SLOT(a, b) \

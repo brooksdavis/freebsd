@@ -1,6 +1,8 @@
 #ifndef JEMALLOC_PREAMBLE_H
 #define JEMALLOC_PREAMBLE_H
 
+#include <sys/types.h>
+
 #include "jemalloc_internal_defs.h"
 #include "jemalloc/internal/jemalloc_internal_decls.h"
 
@@ -9,7 +11,6 @@
 #endif
 
 #include "un-namespace.h"
-#include "libc_private.h"
 
 #define JEMALLOC_NO_DEMANGLE
 #ifdef JEMALLOC_JET

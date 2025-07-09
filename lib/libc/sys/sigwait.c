@@ -25,6 +25,7 @@
  * SUCH DAMAGE.
  */
 
+#include <libsys.h>
 #include <signal.h>
 #include "libc_private.h"
 

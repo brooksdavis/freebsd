@@ -35,6 +35,7 @@
 #include <string.h>
 #include <signal.h>
 #include <errno.h>
+#include <libsys.h>
 #include "un-namespace.h"
 #include "libc_private.h"
 

@@ -32,6 +32,7 @@
 #include <sys/types.h>
 #include <sys/poll.h>
 #include <ssp/ssp.h>
+#include <libsys.h>
 #include "libc_private.h"
 
 int __weak_symbol

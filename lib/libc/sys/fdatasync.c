@@ -31,6 +31,7 @@
 
 #include <sys/types.h>
 #include <sys/fcntl.h>
+#include <libsys.h>
 #include <unistd.h>
 #include "libc_private.h"
 

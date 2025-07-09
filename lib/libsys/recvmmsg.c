@@ -30,10 +30,10 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <errno.h>
+#include <libsys.h>
 #include <poll.h>
 #include <stddef.h>
 #include <ssp/ssp.h>
-#include "libc_private.h"
 
 ssize_t
 __ssp_real(recvmmsg)(int s, struct mmsghdr *__restrict msgvec, size_t vlen,

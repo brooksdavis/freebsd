@@ -31,6 +31,7 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <libsys.h>
 #include <ssp/ssp.h>
 #include "libc_private.h"
 

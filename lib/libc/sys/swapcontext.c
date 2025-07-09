@@ -32,6 +32,7 @@
 #include <sys/signal.h>
 #include <sys/ucontext.h>
 #include <errno.h>
+#include <libsys.h>
 #include <stddef.h>
 #include "libc_private.h"
 

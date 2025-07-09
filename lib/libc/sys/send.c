@@ -33,6 +33,7 @@
 #include <sys/socket.h>
 #include "libc_private.h"
 
+#include <libsys.h>
 #include <stddef.h>
 
 ssize_t

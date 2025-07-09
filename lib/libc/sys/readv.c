@@ -32,6 +32,7 @@
 #include <sys/types.h>
 #include <sys/syscall.h>
 #include <sys/uio.h>
+#include <libsys.h>
 #include <unistd.h>
 #include <ssp/ssp.h>
 #include "libc_private.h"

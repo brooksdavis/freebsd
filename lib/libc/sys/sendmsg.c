@@ -32,6 +32,7 @@
 #include <sys/types.h>
 #include <sys/syscall.h>
 #include <sys/socket.h>
+#include <libsys.h>
 #include "libc_private.h"
 
 #pragma weak sendmsg

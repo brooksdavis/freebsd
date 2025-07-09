@@ -32,6 +32,7 @@
 #include "namespace.h"
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <libsys.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <stddef.h>

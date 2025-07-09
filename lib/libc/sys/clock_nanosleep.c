@@ -31,6 +31,7 @@
  */
 
 #include <sys/types.h>
+#include <libsys.h>
 #include <time.h>
 #include "libc_private.h"
 

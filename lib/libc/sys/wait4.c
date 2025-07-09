@@ -31,6 +31,7 @@
 
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <libsys.h>
 #include "libc_private.h"
 
 #pragma weak wait4

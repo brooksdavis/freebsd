@@ -26,11 +26,11 @@
  * SUCH DAMAGE.
  */
 
+#include <sys/types.h>
 #include "libc_private.h"
 
 int
 __cxa_thread_atexit(void (*dtor_func)(void *), void *obj, void *dso_symbol)
 {
-
 	return (__cxa_thread_atexit_hidden(dtor_func, obj, dso_symbol));
 }

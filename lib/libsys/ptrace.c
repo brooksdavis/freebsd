@@ -32,14 +32,13 @@
 #include <sys/types.h>
 #include <sys/ptrace.h>
 #include <errno.h>
-#include "libc_private.h"
+#include <libsys.h>
 
 __weak_reference(_ptrace, ptrace);
 
 int
 _ptrace(int request, pid_t pid, caddr_t addr, int data)
 {
-
 	errno = 0;
 	return (__sys_ptrace(request, pid, addr, data));
 }

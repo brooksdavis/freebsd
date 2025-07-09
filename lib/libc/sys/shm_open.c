@@ -34,10 +34,9 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <string.h>
 #include <unistd.h>
-
-#include "libc_private.h"
 
 __weak_reference(shm_open, _shm_open);
 __weak_reference(shm_open, __sys_shm_open);

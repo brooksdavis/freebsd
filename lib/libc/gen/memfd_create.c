@@ -34,11 +34,10 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <libsys.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-
-#include "libc_private.h"
 
 #define	MEMFD_NAME_PREFIX	"memfd:"
 

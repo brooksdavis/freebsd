@@ -29,7 +29,8 @@
  * SUCH DAMAGE.
  */
 
-#include "libc_private.h"
+#include <sys/cdefs.h>
+#include <libsys.h>
 
 int __libsys_errno;
 #ifdef LIBSYS

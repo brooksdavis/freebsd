@@ -32,6 +32,7 @@
 #include "namespace.h"
 #include <fcntl.h>
 #include "un-namespace.h"
+#include <libsys.h>
 #include "libc_private.h"
 
 __weak_reference(__creat, creat);

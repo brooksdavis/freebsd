@@ -30,8 +30,8 @@
  */
 
 #include <sys/types.h>
+#include <libsys.h>
 #include <unistd.h>
-#include "libc_private.h"
 
 #pragma weak _Fork
 pid_t

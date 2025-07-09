@@ -24,17 +24,12 @@
  * SUCH DAMAGE.
  */
 
-#include "namespace.h"
-#include <sys/param.h>
 #include <sys/fcntl.h>
-#include <sys/syscall.h>
 #include <sys/stat.h>
-#include <unistd.h>
-#include "libc_private.h"
+#include <libsys.h>
 
 int
 stat(const char *path, struct stat *sb)
 {
-
 	return (__sys_fstatat(AT_FDCWD, path, sb, 0));
 }

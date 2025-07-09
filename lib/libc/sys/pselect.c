@@ -31,6 +31,7 @@
 
 #include <sys/types.h>
 #include <sys/select.h>
+#include <libsys.h>
 #include "libc_private.h"
 
 #pragma weak pselect

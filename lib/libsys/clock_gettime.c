@@ -29,6 +29,7 @@
 #include <sys/time.h>
 #include <sys/vdso.h>
 #include <errno.h>
+#include <libsys.h>
 #include <time.h>
 #include "libc_private.h"
 

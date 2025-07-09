@@ -31,6 +31,7 @@
 
 #include "namespace.h"
 #include <errno.h>
+#include <libsys.h>
 #include <limits.h>
 #include <time.h>
 #include <unistd.h>

@@ -27,9 +27,9 @@
 #include "namespace.h"
 #include <sys/eventfd.h>
 #include <sys/specialfd.h>
+#include <libsys.h>
 #include <unistd.h>
 #include "un-namespace.h"
-#include "libc_private.h"
 
 int eventfd(unsigned int initval, int flags)
 {

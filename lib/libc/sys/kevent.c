@@ -32,6 +32,7 @@
 #include <sys/types.h>
 #include <sys/event.h>
 #include <sys/time.h>
+#include <libsys.h>
 #include "libc_private.h"
 
 #pragma weak kevent
