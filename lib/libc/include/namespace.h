@@ -26,9 +26,6 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _NAMESPACE_H_
-#define _NAMESPACE_H_
-
 /*
  * Adjust names so that headers declare "hidden" names.
  *
@@ -269,5 +266,3 @@
 #define		tcdrain				_tcdrain
 #define		wait				_wait
 #endif
-
-#endif /* _NAMESPACE_H_ */

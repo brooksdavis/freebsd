@@ -26,9 +26,6 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _UN_NAMESPACE_H_
-#define _UN_NAMESPACE_H_
-
 #undef		accept
 #undef		__acl_aclcheck_fd
 #undef		__acl_delete_fd
@@ -259,5 +256,3 @@ int		_flock(int, int);
 #undef		err
 #undef		warn
 #undef		nsdispatch
-
-#endif	/* _UN_NAMESPACE_H_ */
