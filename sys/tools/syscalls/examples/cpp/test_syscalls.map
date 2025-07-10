@@ -6,13 +6,11 @@
 
 FBSDprivate_1.0 {
 #ifdef PLATFORM_FOO
-	_syscall1;
 	__sys_syscall1;
 #else
 #endif
 #ifdef PLATFORM_FOO
 #else
-	_syscall2;
 	__sys_syscall2;
 #endif
 };
