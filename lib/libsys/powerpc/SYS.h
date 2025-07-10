@@ -51,7 +51,6 @@
 	.text;							\
 	.align 2;						\
 ENTRY(__sys_##name);						\
-	WEAK_REFERENCE(__sys_##name, _##name);			\
 	_SYSCALL_BODY(name);					\
 END(__sys_##name)
 
@@ -60,6 +59,5 @@ END(__sys_##name)
 	.align 2;						\
 ENTRY(__sys_##name);						\
 	WEAK_REFERENCE(__sys_##name, name);			\
-	WEAK_REFERENCE(__sys_##name, _##name);			\
 	_SYSCALL_BODY(name);					\
 END(__sys_##name)

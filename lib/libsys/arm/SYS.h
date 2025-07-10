@@ -55,16 +55,12 @@
 
 #define PSEUDO(x)							\
 	ENTRY(__CONCAT(__sys_, x));					\
-	.weak _C_LABEL(__CONCAT(_,x));					\
-	.set _C_LABEL(__CONCAT(_,x)),_C_LABEL(__CONCAT(__sys_,x));	\
 	_SYSCALL_BODY(x)
 
 #define RSYSCALL(x)							\
 	ENTRY(__CONCAT(__sys_, x));					\
 	.weak _C_LABEL(x);						\
 	.set _C_LABEL(x), _C_LABEL(__CONCAT(__sys_,x));			\
-	.weak _C_LABEL(__CONCAT(_,x));					\
-	.set _C_LABEL(__CONCAT(_,x)),_C_LABEL(__CONCAT(__sys_,x));	\
 	_SYSCALL_BODY(x);						\
 
 	.globl  CERROR
