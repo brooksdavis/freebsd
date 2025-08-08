@@ -151,7 +151,8 @@ execvPe_prog(const char *path, char * const *argv, char * const *envp)
 	size_t cnt;
 	int save_errno;
 
-	(void)__sys_execve(path, __DECONST(char **, argv), envp);
+	(void)__sys_execve(path, __DECONST(char **, argv),
+	    __DECONST char **, envp));
 	/* Grouped roughly by never terminal vs. usually terminal conditions */
 	switch (errno) {
 	case ELOOP:
@@ -190,7 +191,7 @@ execvPe_prog(const char *path, char * const *argv, char * const *envp)
 		}
 
 		(void)__sys_execve(_PATH_BSHELL, __DECONST(char **, memp),
-		    envp);
+		    __DECONST(char **, envp));
 		return (-1);
 	case ENOMEM:
 	case E2BIG:
