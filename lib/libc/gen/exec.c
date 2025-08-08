@@ -151,7 +151,7 @@ execvPe_prog(const char *path, char * const *argv, char * const *envp)
 	size_t cnt;
 	int save_errno;
 
-	(void)__sys_execve(path, argv, envp);
+	(void)__sys_execve(path, __DECONST(char **, argv), envp);
 	/* Grouped roughly by never terminal vs. usually terminal conditions */
 	switch (errno) {
 	case ELOOP:
