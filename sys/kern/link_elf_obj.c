@@ -387,6 +387,7 @@ link_elf_link_preload(linker_class_t cls, const char *filename,
 	    hdr->e_ident[EI_VERSION] != EV_CURRENT ||
 	    hdr->e_version != EV_CURRENT ||
 	    hdr->e_type != ET_REL ||
+	    ELF_IS_CHERI(hdr) ||
 	    hdr->e_machine != ELF_TARG_MACH) {
 		error = EFTYPE;
 		goto out;
@@ -795,6 +796,11 @@ link_elf_load_file(linker_class_t cls, const char *filename,
 	}
 	if (hdr->e_machine != ELF_TARG_MACH) {
 		link_elf_error(filename, "Unsupported machine");
+		error = ENOEXEC;
+		goto out;
+	}
+	if (ELF_IS_CHERI(hdr)) {
+		link_elf_error(filename, "Pure capability ABI");
 		error = ENOEXEC;
 		goto out;
 	}

@@ -1077,6 +1077,11 @@ link_elf_load_file(linker_class_t cls, const char* filename,
 		error = ENOEXEC;
 		goto out;
 	}
+	if (ELF_IS_CHERI(hdr)) {
+		link_elf_error(filename, "CHERI pure capability ABI");
+		error = ENOEXEC;
+		goto out;
+	}
 
 	/*
 	 * We rely on the program header being in the first page.

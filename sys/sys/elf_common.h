@@ -344,6 +344,7 @@ typedef struct {
 #define	EF_ARM_ABI_FLOAT_HARD	0x00000400
 #define	EF_ARM_VFP_FLOAT	EF_ARM_ABI_FLOAT_HARD /* Pre-V5 ABI name */
 #define	EF_ARM_MAVERICK_FLOAT	0x00000800
+#define	EF_AARCH64_CHERI_PURECAP	0x00010000
 
 #define	EF_MIPS_NOREORDER	0x00000001
 #define	EF_MIPS_PIC		0x00000002	/* Contains PIC code */
@@ -382,6 +383,7 @@ typedef struct {
 #define	EF_RISCV_FLOAT_ABI_QUAD	0x00000006
 #define	EF_RISCV_RVE		0x00000008
 #define	EF_RISCV_TSO		0x00000010
+#define	EF_RISCV_CHERIABI	0x00010000
 
 /*
  * Loongson LoongArch Specific e_flags

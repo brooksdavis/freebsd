@@ -63,6 +63,8 @@ __ElfType(Auxinfo);
 
 #define	ELF_MACHINE_OK(x) ((x) == (ELF_ARCH))
 
+#define	ELF_IS_CHERI(hdr) (((hdr)->e_flags & EF_RISCV_CHERIABI) != 0)
+
 /* Define "machine" characteristics */
 #define	ELF_TARG_CLASS	ELFCLASS64
 #define	ELF_TARG_DATA	ELFDATA2LSB
