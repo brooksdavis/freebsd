@@ -9,6 +9,7 @@ on:
       TheCapableHub
       cheri
       main-ci
+      main-c-target
   pull_request_target:
     types: [ opened, reopened, edited, synchronize ]
 
