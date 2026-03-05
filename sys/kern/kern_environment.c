@@ -211,7 +211,7 @@ kern_kenv(struct thread *td, int what, const char *namep, char *u_val,
 
 	name = malloc(KENV_MNAMELEN + 1, M_TEMP, M_WAITOK);
 
-	error = copyinstr(name, name, KENV_MNAMELEN + 1, NULL);
+	error = copyinstr(namep, name, KENV_MNAMELEN + 1, NULL);
 	if (error)
 		goto done;
 
