@@ -1320,13 +1320,6 @@ exec_map_stack(struct image_params *imgp)
 #ifdef __CHERI__
 	perms = vm_prot2perms(CHERI_CAP_USER_DATA_PERMS, stack_prot);
 	imgp->stack = (void *)cheri_perms_and(stack_top, perms);
-	if (sv->sv_flags & SV_CHERI)
-		imgp->stack = cheri_capability_build_user_data(perms,
-		    stack_addr, ssiz, ssiz);
-	else
-		imgp->stack =
-			cheri_capability_build_inexact_user_data(perms,
-			    stack_addr, ssiz, stack_top - stack_addr);
 
 	if (sv->sv_flags & SV_CHERI) {
 		/*
@@ -1355,7 +1348,7 @@ exec_map_stack(struct image_params *imgp)
 	if (sv->sv_flags & SV_CHERI)
 		p->p_psstrings = strings_addr + strings_size -
 		    sv->sv_psstringssz;
-		else
+	else
 #endif
 		p->p_psstrings = stack_top - sv->sv_psstringssz;
 
@@ -1932,7 +1925,7 @@ exec_copyout_strings(struct image_params *imgp, uintptr_t *stack_base)
 	 * Fill in "ps_strings" struct for ps, w, etc.
 	 */
 	imgp->argv = cheri_kern_bounds_set(vectp, (argc + 1) * sizeof(*vectp));
-	if (suptr(&arginfo->ps_argvstr, (intptr_t)vectp) != 0 ||
+	if (suptr(&arginfo->ps_argvstr, (intptr_t)imgp->argv) != 0 ||
 	    suword32(&arginfo->ps_nargvstr, argc) != 0)
 		return (EFAULT);
 
@@ -1952,7 +1945,7 @@ exec_copyout_strings(struct image_params *imgp, uintptr_t *stack_base)
 		return (EFAULT);
 
 	imgp->envv = cheri_kern_bounds_set(vectp, (envc + 1) * sizeof(*vectp));
-	if (suptr(&arginfo->ps_envstr, (intptr_t)vectp) != 0 ||
+	if (suptr(&arginfo->ps_envstr, (intptr_t)imgp->envv) != 0 ||
 	    suword32(&arginfo->ps_nenvstr, envc) != 0)
 		return (EFAULT);
 
