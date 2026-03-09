@@ -3818,6 +3818,30 @@ sooptcopyinptr(struct sockopt *sopt, void *buf, size_t len, size_t minlen)
 }
 #endif
 
+#ifdef MAC
+static int
+sooptcopyinmac(struct sockopt *sopt, struct mac *mac)
+{
+	int error = 0;
+
+	memset(mac, 0, sizeof(*mac));
+#ifdef COMPAT_FREEBSD32
+	if (SV_CURPROC_FLAG(SV_ILP32)) {
+		struct mac32 m32;
+
+		error = sooptcopyin(sopt, &m32, sizeof(m32), sizeof(m32));
+		if (error)
+			goto bad;
+		CP(m32, extmac, m_buflen);
+		PTRIN_CP(m32, extmac, m_string);
+	} else
+#endif
+		error = sooptcopyinptr(sopt, mac, sizeof(*mac), sizeof(*mac));
+bad:
+	return (error);
+}
+#endif /* MAC */
+
 /*
  * Kernel version of setsockopt(2).
  *
@@ -3966,8 +3990,7 @@ sosetopt(struct socket *so, struct sockopt *sopt)
 
 		case SO_LABEL:
 #ifdef MAC
-			error = sooptcopyin(sopt, &extmac, sizeof extmac,
-			    sizeof extmac);
+			error = sooptcopyinmac(sopt, &extmac);
 			if (error)
 				goto bad;
 			error = mac_setsockopt_label(sopt->sopt_td->td_ucred,
@@ -4233,8 +4256,7 @@ integer:
 
 		case SO_LABEL:
 #ifdef MAC
-			error = sooptcopyin(sopt, &extmac, sizeof(extmac),
-			    sizeof(extmac));
+			error = sooptcopyinmac(sopt, &extmac);
 			if (error)
 				goto bad;
 			error = mac_getsockopt_label(sopt->sopt_td->td_ucred,
@@ -4249,8 +4271,7 @@ integer:
 
 		case SO_PEERLABEL:
 #ifdef MAC
-			error = sooptcopyin(sopt, &extmac, sizeof(extmac),
-			    sizeof(extmac));
+			error = sooptcopyinmac(sopt, &extmac);
 			if (error)
 				goto bad;
 			error = mac_getsockopt_peerlabel(
