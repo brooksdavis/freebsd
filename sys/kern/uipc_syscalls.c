@@ -547,15 +547,7 @@ done1:
 int
 sys_connectat(struct thread *td, struct connectat_args *uap)
 {
-	struct sockaddr *sa;
-	int error;
-
-	error = getsockaddr(&sa, uap->name, uap->namelen);
-	if (error == 0) {
-		error = kern_connectat(td, uap->fd, uap->s, sa);
-		free(sa, M_SONAME);
-	}
-	return (error);
+	return (user_connectat(td, uap->fd, uap->s, uap->name, uap->namelen));
 }
 
 int
