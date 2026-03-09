@@ -213,7 +213,18 @@ devmap_ptov(vm_paddr_t pa, vm_size_t size)
 
 	for (pd = devmap_table; pd->pd_size != 0; ++pd) {
 		if (pa >= pd->pd_pa && pa + size <= pd->pd_pa + pd->pd_size)
+#ifdef __CHERI__
+			/*
+			 * This assumes that the static mappings are always
+			 * representable. This must be enforced when inserting
+			 * entries.
+			 */
+			return (cheri_bounds_set_exact(cheri_address_set(
+			    devmap_capability, pd->pd_va + (pa - pd->pd_pa)),
+			    size));
+#else
 			return ((void *)(pd->pd_va + (pa - pd->pd_pa)));
+#endif
 	}
 
 	return (NULL);
