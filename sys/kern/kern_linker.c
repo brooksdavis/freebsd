@@ -1526,7 +1526,7 @@ sys_kldsym(struct thread *td, struct kldsym_args *uap)
 	int error;
 
 	user_lookup = uap->data;
-	if ((error = copyin(user_lookup, &lookup, sizeof(lookup))) != 0)
+	if ((error = copyinptr(user_lookup, &lookup, sizeof(lookup))) != 0)
 		return (error);
 	if (lookup.version != sizeof(lookup) || uap->cmd != KLDSYM_LOOKUP)
 		return (EINVAL);
