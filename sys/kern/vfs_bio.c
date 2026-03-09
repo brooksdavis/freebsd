@@ -4478,7 +4478,7 @@ biodone(struct bio *bp)
 {
 	struct mtx *mtxp;
 	void (*done)(struct bio *);
-	vm_offset_t start, end;
+	vm_pointer_t start, end;
 
 	biotrack(bp, __func__);
 
