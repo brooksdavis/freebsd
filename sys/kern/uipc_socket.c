@@ -4119,7 +4119,7 @@ sooptcopyout(struct sockopt *sopt, const void *buf, size_t len)
 		if (sopt->sopt_td != NULL)
 			error = copyout(buf, sopt->sopt_val, valsize);
 		else
-			bcopy(buf, sopt->sopt_val, valsize);
+			bcopy_data(buf, sopt->sopt_val, valsize);
 	}
 	return (error);
 }
