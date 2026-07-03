@@ -76,6 +76,10 @@
 #include <sys/ktrace.h>
 #endif
 
+#ifdef __CHERI__
+#include <cheri/cheric.h>
+#endif
+
 #include <security/audit/audit.h>
 
 /*
@@ -2275,6 +2279,22 @@ exterr_to_ue(struct thread *td, struct uexterror *ue)
 	ue->src_line = td->td_kexterr.src_line;
 	ue->p1 = td->td_kexterr.p1;
 	ue->p2 = td->td_kexterr.p2;
+#ifdef __CHERI__
+	/*
+	 * Check for tags on p1 and p2 and set a flag if they are.
+	 *
+	 * Also clear the tags here so we don't risk leaking valid capabilities
+	 * into user-space.
+	 */
+	if (cheri_tag_get(ue->p1)) {
+		ue->flag |= UEXTERROR_FLAG_P1_TAGGED;
+		ue->p1 = cheri_tag_clear(ue->p1);
+	}
+	if (cheri_tag_get(ue->p2) {
+		ue->flag |= UEXTERROR_FLAG_P2_TAGGED;
+		ue->p2 = cheri_tag_clear(ue->p2);
+	}
+#endif
 	if (td->td_kexterr.msg != NULL)
 		strlcpy(ue->msg, td->td_kexterr.msg, sizeof(ue->msg));
 	return (0);
