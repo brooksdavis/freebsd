@@ -29,17 +29,26 @@ static const char * const cat_to_filenames[] = {
 _Thread_local char filename_buf[128];
 
 #define	MIB_SIZE	4
-static int mib_template[MIB_SIZE];
-pthread_once_t mib_template_once_control = PTHREAD_ONCE_INIT;
+static int kdc_mib_template[MIB_SIZE];
+pthread_once_t kdc_once_control = PTHREAD_ONCE_INIT;
+pthread_mutex_t kdc_lock = PTHREAD_MUTEX_INITIALIZER;
+char **kdc_cache;
+int kdc_ncategories;
 
 static void
-mib_template_init(void)
+kdc_init(void)
 {
 	size_t len;
 
-	len = nitems(mib_template);
-	(void)sysctlnametomib("kern.exterr.categories", mib_template, &len);
+	len = nitems(kdc_mib_template);
+	(void)sysctlnametomib("kern.exterr.categories", kdc_mib_template,
+	     &len);
 	/* failure handled in kern_dynamic_cat_to_filename() */
+
+	len = sizeof(kdc_ncategories);
+	(void)sysctlbyname("kern.exterr.ncategories", &kdc_ncategories,
+	    &len, NULL, 0);
+	kdc_cache = calloc(kdc_ncategories, sizeof(*kdc_cache));
 }
 
 static const char *
@@ -47,20 +56,43 @@ kern_dynamic_cat_to_filename(int category)
 {
 	int mib[MIB_SIZE];
 	size_t len;
+	char *retval;
 
-	if (_once(&mib_template_once_control, mib_template_init) != 0)
+	if (_once(&kdc_once_control, kdc_init) != 0)
 		return (NULL);
-	if (__predict_false(mib_template[0] != CTL_KERN)) {
-		filename_buf[0] = '\0';
-		return (filename_buf);
-	}
+	if (__predict_false(kdc_mib_template[0] != CTL_KERN))
+		return ("");
 
-	memcpy(mib, mib_template, MIB_SIZE);
+	if (category < kdc_ncategories) {
+		pthread_mutex_lock(&kdc_lock);
+		if (kdc_cache[kdc_ncategories] != NULL)
+			retval = kdc_cache[kdc_ncategories];
+		pthread_mutex_unlock(&kdc_lock);
+		if (retval != NULL)
+			return (retval);
+	}
+	memcpy(mib, kdc_mib_template, MIB_SIZE);
 	mib[MIB_SIZE - 1] = category;
 	len = sizeof(filename_buf);
 	if (sysctl(mib, nitems(mib), filename_buf, &len, NULL, 0) != 0)
 		return (NULL);
-	return (filename_buf);
+	retval = filename_buf;
+	if (category < kdc_ncategories) {
+		bool raced = false;
+		retval = strdup(filename_buf);
+		pthread_mutex_lock(&kdc_lock);
+		if (kdc_cache[kdc_ncategories] == NULL)
+			kdc_cache[kdc_ncategories] = retval;
+		else {
+			raced = true;
+			retval = kdc_cache[kdc_ncategories];
+		}
+		pthread_mutex_unlock(&kdc_lock);
+		if (raced)
+			free(retval);
+	}
+
+	return (retval);
 }
 
 static const char *
