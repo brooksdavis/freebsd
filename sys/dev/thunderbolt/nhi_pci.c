@@ -37,6 +37,7 @@
 #include <sys/bus.h>
 #include <sys/conf.h>
 #include <sys/malloc.h>
+#include <sys/stdarg.h>
 #include <sys/sysctl.h>
 #include <sys/lock.h>
 #include <sys/param.h>
@@ -45,7 +46,6 @@
 
 #include <machine/bus.h>
 #include <machine/resource.h>
-#include <machine/stdarg.h>
 #include <sys/rman.h>
 
 #include <dev/pci/pcireg.h>

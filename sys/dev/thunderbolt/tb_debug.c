@@ -42,13 +42,13 @@
 #include <sys/malloc.h>
 #include <sys/queue.h>
 #include <sys/sbuf.h>
+#include <sys/stdarg.h>
 #include <sys/sysctl.h>
 #include <sys/taskqueue.h>
 #include <sys/gsb_crc32.h>
 #include <sys/endian.h>
 
 #include <machine/bus.h>
-#include <machine/stdarg.h>
 
 #include <dev/thunderbolt/nhi_reg.h>
 #include <dev/thunderbolt/nhi_var.h>
