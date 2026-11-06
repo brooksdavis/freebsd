@@ -28,6 +28,10 @@
  * SUCH DAMAGE.
  */
 
+#ifdef _MACHINE_STDARG_H_
+#warning "machine/stdarg.h is obsolete, use sys/stdarg.h"
+#endif
+
 #ifndef _SYS__STDARG_H_
 #define _SYS__STDARG_H_
 
