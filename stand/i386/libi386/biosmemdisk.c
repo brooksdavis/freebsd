@@ -18,7 +18,7 @@
  * it and setting the right env variables.
  */
 #include <stand.h>
-#include <machine/stdarg.h>
+#include <sys/stdarg.h>
 #include <bootstrap.h>
 #include <btxv86.h>
 #include "libi386.h"

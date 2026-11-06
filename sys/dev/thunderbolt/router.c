@@ -38,6 +38,7 @@
 #include <sys/conf.h>
 #include <sys/malloc.h>
 #include <sys/queue.h>
+#include <sys/stdarg.h>
 #include <sys/sysctl.h>
 #include <sys/lock.h>
 #include <sys/mutex.h>
@@ -48,7 +49,6 @@
 #include <vm/pmap.h>
 
 #include <machine/bus.h>
-#include <machine/stdarg.h>
 
 #include <dev/thunderbolt/nhi_reg.h>
 #include <dev/thunderbolt/nhi_var.h>
