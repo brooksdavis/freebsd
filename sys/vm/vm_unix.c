@@ -59,14 +59,14 @@
 #include <vm/pmap.h>
 #include <vm/vm_map.h>
 
-#ifdef COMPAT_FREEBSD14
+#ifdef COMPAT_FREEBSD15
 #ifndef _SYS_SYSPROTO_H_
-struct freebsd14_break_args {
+struct freebsd15_break_args {
 	char *nsize;
 };
 #endif
 int
-freebsd14_break(struct thread *td, struct freebsd14_break_args *uap)
+freebsd15_break(struct thread *td, struct freebsd15_break_args *uap)
 {
 #if !defined(__aarch64__) && !defined(__riscv)
 	uintptr_t addr;

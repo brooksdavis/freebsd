@@ -31,11 +31,11 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-int __freebsd14__brk(const void *addr);
-int __freebsd14_brk(const void *addr);
-void *__freebsd14_sbrk(intptr_t incr);
+int __freebsd15__brk(const void *addr);
+int __freebsd15_brk(const void *addr);
+void *__freebsd15_sbrk(intptr_t incr);
 
-void *freebsd14_break(char *nsize);
+void *freebsd15_break(char *nsize);
 
 static uintptr_t curbrk, minbrk;
 static int curbrk_initted;
@@ -46,7 +46,7 @@ initbrk(void)
 	void *newbrk;
 
 	if (!curbrk_initted) {
-		newbrk = freebsd14_break(NULL);
+		newbrk = freebsd15_break(NULL);
 		if (newbrk == (void *)-1)
 			return (-1);
 		curbrk = minbrk = (uintptr_t)newbrk;
@@ -65,7 +65,7 @@ mvbrk(void *addr)
 		errno = EINVAL;
 		return ((void *)-1);
 	}
-	if (freebsd14_break(addr) == (void *)-1)
+	if (freebsd15_break(addr) == (void *)-1)
 		return ((void *)-1);
 	oldbrk = curbrk;
 	curbrk = (uintptr_t)addr;
@@ -73,7 +73,7 @@ mvbrk(void *addr)
 }
 
 int
-__freebsd14_brk(const void *addr)
+__freebsd15_brk(const void *addr)
 {
 
 	if (initbrk() == -1)
@@ -82,22 +82,22 @@ __freebsd14_brk(const void *addr)
 		addr = (void *)minbrk;
 	return (mvbrk(__DECONST(void *, addr)) == (void *)-1 ? -1 : 0);
 }
-__sym_compat(brk, __freebsd14_brk, FBSD_1.0);
+__sym_compat(brk, __freebsd15_brk, FBSD_1.0);
 
 #if defined(__amd64__) || defined(__arm__) || defined(__i386__)
 int
-__freebsd14__brk(const void *addr)
+__freebsd15__brk(const void *addr)
 {
 
 	if (initbrk() == -1)
 		return (-1);
 	return (mvbrk(__DECONST(void *, addr)) == (void *)-1 ? -1 : 0);
 }
-__sym_compat(_brk, __freebsd14__brk, FBSD_1.0);
+__sym_compat(_brk, __freebsd15__brk, FBSD_1.0);
 #endif
 
 void *
-__freebsd14_sbrk(intptr_t incr)
+__freebsd15_sbrk(intptr_t incr)
 {
 
 	if (initbrk() == -1)
@@ -110,4 +110,4 @@ __freebsd14_sbrk(intptr_t incr)
 	}
 	return (mvbrk((void *)(curbrk + incr)));
 }
-__sym_compat(sbrk, __freebsd14_sbrk, FBSD_1.0);
+__sym_compat(sbrk, __freebsd15_sbrk, FBSD_1.0);
