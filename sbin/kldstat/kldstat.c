@@ -60,7 +60,7 @@ printmod(int modid)
 	if (showdata) {
 		printf("\t\t%3d %s (%d, %u, 0x%lx)\n", stat.id,
 		    stat.name, stat.data.intval, stat.data.uintval,
-		    stat.data.ulongval);
+		    *(unsigned long *)(void *)&stat.data);
 	} else
 		printf("\t\t%3d %s\n", stat.id, stat.name);
 }
@@ -171,7 +171,7 @@ main(int argc, char *argv[])
 				printf("%3d %4d %s (%d, %u, 0x%lx)\n",
 				    stat.id, stat.refs, stat.name,
 				    stat.data.intval, stat.data.uintval,
-				    stat.data.ulongval);
+				    *(unsigned long *)(void *)&stat.data);
 			} else {
 				printf("Id  Refs Name\n");
 				printf("%3d %4d %s\n", stat.id, stat.refs,

@@ -66,8 +66,9 @@ typedef struct moduledata {
 typedef union modspecific {
 	int	intval;
 	u_int	uintval;
-	long	longval;
-	u_long	ulongval;
+	/* 32-bit compat is impractical for unions of ints and longs */
+	long	longval __deprecated1("use intval");
+	u_long	ulongval __deprecated1("use uintval");
 } modspecific_t;
 
 /*
